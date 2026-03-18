@@ -97,6 +97,25 @@ function normalizeTime(t: string): string {
   return `${String(h).padStart(2, "0")}:${min}`;
 }
 
+/* ─── Static params (required for output: 'export') ─────────────── */
+export async function generateStaticParams() {
+  const { db } = await import("@/lib/db/index");
+  const { clinics: c, cities: ct, categories: cat } = await import("@/lib/db/schema");
+  const { eq: eqF } = await import("drizzle-orm");
+
+  const rows = await db
+    .select({ slug: c.slug, citySlug: ct.slug, categorySlug: cat.slug })
+    .from(c)
+    .innerJoin(ct,  eqF(c.cityId,     ct.id))
+    .innerJoin(cat, eqF(c.categoryId, cat.id));
+
+  return rows.map((r) => ({
+    city:     r.citySlug,
+    category: r.categorySlug,
+    slug:     r.slug,
+  }));
+}
+
 /* ─── Metadata ───────────────────────────────────────────────────── */
 type Props = {
   params: Promise<{ city: string; category: string; slug: string }>;
