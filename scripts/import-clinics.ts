@@ -49,6 +49,14 @@ function cleanInt(v: unknown): number | null {
   return isNaN(n) ? null : n;
 }
 
+/** Convert Outscraper CID float (e.g. 7.62608e+18) to integer string */
+function cleanCid(v: unknown): string | null {
+  if (v === undefined || v === null) return null;
+  const n = Number(v);
+  if (!isFinite(n) || n === 0) return null;
+  return BigInt(Math.round(n)).toString();
+}
+
 function parseHours(v: unknown): string | null {
   const s = clean(v);
   if (!s) return null;
@@ -186,6 +194,7 @@ async function main() {
       website:    clean(row.website),
       email:      clean(row.email),
       googlePlaceId:      placeId,
+      cid:                cleanCid(row.cid),
       googleRating:       cleanFloat(row.rating),
       googleReviewsCount: reviewCount,
       openingHours:       parseHours(row.working_hours),

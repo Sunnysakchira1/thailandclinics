@@ -50,6 +50,7 @@ export const clinics = sqliteTable("clinics", {
 
   // Google
   googlePlaceId:      text("google_place_id").unique(),
+  cid:                text("cid"),               // Google Maps CID — for /maps?cid= links
   googleRating:       real("google_rating"),
   googleReviewsCount: integer("google_reviews_count"),
 

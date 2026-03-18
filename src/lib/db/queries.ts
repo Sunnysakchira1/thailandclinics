@@ -36,6 +36,7 @@ export type ClinicProfile = {
   website:            string | null;
   email:              string | null;
   googlePlaceId:      string | null;
+  cid:                string | null;
   googleRating:       number | null;
   googleReviewsCount: number | null;
   englishSpeaking:    boolean | null;
@@ -110,6 +111,7 @@ export async function getClinicProfile(
       website:            clinics.website,
       email:              clinics.email,
       googlePlaceId:      clinics.googlePlaceId,
+      cid:                clinics.cid,
       googleRating:       clinics.googleRating,
       googleReviewsCount: clinics.googleReviewsCount,
       englishSpeaking:    clinics.englishSpeaking,
