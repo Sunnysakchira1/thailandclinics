@@ -72,6 +72,66 @@ body {
 .delay-300 { animation-delay: 0.3s; }
 .delay-400 { animation-delay: 0.4s; }
 
+/* ─── Hero eyebrow lines ─────────────────────────────────────────── */
+.hero-eyebrow::before,
+.hero-eyebrow::after {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1px;
+  background: var(--terracotta);
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* ─── Category tile hover ────────────────────────────────────────── */
+.category-tile {
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.category-tile:hover {
+  border-color: var(--green) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(26,71,49,0.08);
+}
+.category-tile:hover .category-arrow {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+/* ─── City tile hover ────────────────────────────────────────────── */
+.city-tile-bg {
+  transition: transform 0.4s ease;
+}
+.city-tile:hover .city-tile-bg {
+  transform: scale(1.04);
+}
+
+/* ─── Featured clinic card hover ─────────────────────────────────── */
+.featured-card {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.featured-card:hover {
+  box-shadow: 0 12px 32px rgba(26,26,26,0.08);
+  transform: translateY(-3px);
+}
+
+/* ─── Nav hovers ────────────────────────────────────────────────── */
+.nav-link:hover { color: var(--green) !important; }
+
+.nav-cta:hover {
+  background: var(--green) !important;
+  color: var(--white) !important;
+}
+
+/* ─── Search button hover ───────────────────────────────────────── */
+.search-btn:hover { background: var(--green-light) !important; }
+
+/* ─── Section link hover ─────────────────────────────────────────── */
+.section-link:hover { border-color: var(--green) !important; }
+
+/* ─── Footer link hover ──────────────────────────────────────────── */
+.footer-link:hover { color: var(--white) !important; }
+
 /* ─── Card hover ────────────────────────────────────────────────── */
 .clinic-card {
   transition: transform 0.2s ease, box-shadow 0.2s ease;

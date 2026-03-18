@@ -1,4 +1,4 @@
-import { eq, desc, and, ne } from "drizzle-orm";
+import { eq, desc, and, ne, sql } from "drizzle-orm";
 import { db } from "./index";
 import { clinics, cities, categories } from "./schema";
 
@@ -140,6 +140,52 @@ export async function getClinicProfile(
     .limit(1);
 
   return rows[0] ?? null;
+}
+
+/** Count clinics in a city+category */
+export async function getClinicCount(
+  citySlug: string,
+  categorySlug: string
+): Promise<number> {
+  const rows = await db
+    .select({ value: sql<number>`count(*)` })
+    .from(clinics)
+    .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+    .innerJoin(categories, eq(clinics.categoryId, categories.id))
+    .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug)));
+  return Number(rows[0]?.value ?? 0);
+}
+
+/** Top N clinics by review count for a city+category */
+export async function getTopClinicsByReviews(
+  citySlug: string,
+  categorySlug: string,
+  limit: number
+): Promise<ClinicListItem[]> {
+  return db
+    .select({
+      id:                 clinics.id,
+      name:               clinics.name,
+      nameEn:             clinics.nameEn,
+      slug:               clinics.slug,
+      district:           clinics.district,
+      googleRating:       clinics.googleRating,
+      googleReviewsCount: clinics.googleReviewsCount,
+      verified:           clinics.verified,
+      englishSpeaking:    clinics.englishSpeaking,
+      nearBts:            clinics.nearBts,
+      nearMrt:            clinics.nearMrt,
+      openWeekends:       clinics.openWeekends,
+      featured:           clinics.featured,
+      featuredPosition:   clinics.featuredPosition,
+      photoUrl:           clinics.photoUrl,
+    })
+    .from(clinics)
+    .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+    .innerJoin(categories, eq(clinics.categoryId, categories.id))
+    .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug)))
+    .orderBy(desc(clinics.googleReviewsCount))
+    .limit(limit);
 }
 
 /** Fetch all clinics in same city+category for proximity sort in JS */

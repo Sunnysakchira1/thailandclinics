@@ -1,98 +1,94 @@
 import Link from "next/link";
 
-const cities = [
-  { name: "Bangkok",    slug: "bangkok" },
-  { name: "Phuket",     slug: "phuket" },
-  { name: "Chiang Mai", slug: "chiang-mai" },
-  { name: "Pattaya",    slug: "pattaya" },
-];
-
-const categories = [
-  { name: "Physiotherapy", slug: "physiotherapy-clinics" },
-  { name: "Dental",        slug: "dental-clinics" },
-  { name: "Cosmetic",      slug: "cosmetic-clinics" },
-  { name: "Wellness",      slug: "wellness-clinics" },
-];
-
 export default function Nav() {
   return (
     <nav
       style={{
-        height: "64px",
-        backgroundColor: "var(--white)",
-        borderBottom: "1px solid var(--border-soft)",
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
+        height:          "64px",
+        backgroundColor: "var(--linen)",
+        borderBottom:    "1px solid var(--border)",
+        position:        "sticky",
+        top:             0,
+        zIndex:          100,
+        padding:         "0 48px",
+        display:         "flex",
+        alignItems:      "center",
+        justifyContent:  "space-between",
       }}
     >
-      <div
-        style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          height: "100%",
-          padding: "0 48px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: "32px",
-        }}
-      >
-        {/* Logo wordmark */}
-        <Link
-          href="/"
+      {/* ── Logo ─────────────────────────────────────────────── */}
+      <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
+        {/* Leaf SVG */}
+        <svg
+          width="22" height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="var(--green)"
+          strokeWidth="1.5"
+          aria-hidden="true"
+        >
+          <path d="M12 22c0 0-8-4-8-12a8 8 0 0 1 16 0c0 8-8 12-8 12z"/>
+          <path d="M12 10v12" strokeDasharray="2 2"/>
+        </svg>
+
+        {/* Wordmark */}
+        <span
           style={{
-            textDecoration: "none",
-            fontFamily: "var(--font-cormorant, 'Cormorant Garamond', serif)",
-            fontSize: "20px",
+            fontFamily:    "var(--font-cormorant, 'Cormorant Garamond', serif)",
+            fontSize:      "20px",
+            fontWeight:    600,
             letterSpacing: "0.01em",
-            lineHeight: 1,
-            flexShrink: 0,
+            lineHeight:    1,
           }}
         >
-          <span style={{ fontWeight: 400, color: "var(--charcoal-soft)" }}>
-            thailand
-          </span>
-          <span style={{ fontWeight: 600, color: "var(--green)" }}>
-            clinics
-          </span>
-        </Link>
+          <span style={{ color: "var(--charcoal)" }}>Thailand</span>
+          <span style={{ color: "var(--green)" }}>Clinics</span>
+        </span>
+      </Link>
 
-        {/* City links */}
-        <div
+      {/* ── Right nav ────────────────────────────────────────── */}
+      <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+        {[
+          { label: "Browse",  href: "/bangkok/physiotherapy-clinics/" },
+          { label: "Cities",  href: "/" },
+          { label: "About",   href: "/about/" },
+        ].map(({ label, href }) => (
+          <Link
+            key={label}
+            href={href}
+            style={{
+              fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
+              fontSize:      "13.5px",
+              fontWeight:    400,
+              color:         "var(--charcoal-soft)",
+              textDecoration: "none",
+              letterSpacing: "0.02em",
+              transition:    "color 0.2s",
+            }}
+            className="nav-link"
+          >
+            {label}
+          </Link>
+        ))}
+
+        <Link
+          href="/list-your-clinic/"
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "24px",
-            fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)",
-            fontSize: "13.5px",
-            fontWeight: 400,
+            fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
+            fontSize:      "13px",
+            fontWeight:    500,
+            color:         "var(--green)",
+            textDecoration: "none",
+            border:        "1px solid var(--green)",
+            padding:       "7px 16px",
+            borderRadius:  "4px",
+            transition:    "background 0.2s, color 0.2s",
+            whiteSpace:    "nowrap",
           }}
+          className="nav-cta"
         >
-          {cities.map((city) => (
-            <Link
-              key={city.slug}
-              href={`/${city.slug}`}
-              style={{ color: "var(--charcoal-soft)", textDecoration: "none" }}
-              className="nav-link"
-            >
-              {city.name}
-            </Link>
-          ))}
-
-          <span style={{ color: "var(--border)", userSelect: "none" }}>|</span>
-
-          {categories.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={`/bangkok/${cat.slug}`}
-              style={{ color: "var(--charcoal-soft)", textDecoration: "none" }}
-              className="nav-link"
-            >
-              {cat.name}
-            </Link>
-          ))}
-        </div>
+          List Your Clinic
+        </Link>
       </div>
     </nav>
   );
