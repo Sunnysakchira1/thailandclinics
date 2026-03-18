@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Sitemap (generated at build time)
+public/sitemap*.xml
+public/robots.txt
+
+# Data files (may contain PII / raw exports)
+data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp

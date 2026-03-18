@@ -1,0 +1,82 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ─────────────────────────────────────────────── */
+:root {
+  --linen:         #faf8f5;
+  --linen-dark:    #f2ede6;
+  --charcoal:      #1a1a1a;
+  --charcoal-soft: #3d3d3d;
+  --green:         #1a4731;
+  --green-light:   #2a5c40;
+  --green-pale:    #eef4f0;
+  --terracotta:    #c4622d;
+  --border:        #e0d9ce;
+  --border-soft:   #ece7df;
+  --muted:         #8a8278;
+  --white:         #ffffff;
+  --open:          #2d7a4f;
+  --star:          #e8a020;
+  --footer-bg:     #1a1a1a;
+}
+
+/* ─── Tailwind v4 Theme ─────────────────────────────────────────── */
+@theme inline {
+  /* Colors */
+  --color-linen:         var(--linen);
+  --color-linen-dark:    var(--linen-dark);
+  --color-charcoal:      var(--charcoal);
+  --color-charcoal-soft: var(--charcoal-soft);
+  --color-green:         var(--green);
+  --color-green-light:   var(--green-light);
+  --color-green-pale:    var(--green-pale);
+  --color-terracotta:    var(--terracotta);
+  --color-border:        var(--border);
+  --color-border-soft:   var(--border-soft);
+  --color-muted:         var(--muted);
+  --color-open:          var(--open);
+  --color-star:          var(--star);
+
+  /* Fonts */
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans:  'DM Sans', sans-serif;
+}
+
+/* ─── Base ──────────────────────────────────────────────────────── */
+body {
+  background-color: var(--linen);
+  color: var(--charcoal);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Hero Animations ───────────────────────────────────────────── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.delay-0   { animation-delay: 0s; }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* ─── Card hover ────────────────────────────────────────────────── */
+.clinic-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.clinic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(26,26,26,0.08);
+}
