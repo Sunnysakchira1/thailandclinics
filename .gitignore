@@ -17,6 +17,11 @@ public/robots.txt
 # Data files (may contain PII / raw exports)
 data/
 
+# Office documents
+*.docx
+*.xlsx
+*.pdf
+
 # OS
 .DS_Store
 Thumbs.db
