@@ -160,8 +160,8 @@ function buildSchema(clinic: ClinicProfile, siteUrl: string) {
   const displayName = clinic.nameEn ?? clinic.name;
   const profileUrl  = `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/${clinic.slug}/`;
   const mapsUrl     = clinic.googlePlaceId
-    ? `https://www.google.com/maps/place/?q=place_id:${clinic.googlePlaceId}`
-    : `https://www.google.com/maps/search/?api=1&query=${clinic.lat},${clinic.lng}`;
+    ? `https://maps.google.com/?q=place_id:${clinic.googlePlaceId}`
+    : `https://maps.google.com/?q=${clinic.lat},${clinic.lng}`;
 
   const localBusiness: Record<string, unknown> = {
     "@context": "https://schema.org",
@@ -265,8 +265,8 @@ export default async function ClinicProfilePage({ params }: Props) {
   const about     = parseAbout(clinic.about);
   const hours     = parseHours(clinic.openingHours);
   const mapsUrl   = clinic.cid
-    ? `https://www.google.com/maps/place/?q=place_id:${clinic.googlePlaceId}`
-    : `https://www.google.com/maps/search/?api=1&query=${clinic.lat},${clinic.lng}`;
+    ? `https://maps.google.com/?q=place_id:${clinic.googlePlaceId}`
+    : `https://maps.google.com/?q=${clinic.lat},${clinic.lng}`;
 
   // Parse review summary
   let positives: string[] = [];
