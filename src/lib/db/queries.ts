@@ -1,6 +1,6 @@
-import { eq, desc, and, ne, sql } from "drizzle-orm";
+import { eq, desc, and, ne, sql, isNotNull } from "drizzle-orm";
 import { db } from "./index";
-import { clinics, cities, categories } from "./schema";
+import { clinics, cities, categories, clinicReviews } from "./schema";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 export type ClinicListItem = {
@@ -188,6 +188,30 @@ export async function getTopClinicsByReviews(
     .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug)))
     .orderBy(desc(clinics.googleReviewsCount))
     .limit(limit);
+}
+
+export type ClinicReviewRow = {
+  id:         number;
+  authorName: string;
+  rating:     number;
+  text:       string;
+  reviewDate: string | null;
+};
+
+/** Last 5 reviews with text for a clinic */
+export async function getClinicReviews(clinicId: number): Promise<ClinicReviewRow[]> {
+  return db
+    .select({
+      id:         clinicReviews.id,
+      authorName: clinicReviews.authorName,
+      rating:     clinicReviews.rating,
+      text:       clinicReviews.text,
+      reviewDate: clinicReviews.reviewDate,
+    })
+    .from(clinicReviews)
+    .where(and(eq(clinicReviews.clinicId, clinicId), isNotNull(clinicReviews.text)))
+    .orderBy(desc(clinicReviews.reviewDate))
+    .limit(5) as Promise<ClinicReviewRow[]>;
 }
 
 /** Fetch all clinics in same city+category for proximity sort in JS */

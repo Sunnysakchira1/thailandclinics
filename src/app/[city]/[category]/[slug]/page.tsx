@@ -6,8 +6,10 @@ import StructuredData from "@/components/seo/StructuredData";
 import {
   getClinicProfile,
   getNearbyPool,
+  getClinicReviews,
   type ClinicProfile,
   type ClinicListItem,
+  type ClinicReviewRow,
 } from "@/lib/db/queries";
 
 /* ─── Helpers ────────────────────────────────────────────────────── */
@@ -30,6 +32,14 @@ function haversine(
 function formatMonth(isoDate: string | null): string {
   if (!isoDate) return "";
   const d = new Date(isoDate);
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+}
+
+/** Handles both "YYYY-MM-DD" and "MM/DD/YYYY HH:mm:ss" (Outscraper) */
+function formatReviewDate(dateStr: string | null): string {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return "";
   return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
@@ -216,11 +226,13 @@ export default async function ClinicProfilePage({ params }: Props) {
   const siteUrl     = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailandclinics.co";
   const schemas     = buildSchema(clinic, siteUrl);
 
-  // Nearby clinics — fetch pool, sort by distance, take 3
-  const pool = await getNearbyPool(city, category, clinic.id);
+  // Patient reviews and nearby clinics in parallel
+  const [reviews, pool] = await Promise.all([
+    getClinicReviews(clinic.id),
+    getNearbyPool(city, category, clinic.id),
+  ]);
 
   // We need lat/lng for pool items — fetch them separately
-  const nearbyRaw = await Promise.resolve(pool);
   // Approximation: we have lat/lng on clinic; pool items need it too.
   // Re-query with lat/lng for distance sort
   const nearbyWithCoords = await (async () => {
@@ -413,6 +425,74 @@ export default async function ClinicProfilePage({ params }: Props) {
                       {clinic.reviewSummaryUpdatedAt
                         ? ` · Updated ${formatMonth(clinic.reviewSummaryUpdatedAt)}`
                         : ""}
+                    </p>
+                  )}
+                </Section>
+              )}
+
+              {/* Patient reviews */}
+              {reviews.length > 0 && (
+                <Section title="Patient reviews">
+                  <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                    {reviews.map((r) => (
+                      <div
+                        key={r.id}
+                        style={{
+                          background:    "var(--white)",
+                          border:        "1px solid var(--border-soft)",
+                          borderRadius:  "6px",
+                          padding:       "20px 24px",
+                        }}
+                      >
+                        <div style={{
+                          display:      "flex",
+                          alignItems:   "center",
+                          gap:          "10px",
+                          marginBottom: "10px",
+                          flexWrap:     "wrap",
+                        }}>
+                          <span style={{ color: "var(--star)", fontSize: "14px", letterSpacing: "1px" }}>
+                            {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
+                          </span>
+                          <span style={{
+                            fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                            fontSize:   "13px",
+                            fontWeight: 500,
+                            color:      "var(--charcoal)",
+                          }}>
+                            {r.authorName}
+                          </span>
+                          {r.reviewDate && (
+                            <span style={{
+                              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                              fontSize:   "12px",
+                              color:      "var(--muted)",
+                            }}>
+                              {formatReviewDate(r.reviewDate)}
+                            </span>
+                          )}
+                        </div>
+                        <p style={{
+                          fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                          fontSize:   "14px",
+                          color:      "var(--charcoal-soft)",
+                          lineHeight: 1.7,
+                          margin:     0,
+                        }}>
+                          {r.text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  {clinic.googleReviewsCount && (
+                    <p style={{
+                      fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                      fontSize:   "12px",
+                      color:      "var(--muted)",
+                      textAlign:  "center",
+                      marginTop:  "16px",
+                    }}>
+                      Based on {clinic.googleReviewsCount.toLocaleString()} Google reviews
                     </p>
                   )}
                 </Section>
