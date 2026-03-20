@@ -159,8 +159,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function buildSchema(clinic: ClinicProfile, siteUrl: string) {
   const displayName = clinic.nameEn ?? clinic.name;
   const profileUrl  = `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/${clinic.slug}/`;
-  const mapsUrl     = clinic.cid
-    ? `https://www.google.com/maps?cid=${clinic.cid}`
+  const mapsUrl     = clinic.googlePlaceId
+    ? `https://www.google.com/maps/place/?q=place_id:${clinic.googlePlaceId}`
     : `https://www.google.com/maps/search/?api=1&query=${clinic.lat},${clinic.lng}`;
 
   const localBusiness: Record<string, unknown> = {
@@ -265,7 +265,7 @@ export default async function ClinicProfilePage({ params }: Props) {
   const about     = parseAbout(clinic.about);
   const hours     = parseHours(clinic.openingHours);
   const mapsUrl   = clinic.cid
-    ? `https://www.google.com/maps?cid=${clinic.cid}`
+    ? `https://www.google.com/maps/place/?q=place_id:${clinic.googlePlaceId}`
     : `https://www.google.com/maps/search/?api=1&query=${clinic.lat},${clinic.lng}`;
 
   // Parse review summary
