@@ -140,3 +140,164 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(26,26,26,0.08);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE LAYOUT
+   All desktop values here; overrides in tablet/mobile blocks below.
+═══════════════════════════════════════════════════════════════════ */
+
+/* Navigation */
+.main-nav  { padding: 0 48px; }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+
+/* Page horizontal padding (shared by breadcrumbs, content wrappers) */
+.px-page { padding-left: 48px; padding-right: 48px; }
+
+/* Hero */
+.hero-pad { padding: 96px 48px 80px; }
+
+/* Standard section vertical + horizontal padding */
+.r-section { padding: 72px 48px; }
+
+/* Specialty tiles */
+.specialty-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+/* Featured clinics */
+.featured-section { padding: 72px 48px; }
+.section-header   { display: flex; align-items: flex-end; justify-content: space-between; }
+.featured-grid    { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+/* Cities */
+.city-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-top: 32px;
+}
+
+/* Trust strip */
+.trust-pad   { padding: 40px 48px; }
+.trust-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  flex-wrap: wrap;
+}
+
+/* Footer */
+.footer-pad { padding: 56px 48px 32px; }
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.footer-bottom {
+  padding-top: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Listing page (sidebar + clinic grid) */
+.listing-layout {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+.listing-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+}
+.clinic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Clinic profile page */
+.profile-layout {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+}
+.profile-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+}
+.review-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.review-col { padding: 20px 24px; }
+.review-col:first-child { border-right: 1px solid var(--border-soft); }
+
+/* ─── Tablet (768 – 1099px) ─────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .main-nav        { padding: 0 24px; }
+  .px-page         { padding-left: 24px; padding-right: 24px; }
+  .hero-pad        { padding: 72px 24px 60px; }
+  .r-section       { padding: 60px 24px; }
+  .featured-section { padding: 60px 24px; }
+  .trust-pad       { padding: 36px 24px; }
+  .footer-pad      { padding: 48px 24px 28px; }
+
+  .specialty-grid  { grid-template-columns: repeat(2, 1fr); }
+  .featured-grid   { grid-template-columns: repeat(2, 1fr); }
+  .city-grid       { grid-template-columns: repeat(3, 1fr); }
+  .footer-grid     { grid-template-columns: 1fr 1fr; gap: 32px; }
+
+  .listing-layout  { flex-direction: column; }
+  .listing-sidebar { width: 100%; position: static; top: auto; }
+  .clinic-grid     { grid-template-columns: repeat(2, 1fr); }
+
+  .profile-layout  { flex-direction: column; }
+  .profile-sidebar { width: 100%; position: static; top: auto; }
+}
+
+/* ─── Mobile (≤ 767px) ──────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .main-nav { padding: 0 20px; }
+  .nav-links .nav-link { display: none; }
+
+  .px-page          { padding-left: 20px; padding-right: 20px; }
+  .hero-pad         { padding: 52px 20px 44px; }
+  .r-section        { padding: 48px 20px; }
+  .featured-section { padding: 48px 20px; }
+  .trust-pad        { padding: 32px 20px; }
+  .footer-pad       { padding: 40px 20px 28px; }
+
+  .specialty-grid   { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .featured-grid    { grid-template-columns: 1fr; }
+  .city-grid        { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .section-header   { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .trust-inner      { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 20px; justify-items: start; }
+  .footer-grid      { grid-template-columns: 1fr; gap: 28px; padding-bottom: 32px; }
+  .footer-bottom    { flex-direction: column; align-items: flex-start; }
+
+  .listing-layout   { flex-direction: column; }
+  .listing-sidebar  { width: 100%; position: static; top: auto; }
+  .clinic-grid      { grid-template-columns: 1fr 1fr; }
+
+  .profile-layout   { flex-direction: column; }
+  .profile-sidebar  { width: 100%; position: static; top: auto; }
+  .review-grid      { grid-template-columns: 1fr; }
+  .review-col:first-child { border-right: none; border-bottom: 1px solid var(--border-soft); }
+}

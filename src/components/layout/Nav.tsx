@@ -3,6 +3,7 @@ import Link from "next/link";
 export default function Nav() {
   return (
     <nav
+      className="main-nav"
       style={{
         height:          "64px",
         backgroundColor: "var(--linen)",
@@ -10,7 +11,6 @@ export default function Nav() {
         position:        "sticky",
         top:             0,
         zIndex:          100,
-        padding:         "0 48px",
         display:         "flex",
         alignItems:      "center",
         justifyContent:  "space-between",
@@ -47,7 +47,7 @@ export default function Nav() {
       </Link>
 
       {/* ── Right nav ────────────────────────────────────────── */}
-      <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+      <div className="nav-links">
         {[
           { label: "Browse",  href: "/bangkok/physiotherapy-clinics/" },
           { label: "Cities",  href: "/" },

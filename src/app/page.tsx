@@ -64,10 +64,9 @@ export default async function HomePage() {
             SECTION 2 — HERO
         ══════════════════════════════════════════════════════ */}
         <section style={{ backgroundColor: "var(--linen)" }}>
-          <div style={{
+          <div className="hero-pad" style={{
             maxWidth:  "1100px",
             margin:    "0 auto",
-            padding:   "96px 48px 80px",
             textAlign: "center",
           }}>
             {/* Eyebrow */}
@@ -235,10 +234,10 @@ export default async function HomePage() {
             SECTION 3 — BROWSE BY SPECIALTY
         ══════════════════════════════════════════════════════ */}
         <section style={{ borderTop: "1px solid var(--border-soft)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "72px 48px" }}>
+          <div className="r-section" style={{ maxWidth: "1200px", margin: "0 auto" }}>
             <p style={eyebrowStyle}>Browse by specialty</p>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "16px" }}>
+            <div className="specialty-grid">
 
               {/* Physiotherapy — LIVE */}
               <Link href="/bangkok/physiotherapy-clinics/" style={{ textDecoration: "none" }}>
@@ -293,15 +292,14 @@ export default async function HomePage() {
         {/* ══════════════════════════════════════════════════════
             SECTION 4 — FEATURED CLINICS
         ══════════════════════════════════════════════════════ */}
-        <section style={{
+        <section className="featured-section" style={{
           background:   "var(--linen-dark)",
           borderTop:    "1px solid var(--border-soft)",
           borderBottom: "1px solid var(--border-soft)",
-          padding:      "72px 48px",
         }}>
           <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
             {/* Section header */}
-            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "36px" }}>
+            <div className="section-header" style={{ marginBottom: "36px" }}>
               <h2 style={{
                 fontFamily: "var(--font-cormorant, 'Cormorant Garamond', serif)",
                 fontSize:   "36px",
@@ -317,7 +315,7 @@ export default async function HomePage() {
             </div>
 
             {/* 3-column grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "20px" }}>
+            <div className="featured-grid">
               {topClinics.map((clinic, i) => {
                 const displayName = clinic.nameEn ?? clinic.name;
                 return (
@@ -444,8 +442,8 @@ export default async function HomePage() {
             SECTION 5 — BROWSE BY CITY
         ══════════════════════════════════════════════════════ */}
         <section style={{ backgroundColor: "var(--linen)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "72px 48px" }}>
-            <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "0" }}>
+          <div className="r-section" style={{ maxWidth: "1200px", margin: "0 auto" }}>
+            <div className="section-header">
               <div>
                 <p style={eyebrowStyle}>Explore by city</p>
                 <h2 style={{
@@ -461,12 +459,7 @@ export default async function HomePage() {
               <Link href="/" style={sectionLinkStyle} className="section-link">All cities →</Link>
             </div>
 
-            <div style={{
-              display:             "grid",
-              gridTemplateColumns: "repeat(5,1fr)",
-              gap:                 "12px",
-              marginTop:           "32px",
-            }}>
+            <div className="city-grid">
               {CITY_TILES.map((city) => (
                 <Link
                   key={city.slug}
@@ -521,16 +514,8 @@ export default async function HomePage() {
         {/* ══════════════════════════════════════════════════════
             SECTION 6 — TRUST STRIP
         ══════════════════════════════════════════════════════ */}
-        <section style={{ borderTop: "1px solid var(--border-soft)", background: "var(--white)", padding: "40px 48px" }}>
-          <div style={{
-            maxWidth:       "1200px",
-            margin:         "0 auto",
-            display:        "flex",
-            alignItems:     "center",
-            justifyContent: "center",
-            gap:            "56px",
-            flexWrap:       "wrap",
-          }}>
+        <section className="trust-pad" style={{ borderTop: "1px solid var(--border-soft)", background: "var(--white)" }}>
+          <div className="trust-inner">
 
             {/* Verified listings */}
             <TrustItem
@@ -588,17 +573,11 @@ export default async function HomePage() {
       {/* ══════════════════════════════════════════════════════
           SECTION 7 — FOOTER
       ══════════════════════════════════════════════════════ */}
-      <footer style={{ background: "var(--charcoal)", padding: "56px 48px 32px" }}>
+      <footer className="footer-pad" style={{ background: "var(--charcoal)" }}>
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
           {/* Top grid */}
-          <div style={{
-            display:             "grid",
-            gridTemplateColumns: "2fr 1fr 1fr 1fr",
-            gap:                 "48px",
-            paddingBottom:       "48px",
-            borderBottom:        "1px solid rgba(255,255,255,0.1)",
-          }}>
+          <div className="footer-grid">
             {/* Col 1 — Brand */}
             <div>
               <div style={{
@@ -648,16 +627,10 @@ export default async function HomePage() {
           </div>
 
           {/* Bottom bar */}
-          <div style={{
-            paddingTop:     "28px",
-            display:        "flex",
-            alignItems:     "center",
-            justifyContent: "space-between",
-            fontFamily:     "var(--font-dm-sans, 'DM Sans', sans-serif)",
-            fontSize:       "12.5px",
-            color:          "rgba(255,255,255,0.3)",
-            flexWrap:       "wrap",
-            gap:            "8px",
+          <div className="footer-bottom" style={{
+            fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)",
+            fontSize:   "12.5px",
+            color:      "rgba(255,255,255,0.3)",
           }}>
             <span>© 2025 ThailandClinics.co — All rights reserved</span>
             <span>Made with care for expats in Thailand</span>

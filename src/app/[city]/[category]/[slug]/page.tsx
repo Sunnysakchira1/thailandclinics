@@ -286,7 +286,7 @@ export default async function ClinicProfilePage({ params }: Props) {
       <main style={{ backgroundColor: "var(--linen)", minHeight: "100vh" }}>
 
         {/* ── Breadcrumb ─────────────────────────────────────────── */}
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 48px" }}>
+        <div className="px-page" style={{ maxWidth: "1200px", margin: "0 auto", paddingTop: "16px", paddingBottom: "16px" }}>
           <nav
             aria-label="Breadcrumb"
             style={{
@@ -319,8 +319,8 @@ export default async function ClinicProfilePage({ params }: Props) {
           </nav>
         </div>
 
-        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 48px 72px" }}>
-          <div style={{ display: "flex", gap: "48px", alignItems: "flex-start" }}>
+        <div className="px-page" style={{ maxWidth: "1200px", margin: "0 auto", paddingBottom: "72px" }}>
+          <div className="profile-layout">
 
             {/* ── Main column ──────────────────────────────────── */}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -396,19 +396,15 @@ export default async function ClinicProfilePage({ params }: Props) {
               {/* Review summary */}
               {showReviewSummary && (
                 <Section title="What patients say">
-                  <div style={{
-                    display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0",
-                    border: "1px solid var(--border-soft)", borderRadius: "6px",
-                    overflow: "hidden",
-                  }}>
-                    <div style={{ padding: "20px 24px", borderRight: "1px solid var(--border-soft)" }}>
+                  <div className="review-grid">
+                    <div className="review-col">
                       {positives.filter(Boolean).map((p, i) => (
                         <p key={i} style={bulletStyle}>
                           <span style={{ color: "var(--open)", marginRight: "8px" }}>✓</span>{p}
                         </p>
                       ))}
                     </div>
-                    <div style={{ padding: "20px 24px" }}>
+                    <div className="review-col">
                       {negatives.filter(Boolean).map((n, i) => (
                         <p key={i} style={bulletStyle}>
                           <span style={{ color: "var(--muted)", marginRight: "8px" }}>–</span>{n}
@@ -644,7 +640,7 @@ export default async function ClinicProfilePage({ params }: Props) {
             </div>
 
             {/* ── Sidebar ──────────────────────────────────────── */}
-            <aside style={{ width: "280px", flexShrink: 0, position: "sticky", top: "80px" }}>
+            <aside className="profile-sidebar">
               {/* Quick info card */}
               <div style={{
                 background: "var(--white)", border: "1px solid var(--border-soft)",
@@ -724,9 +720,7 @@ export default async function ClinicProfilePage({ params }: Props) {
               }}>
                 {clinic.categoryName} close to here
               </h2>
-              <div style={{
-                display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "16px",
-              }}>
+              <div className="clinic-grid">
                 {nearby.map((n, i) => (
                   <ClinicCard
                     key={n.id}

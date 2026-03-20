@@ -96,13 +96,15 @@ export default async function CategoryPage({ params }: Props) {
 
         {/* ── Breadcrumb ─────────────────────────────────────────── */}
         <div
+          className="px-page"
           style={{
-            maxWidth: "1400px",
-            margin:   "0 auto",
-            padding:  "16px 48px",
+            maxWidth:   "1400px",
+            margin:     "0 auto",
+            paddingTop: "16px",
+            paddingBottom: "16px",
             fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)",
-            fontSize: "12.5px",
-            color:    "var(--muted)",
+            fontSize:   "12.5px",
+            color:      "var(--muted)",
           }}
         >
           <a href="/" style={{ color: "var(--muted)", textDecoration: "none" }}>Home</a>
@@ -113,24 +115,15 @@ export default async function CategoryPage({ params }: Props) {
         </div>
 
         <div
+          className="px-page listing-layout"
           style={{
-            maxWidth: "1400px",
-            margin:   "0 auto",
-            padding:  "0 48px 72px",
-            display:  "flex",
-            gap:      "40px",
-            alignItems: "flex-start",
+            maxWidth:      "1400px",
+            margin:        "0 auto",
+            paddingBottom: "72px",
           }}
         >
           {/* ── Sidebar ──────────────────────────────────────────── */}
-          <aside
-            style={{
-              width:     "260px",
-              flexShrink: 0,
-              position:  "sticky",
-              top:       "80px",
-            }}
-          >
+          <aside className="listing-sidebar">
             <div
               style={{
                 background:   "var(--white)",
@@ -292,13 +285,7 @@ export default async function CategoryPage({ params }: Props) {
                 </p>
               </div>
             ) : (
-              <div
-                style={{
-                  display:             "grid",
-                  gridTemplateColumns: "repeat(3, 1fr)",
-                  gap:                 "16px",
-                }}
-              >
+              <div className="clinic-grid">
                 {clinicList.map((clinic: ClinicListItem, i: number) => (
                   <ClinicCard
                     key={clinic.id}
