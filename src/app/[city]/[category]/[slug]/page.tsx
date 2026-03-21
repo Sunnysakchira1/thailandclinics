@@ -162,8 +162,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function buildSchema(clinic: ClinicProfile, siteUrl: string) {
   const displayName = clinic.nameEn ?? clinic.name;
   const profileUrl  = `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/${clinic.slug}/`;
-  const mapsUrl     = clinic.cid
-    ? `https://maps.google.com/?cid=${clinic.cid}`
+  const mapsUrl     = clinic.googlePlaceId
+    ? `https://www.google.com/maps/place/?q=place_id:${clinic.googlePlaceId}`
     : `https://maps.google.com/?q=${clinic.lat},${clinic.lng}`;
 
   const localBusiness: Record<string, unknown> = {
@@ -234,8 +234,8 @@ export default async function ClinicProfilePage({ params }: Props) {
   const displayName = clinic.nameEn ?? clinic.name;
   const siteUrl     = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
   const schemas     = buildSchema(clinic, siteUrl);
-  const mapsUrl     = clinic.cid
-    ? `https://maps.google.com/?cid=${clinic.cid}`
+  const mapsUrl     = clinic.googlePlaceId
+    ? `https://www.google.com/maps/place/?q=place_id:${clinic.googlePlaceId}`
     : `https://maps.google.com/?q=${clinic.lat},${clinic.lng}`;
 
   /* Fetch reviews + nearby in parallel */
