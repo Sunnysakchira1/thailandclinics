@@ -1,4 +1,4 @@
-import { eq, desc, and, ne, sql, isNotNull } from "drizzle-orm";
+import { eq, desc, and, ne, sql, isNotNull, count } from "drizzle-orm";
 import { db } from "./index";
 import { clinics, cities, categories, clinicReviews } from "./schema";
 
@@ -212,6 +212,102 @@ export async function getClinicReviews(clinicId: number): Promise<ClinicReviewRo
     .where(and(eq(clinicReviews.clinicId, clinicId), isNotNull(clinicReviews.text)))
     .orderBy(desc(clinicReviews.reviewDate))
     .limit(5) as Promise<ClinicReviewRow[]>;
+}
+
+/* ─── City landing page ──────────────────────────────────────────── */
+
+/** Clinic counts per category for a city */
+export async function getCategoryCountsForCity(
+  citySlug: string
+): Promise<{ categorySlug: string; count: number }[]> {
+  const rows = await db
+    .select({ categorySlug: categories.slug, count: sql<number>`count(*)` })
+    .from(clinics)
+    .innerJoin(cities,      eq(clinics.cityId,     cities.id))
+    .innerJoin(categories,  eq(clinics.categoryId, categories.id))
+    .where(eq(cities.slug, citySlug))
+    .groupBy(categories.slug);
+  return rows.map(r => ({ categorySlug: r.categorySlug, count: Number(r.count) }));
+}
+
+/** Top N clinics in a city across all categories, ordered by review count */
+export async function getTopClinicsByCity(
+  citySlug: string,
+  limit: number
+): Promise<ClinicListItem[]> {
+  return db
+    .select({
+      id:                 clinics.id,
+      name:               clinics.name,
+      nameEn:             clinics.nameEn,
+      slug:               clinics.slug,
+      district:           clinics.district,
+      googleRating:       clinics.googleRating,
+      googleReviewsCount: clinics.googleReviewsCount,
+      verified:           clinics.verified,
+      englishSpeaking:    clinics.englishSpeaking,
+      nearBts:            clinics.nearBts,
+      nearMrt:            clinics.nearMrt,
+      openWeekends:       clinics.openWeekends,
+      featured:           clinics.featured,
+      featuredPosition:   clinics.featuredPosition,
+      photoUrl:           clinics.photoUrl,
+      categorySlug:       categories.slug,
+    } as any)
+    .from(clinics)
+    .innerJoin(cities,      eq(clinics.cityId,     cities.id))
+    .innerJoin(categories,  eq(clinics.categoryId, categories.id))
+    .where(eq(cities.slug, citySlug))
+    .orderBy(desc(clinics.googleReviewsCount), desc(clinics.googleRating))
+    .limit(limit) as unknown as ClinicListItem[];
+}
+
+/* ─── Category landing page ──────────────────────────────────────── */
+
+/** Clinic counts per city for a category */
+export async function getCityCountsForCategory(
+  catSlug: string
+): Promise<{ citySlug: string; count: number }[]> {
+  const rows = await db
+    .select({ citySlug: cities.slug, count: sql<number>`count(*)` })
+    .from(clinics)
+    .innerJoin(cities,      eq(clinics.cityId,     cities.id))
+    .innerJoin(categories,  eq(clinics.categoryId, categories.id))
+    .where(eq(categories.slug, catSlug))
+    .groupBy(cities.slug);
+  return rows.map(r => ({ citySlug: r.citySlug, count: Number(r.count) }));
+}
+
+/** Top N clinics for a category across all cities, ordered by rating */
+export async function getTopClinicsByCategory(
+  catSlug: string,
+  limit: number
+): Promise<(ClinicListItem & { citySlug: string })[]> {
+  return db
+    .select({
+      id:                 clinics.id,
+      name:               clinics.name,
+      nameEn:             clinics.nameEn,
+      slug:               clinics.slug,
+      district:           clinics.district,
+      googleRating:       clinics.googleRating,
+      googleReviewsCount: clinics.googleReviewsCount,
+      verified:           clinics.verified,
+      englishSpeaking:    clinics.englishSpeaking,
+      nearBts:            clinics.nearBts,
+      nearMrt:            clinics.nearMrt,
+      openWeekends:       clinics.openWeekends,
+      featured:           clinics.featured,
+      featuredPosition:   clinics.featuredPosition,
+      photoUrl:           clinics.photoUrl,
+      citySlug:           cities.slug,
+    })
+    .from(clinics)
+    .innerJoin(cities,      eq(clinics.cityId,     cities.id))
+    .innerJoin(categories,  eq(clinics.categoryId, categories.id))
+    .where(eq(categories.slug, catSlug))
+    .orderBy(desc(clinics.googleRating), desc(clinics.googleReviewsCount))
+    .limit(limit) as unknown as (ClinicListItem & { citySlug: string })[];
 }
 
 /** Fetch all clinics in same city+category for proximity sort in JS */

@@ -587,7 +587,7 @@ export default async function HomePage() {
                 color:        "var(--white)",
                 marginBottom: "12px",
               }}>
-                ThailandClinics.co
+                ThailandClinics
               </div>
               <p style={{
                 fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)",
@@ -620,9 +620,10 @@ export default async function HomePage() {
             {/* Col 4 — Company */}
             <FooterCol title="Company" links={[
               { label: "About",            href: "/about/" },
+              { label: "How we rank",      href: "/how-we-rank/" },
               { label: "List Your Clinic", href: "/list-your-clinic/" },
-              { label: "Contact",          href: "/contact/" },
-              { label: "Privacy Policy",   href: "/privacy-policy/" },
+              { label: "Privacy Policy",   href: "/privacy/" },
+              { label: "Terms of Use",     href: "/terms/" },
             ]} />
           </div>
 
@@ -632,7 +633,7 @@ export default async function HomePage() {
             fontSize:   "12.5px",
             color:      "rgba(255,255,255,0.3)",
           }}>
-            <span>© 2025 ThailandClinics.co — All rights reserved</span>
+            <span>© 2026 ThailandClinics — All rights reserved</span>
             <span>Made with care for expats in Thailand</span>
           </div>
 
