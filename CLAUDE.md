@@ -520,11 +520,57 @@ CSS profile classes added to globals.css:
 
 ---
 
+### Built this session (2026-03-21, session 3)
+
+**Brand cleanup: all ThailandClinics.co references removed**
+- `websiteSchema` in src/app/page.tsx: `name` changed from "ThailandClinics.co" → "ThailandClinics"
+- CLAUDE.md document title updated
+- content/listings.html updated
+- Zero remaining occurrences of "ThailandClinics.co" anywhere in codebase
+
+**Favicon**
+- Created src/app/icon.svg — white leaf on #1a4731 green circle, 32×32 viewBox
+- Leaf path mirrors the Nav logo SVG exactly
+- Next.js App Router serves as `<link rel="icon" type="image/svg+xml">` automatically
+- src/app/favicon.ico remains as legacy fallback for older browsers
+
+**public/llms.txt** — added (session 1, confirmed committed in session 3)
+- Location: /llms.txt — standard path for AI crawlers
+- Covers: site purpose, structure, cities, categories, ranking methodology, data sources
+
+**robots.txt** — domain fixed to thailand-clinics.com (session 1)
+
+**cid column — architectural decision (do not revert)**
+- cid column in DB is permanently corrupted (float precision loss from Outscraper export)
+- All Maps URLs now use: `google.com/maps/search/?api=1&query=NAME&query_place_id=PLACE_ID`
+- Never use cid column for any URL generation
+
+---
+
+### Half done / in progress
+
+- **Multi-source reviews** (Trustpilot + Facebook + Google combined) — referenced on
+  /how-we-rank/ as "coming soon", pipeline not built
+- **List your clinic form** — mailto: only, no backend. Options: Formspree, Resend
+- **scripts/generate-summaries.ts** — untracked, not committed
+- **Footer Browse column** — category pages exist now but may need real clinic counts
+
+---
+
+### Bugs found but not fixed
+
+- ~~`websiteSchema` name bug~~ — fixed 2026-03-21
+- ~~Maps URL using corrupted CID~~ — fixed 2026-03-21
+- **`cid` column in DB is permanently corrupted** — never use for URLs, use google_place_id
+- **Sitemap-0.xml clinic profile URLs missing trailing slashes** — will correct on next build
+
+---
+
 ### Next session priorities
 
-1. Decide on form backend for /list-your-clinic/ (Formspree, Resend, or keep mailto)
-2. Commit scripts/generate-summaries.ts
-3. Fix sitemap trailing slash issue
+1. Fix sitemap trailing slash issue in next-sitemap.config.js
+2. Decide on form backend for /list-your-clinic/ (Formspree, Resend, or keep mailto)
+3. Commit scripts/generate-summaries.ts
 4. Add more city/category data (Phuket, Chiang Mai, Pattaya, Dental, Cosmetic, Wellness)
 
 ---
