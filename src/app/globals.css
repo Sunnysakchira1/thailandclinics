@@ -465,3 +465,191 @@ body {
   transition: color 0.15s;
 }
 .nav-browse-link:hover { color: var(--green); }
+
+/* ═══════════════════════════════════════════════════════════════════
+   CLINIC PROFILE PAGE
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Zone 1: Hero ──────────────────────────────────────────────── */
+.profile-hero {
+  background: var(--white);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 40px 48px 48px;
+}
+.profile-hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.profile-hero-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.profile-hero-content { order: 1; }
+.profile-glance-card {
+  order: -1; /* appears first on mobile (flex-column) */
+  background: var(--white);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  padding: 24px;
+}
+
+/* ── Zone 2: Editorial verdict ─────────────────────────────────── */
+.profile-editorial {
+  background: var(--linen-dark);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 48px;
+}
+.profile-editorial-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.profile-verdict-card {
+  background: var(--white);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--green);
+  border-radius: 0 6px 6px 0;
+  padding: 24px 28px;
+}
+
+/* ── Patient Voices ────────────────────────────────────────────── */
+.profile-voices {
+  background: var(--linen);
+  border-bottom: 1px solid var(--border-soft);
+  padding: 48px;
+}
+.profile-voices-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.profile-voices-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ── Zone 3: Details ───────────────────────────────────────────── */
+.profile-details {
+  background: var(--linen);
+  padding: 48px;
+}
+.profile-details-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.profile-detail-block {
+  border-bottom: 1px solid var(--border-soft);
+  padding: 0;
+}
+.profile-detail-block:last-child { border-bottom: none; }
+.profile-detail-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  cursor: pointer;
+  font-family: var(--font-dm-sans, 'DM Sans', sans-serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--charcoal);
+  list-style: none;
+  user-select: none;
+}
+.profile-detail-summary::-webkit-details-marker { display: none; }
+.profile-detail-summary::after {
+  content: '+';
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+details[open] > .profile-detail-summary::after {
+  transform: rotate(45deg);
+}
+.profile-detail-content { padding-bottom: 24px; }
+
+/* ── Nearby ────────────────────────────────────────────────────── */
+.profile-nearby {
+  background: var(--linen-dark);
+  border-top: 1px solid var(--border-soft);
+  padding: 48px;
+}
+.profile-nearby-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* ── Nearby row hover ──────────────────────────────────────────── */
+.nearby-row:hover { background: #fdfcfa !important; }
+.nearby-row:last-child { border-bottom: none !important; }
+
+/* ── Maps button hover ─────────────────────────────────────────── */
+.glance-maps-btn:hover { background: var(--green-light) !important; }
+
+/* ── Mobile sticky CTA ─────────────────────────────────────────── */
+.profile-sticky-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--border-soft);
+  padding: 12px 20px;
+  z-index: 100;
+  box-shadow: 0 -4px 16px rgba(26,26,26,0.06);
+}
+
+/* ── Desktop: two-column hero, no sticky CTA ───────────────────── */
+@media (min-width: 1024px) {
+  .profile-hero-grid {
+    flex-direction: row;
+    gap: 56px;
+    align-items: flex-start;
+  }
+  .profile-hero-content {
+    order: 1;
+    flex: 1;
+    min-width: 0;
+  }
+  .profile-glance-card {
+    order: 2;
+    width: 300px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+  }
+  .profile-sticky-cta { display: none; }
+  .profile-voices-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Tablet ────────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .profile-hero    { padding: 32px 24px 40px; }
+  .profile-editorial { padding: 40px 24px; }
+  .profile-voices  { padding: 40px 24px; }
+  .profile-details { padding: 40px 24px; }
+  .profile-nearby  { padding: 40px 24px; }
+  .profile-voices-grid { grid-template-columns: repeat(2, 1fr); }
+  .profile-glance-card { order: -1; }
+  .profile-sticky-cta { display: none; }
+}
+
+/* ── Mobile ────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .profile-hero    { padding: 20px 20px 28px; }
+  .profile-editorial { padding: 28px 20px; }
+  .profile-voices  { padding: 28px 20px; }
+  .profile-details { padding: 28px 20px; }
+  .profile-nearby  { padding: 28px 20px; }
+  .profile-voices-grid { grid-template-columns: 1fr; }
+  .profile-glance-card { padding: 18px; }
+  /* Add bottom padding so sticky CTA doesn't cover content */
+  main { padding-bottom: 80px; }
+}

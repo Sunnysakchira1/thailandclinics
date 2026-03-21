@@ -198,8 +198,8 @@ export type ClinicReviewRow = {
   reviewDate: string | null;
 };
 
-/** Last 5 reviews with text for a clinic */
-export async function getClinicReviews(clinicId: number): Promise<ClinicReviewRow[]> {
+/** Recent reviews with text for a clinic */
+export async function getClinicReviews(clinicId: number, limit = 20): Promise<ClinicReviewRow[]> {
   return db
     .select({
       id:         clinicReviews.id,
@@ -211,7 +211,7 @@ export async function getClinicReviews(clinicId: number): Promise<ClinicReviewRo
     .from(clinicReviews)
     .where(and(eq(clinicReviews.clinicId, clinicId), isNotNull(clinicReviews.text)))
     .orderBy(desc(clinicReviews.reviewDate))
-    .limit(5) as Promise<ClinicReviewRow[]>;
+    .limit(limit) as Promise<ClinicReviewRow[]>;
 }
 
 /* ─── City landing page ──────────────────────────────────────────── */
