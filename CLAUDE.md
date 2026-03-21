@@ -101,7 +101,7 @@ Validate every schema with Google's Rich Results Test before deploying.
 User-agent: *
 Allow: /
 Disallow: /api/
-Sitemap: https://thailandclinics.co/sitemap.xml
+Sitemap: https://thailand-clinics.com/sitemap.xml
 
 ### Pre-Deploy SEO Checklist
 - [ ] All pages have unique meta title (55-62 chars)
@@ -617,7 +617,7 @@ Add all to .env.local (never commit) and .env.example (commit the keys, not valu
 ```
 TURSO_URL=
 TURSO_AUTH_TOKEN=
-NEXT_PUBLIC_SITE_URL=https://thailandclinics.co
+NEXT_PUBLIC_SITE_URL=https://thailand-clinics.com
 OUTSCRAPER_API_KEY=
 ANTHROPIC_API_KEY=
 ```

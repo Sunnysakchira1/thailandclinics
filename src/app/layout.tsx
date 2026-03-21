@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   description:
     "Find verified dental, physiotherapy, cosmetic, and wellness clinics in Bangkok, Phuket, Chiang Mai and Pattaya. Trusted by expats and medical tourists.",
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailandclinics.co"
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com"
   ),
   viewport: {
     width: "device-width",

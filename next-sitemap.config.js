@@ -3,7 +3,7 @@
 const { createClient } = require("@libsql/client");
 
 module.exports = {
-  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://thailandclinics.co",
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://thailand-clinics.com",
 
   // robots.txt is managed manually in /public/robots.txt
   generateRobotsTxt: false,

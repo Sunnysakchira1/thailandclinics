@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physiotherapy Clinics in Bangkok — ThailandClinics.co</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --linen:        #faf8f5;
+      --linen-dark:   #f2ede6;
+      --charcoal:     #1a1a1a;
+      --charcoal-soft:#3d3d3d;
+      --green:        #1a4731;
+      --green-light:  #2a5c40;
+      --green-pale:   #eef4f0;
+      --terracotta:   #c4622d;
+      --border:       #e0d9ce;
+      --border-soft:  #ece7df;
+      --muted:        #8a8278;
+      --white:        #ffffff;
+      --open:         #2d7a4f;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--linen);
+      color: var(--charcoal);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--linen);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .nav-logo-leaf { width: 22px; height: 22px; color: var(--green); }
+
+    .nav-logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--charcoal);
+    }
+
+    .nav-logo-text span { color: var(--green); }
+
+    /* Inline search in nav (appears on listing pages) */
+    .nav-search {
+      flex: 1;
+      max-width: 440px;
+      margin: 0 40px;
+      display: flex;
+      align-items: center;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--white);
+      overflow: hidden;
+    }
+
+    .nav-search input {
+      flex: 1;
+      padding: 0 14px;
+      height: 100%;
+      border: none;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      color: var(--charcoal);
+      background: transparent;
+    }
+
+    .nav-search input::placeholder { color: #b0a99f; }
+
+    .nav-search-divider { width: 1px; height: 20px; background: var(--border); flex-shrink: 0; }
+
+    .nav-search select {
+      padding: 0 28px 0 12px;
+      height: 100%;
+      border: none;
+      outline: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      color: var(--charcoal-soft);
+      background: transparent;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238a8278' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      flex-shrink: 0;
+    }
+
+    .nav-search button {
+      height: 100%;
+      padding: 0 16px;
+      background: var(--green);
+      color: var(--white);
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+      flex-shrink: 0;
+    }
+
+    .nav-links a {
+      font-size: 13.5px;
+      color: var(--charcoal-soft);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--green); }
+
+    .nav-cta {
+      font-size: 13px !important;
+      font-weight: 500 !important;
+      color: var(--green) !important;
+      border: 1px solid var(--green);
+      padding: 6px 14px;
+      border-radius: 4px;
+      transition: background 0.2s, color 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--green) !important; color: var(--white) !important; }
+
+    /* ─── BREADCRUMB + TITLE BAR ─── */
+    .title-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 20px 40px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover { color: var(--green); }
+
+    .breadcrumb-sep { opacity: 0.4; }
+
+    .breadcrumb-current { color: var(--charcoal-soft); }
+
+    .title-bar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 400;
+      color: var(--charcoal);
+      line-height: 1.2;
+    }
+
+    .page-title em { font-style: italic; color: var(--green); }
+
+    .result-count {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .result-count strong { color: var(--charcoal); font-weight: 500; }
+
+    /* ─── SORT BAR ─── */
+    .sort-bar {
+      background: var(--linen);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 12px 40px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .sort-label {
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .sort-options {
+      display: flex;
+      gap: 4px;
+    }
+
+    .sort-btn {
+      padding: 5px 14px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      background: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12.5px;
+      color: var(--charcoal-soft);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .sort-btn:hover { border-color: var(--green); color: var(--green); }
+    .sort-btn.active { background: var(--green); border-color: var(--green); color: var(--white); }
+
+    .sort-spacer { flex: 1; }
+
+    .open-now-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--charcoal-soft);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-track {
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      background: var(--border);
+      position: relative;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .toggle-track.on { background: var(--green); }
+
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--white);
+      transition: transform 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .toggle-track.on .toggle-thumb { transform: translateX(16px); }
+
+    /* ─── MAIN LAYOUT ─── */
+    .listing-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: calc(100vh - 180px);
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      background: var(--white);
+      border-right: 1px solid var(--border-soft);
+      padding: 28px 24px;
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .filter-group {
+      margin-bottom: 28px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .filter-group:last-child { border-bottom: none; margin-bottom: 0; }
+
+    .filter-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .filter-option-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-checkbox {
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 3px;
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .filter-option:hover .filter-checkbox { border-color: var(--green); }
+
+    .filter-option.checked .filter-checkbox {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .filter-option.checked .filter-checkbox::after {
+      content: '';
+      width: 9px;
+      height: 6px;
+      border-left: 1.5px solid white;
+      border-bottom: 1.5px solid white;
+      transform: rotate(-45deg) translateY(-1px);
+    }
+
+    .filter-option-label {
+      font-size: 13.5px;
+      color: var(--charcoal-soft);
+    }
+
+    .filter-option-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Star rating filter */
+    .rating-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .rating-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+
+    .rating-option:hover { background: var(--linen-dark); }
+    .rating-option.active { background: var(--green-pale); }
+
+    .rating-stars {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stars {
+      display: flex;
+      gap: 1px;
+    }
+
+    .stars svg {
+      width: 12px;
+      height: 12px;
+      color: #e8a020;
+    }
+
+    .rating-label {
+      font-size: 13px;
+      color: var(--charcoal-soft);
+      margin-left: 6px;
+    }
+
+    .rating-count {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ─── LISTINGS ─── */
+    .listings-main {
+      padding: 0;
+    }
+
+    .clinic-row {
+      background: var(--white);
+      border-bottom: 1px solid var(--border-soft);
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
+      text-decoration: none;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .clinic-row:hover { background: #fdfcfa; }
+
+    .clinic-row:hover .clinic-row-name { color: var(--green); }
+
+    /* Rank badge */
+    .rank-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 28px;
+      height: 28px;
+      background: var(--charcoal);
+      color: var(--white);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      z-index: 1;
+    }
+
+    .rank-badge.gold { background: #c9a84c; }
+    .rank-badge.silver { background: #8a8278; }
+    .rank-badge.bronze { background: #a0714c; }
+
+    .clinic-row-photo {
+      width: 200px;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .clinic-row-photo svg {
+      width: 32px;
+      height: 32px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    .clinic-row-body {
+      padding: 20px 24px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .clinic-row-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 6px;
+    }
+
+    .clinic-row-tag {
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--terracotta);
+      margin-bottom: 4px;
+    }
+
+    .clinic-row-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--charcoal);
+      line-height: 1.2;
+      transition: color 0.15s;
+    }
+
+    .clinic-row-rating {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .rating-score {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--charcoal);
+    }
+
+    .rating-stars-sm {
+      display: flex;
+      gap: 1px;
+    }
+
+    .rating-stars-sm svg {
+      width: 13px;
+      height: 13px;
+      color: #e8a020;
+    }
+
+    .rating-reviews {
+      font-size: 12.5px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .clinic-row-desc {
+      font-size: 13.5px;
+      color: var(--charcoal-soft);
+      line-height: 1.6;
+      margin: 8px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .clinic-row-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .clinic-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+
+    .clinic-meta-item svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    .clinic-open-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--open);
+    }
+
+    .open-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--open);
+      flex-shrink: 0;
+    }
+
+    .clinic-closed-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #b05a3a;
+    }
+
+    .closed-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #b05a3a;
+      flex-shrink: 0;
+    }
+
+    .clinic-row-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .clinic-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .clinic-tag {
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      font-size: 11.5px;
+      color: var(--charcoal-soft);
+      background: var(--linen);
+    }
+
+    .view-btn {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .view-btn svg { width: 14px; height: 14px; transition: transform 0.15s; }
+    .clinic-row:hover .view-btn svg { transform: translateX(3px); }
+
+    /* ─── FEATURED ROW (highlighted) ─── */
+    .clinic-row.featured {
+      border-left: 3px solid var(--green);
+    }
+
+    .featured-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+      background: var(--green-pale);
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-bottom: 6px;
+    }
+
+    /* ─── PAGINATION ─── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 32px 40px;
+      background: var(--white);
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .page-btn {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--white);
+      color: var(--charcoal-soft);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .page-btn:hover { border-color: var(--green); color: var(--green); }
+    .page-btn.active { background: var(--green); border-color: var(--green); color: var(--white); }
+    .page-btn.arrow { color: var(--muted); }
+    .page-btn.arrow:hover { color: var(--green); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .clinic-row { animation: fadeIn 0.4s ease both; }
+    .clinic-row:nth-child(1) { animation-delay: 0.05s; }
+    .clinic-row:nth-child(2) { animation-delay: 0.10s; }
+    .clinic-row:nth-child(3) { animation-delay: 0.15s; }
+    .clinic-row:nth-child(4) { animation-delay: 0.20s; }
+    .clinic-row:nth-child(5) { animation-delay: 0.25s; }
+    .clinic-row:nth-child(6) { animation-delay: 0.30s; }
+    .clinic-row:nth-child(7) { animation-delay: 0.35s; }
+
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="https://thailand-clinics.com/" class="nav-logo">
+      <svg class="nav-logo-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 22c0 0-8-4-8-12a8 8 0 0 1 16 0c0 8-8 12-8 12z"/>
+        <path d="M12 10v12" stroke-dasharray="2 2"/>
+      </svg>
+      <span class="nav-logo-text">Thailand<span>Clinics</span></span>
+    </a>
+
+    <div class="nav-search">
+      <input type="text" placeholder="Physiotherapy, dental, wellness…" value="Physiotherapy">
+      <div class="nav-search-divider"></div>
+      <select>
+        <option>Bangkok</option>
+        <option>Chiang Mai</option>
+        <option>Phuket</option>
+      </select>
+      <button>Search</button>
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="https://thailand-clinics.com/places/">Browse</a></li>
+      <li><a href="https://thailand-clinics.com/about/">About</a></li>
+      <li><a href="https://thailand-clinics.com/add-listing/" class="nav-cta">List Your Clinic</a></li>
+    </ul>
+  </nav>
+
+  <!-- TITLE BAR -->
+  <div class="title-bar">
+    <nav class="breadcrumb">
+      <a href="https://thailand-clinics.com/">Home</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="https://thailand-clinics.com/places/">Browse</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="https://thailand-clinics.com/places/?location=bangkok">Bangkok</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Physiotherapy</span>
+    </nav>
+    <div class="title-bar-row">
+      <h1 class="page-title">Physiotherapy clinics in <em>Bangkok</em></h1>
+      <span class="result-count"><strong>247</strong> clinics found</span>
+    </div>
+  </div>
+
+  <!-- SORT BAR -->
+  <div class="sort-bar">
+    <span class="sort-label">Sort by</span>
+    <div class="sort-options">
+      <button class="sort-btn active" onclick="setSort(this)">Highest rated</button>
+      <button class="sort-btn" onclick="setSort(this)">Most reviewed</button>
+      <button class="sort-btn" onclick="setSort(this)">Newest</button>
+    </div>
+    <div class="sort-spacer"></div>
+    <label class="open-now-toggle" onclick="toggleOpen(this)">
+      <div class="toggle-track" id="openToggle">
+        <div class="toggle-thumb"></div>
+      </div>
+      Open now
+    </label>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="listing-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <!-- Rating -->
+      <div class="filter-group">
+        <p class="filter-title">Rating</p>
+        <div class="rating-options">
+          <div class="rating-option active" onclick="setRating(this)">
+            <div class="rating-stars">
+              <div class="stars">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-label">4.5 & up</span>
+            </div>
+            <span class="rating-count">84</span>
+          </div>
+          <div class="rating-option" onclick="setRating(this)">
+            <div class="rating-stars">
+              <div class="stars">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-label">4.0 & up</span>
+            </div>
+            <span class="rating-count">162</span>
+          </div>
+          <div class="rating-option" onclick="setRating(this)">
+            <div class="rating-stars">
+              <div class="stars">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-label">3.0 & up</span>
+            </div>
+            <span class="rating-count">218</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Area -->
+      <div class="filter-group">
+        <p class="filter-title">Neighbourhood</p>
+        <div class="filter-options">
+          <div class="filter-option checked" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Sukhumvit</span>
+            </div>
+            <span class="filter-option-count">89</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Silom / Sathorn</span>
+            </div>
+            <span class="filter-option-count">34</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Ratchathewi</span>
+            </div>
+            <span class="filter-option-count">28</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Lat Phrao</span>
+            </div>
+            <span class="filter-option-count">22</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Chatuchak</span>
+            </div>
+            <span class="filter-option-count">18</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">On Nut / Bang Na</span>
+            </div>
+            <span class="filter-option-count">14</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Specialty -->
+      <div class="filter-group">
+        <p class="filter-title">Specialty</p>
+        <div class="filter-options">
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Sports rehab</span>
+            </div>
+            <span class="filter-option-count">61</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Office syndrome</span>
+            </div>
+            <span class="filter-option-count">54</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Post-surgery rehab</span>
+            </div>
+            <span class="filter-option-count">38</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Paediatric physio</span>
+            </div>
+            <span class="filter-option-count">12</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Elderly care</span>
+            </div>
+            <span class="filter-option-count">21</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- English speaking -->
+      <div class="filter-group">
+        <p class="filter-title">Language</p>
+        <div class="filter-options">
+          <div class="filter-option checked" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">English speaking</span>
+            </div>
+            <span class="filter-option-count">103</span>
+          </div>
+          <div class="filter-option" onclick="toggleFilter(this)">
+            <div class="filter-option-left">
+              <div class="filter-checkbox"></div>
+              <span class="filter-option-label">Thai only</span>
+            </div>
+            <span class="filter-option-count">144</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- LISTINGS -->
+    <main class="listings-main">
+
+      <!-- Row 1 — Featured -->
+      <a href="https://thailand-clinics.com/places/form-recovery-wellness/" class="clinic-row featured">
+        <div class="clinic-row-photo" style="background: linear-gradient(135deg, #2a5c40 0%, #1a3d2b 100%);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <div class="rank-badge gold">1</div>
+        </div>
+        <div class="clinic-row-body">
+          <div class="featured-badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Top Rated
+          </div>
+          <div class="clinic-row-top">
+            <div>
+              <p class="clinic-row-tag">Physiotherapy · TCM · Applied Thai Medicine</p>
+              <h2 class="clinic-row-name">Form Recovery & Wellness</h2>
+            </div>
+            <div class="clinic-row-rating">
+              <span class="rating-score">4.9</span>
+              <div class="rating-stars-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-reviews">670 reviews</span>
+            </div>
+          </div>
+          <p class="clinic-row-desc">Multidisciplinary clinic combining physiotherapy, traditional Chinese medicine and Thai wellness treatments. Specialises in sports injuries, office syndrome and post-surgical rehabilitation without painkillers or injections.</p>
+          <div class="clinic-row-meta">
+            <span class="clinic-open-badge"><span class="open-dot"></span>Open now · closes 8pm</span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              Asoke (Sukhumvit 20) · Thonglor (Sukhumvit 49)
+            </span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              English speaking
+            </span>
+          </div>
+          <div class="clinic-row-footer">
+            <div class="clinic-tags">
+              <span class="clinic-tag">Sports rehab</span>
+              <span class="clinic-tag">Office syndrome</span>
+              <span class="clinic-tag">Acupuncture</span>
+              <span class="clinic-tag">Cupping</span>
+            </div>
+            <span class="view-btn">View clinic <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Row 2 -->
+      <a href="https://thailand-clinics.com/places/bangkok-physiotherapy-center/" class="clinic-row">
+        <div class="clinic-row-photo" style="background: linear-gradient(135deg, #3d4a5c 0%, #2a3340 100%);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <div class="rank-badge silver">2</div>
+        </div>
+        <div class="clinic-row-body">
+          <div class="clinic-row-top">
+            <div>
+              <p class="clinic-row-tag">Physiotherapy · Sports Rehabilitation</p>
+              <h2 class="clinic-row-name">Bangkok Physiotherapy Center</h2>
+            </div>
+            <div class="clinic-row-rating">
+              <span class="rating-score">4.8</span>
+              <div class="rating-stars-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-reviews">412 reviews</span>
+            </div>
+          </div>
+          <p class="clinic-row-desc">International-standard physiotherapy clinic in the heart of Sukhumvit. Specialises in manual therapy, sports injury recovery and chronic pain management using modern rehabilitation equipment.</p>
+          <div class="clinic-row-meta">
+            <span class="clinic-open-badge"><span class="open-dot"></span>Open now · closes 8pm</span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              Phrom Phong (Sukhumvit 39)
+            </span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              English speaking
+            </span>
+          </div>
+          <div class="clinic-row-footer">
+            <div class="clinic-tags">
+              <span class="clinic-tag">Sports rehab</span>
+              <span class="clinic-tag">Manual therapy</span>
+              <span class="clinic-tag">Post-surgery</span>
+            </div>
+            <span class="view-btn">View clinic <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Row 3 -->
+      <a href="https://thailand-clinics.com/places/le-physio-clinic/" class="clinic-row">
+        <div class="clinic-row-photo" style="background: linear-gradient(135deg, #4a3d5c 0%, #332a40 100%);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <div class="rank-badge bronze">3</div>
+        </div>
+        <div class="clinic-row-body">
+          <div class="clinic-row-top">
+            <div>
+              <p class="clinic-row-tag">Physiotherapy · Manual Therapy · Pilates</p>
+              <h2 class="clinic-row-name">Le Physio Clinic Bangkok</h2>
+            </div>
+            <div class="clinic-row-rating">
+              <span class="rating-score">4.7</span>
+              <div class="rating-stars-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-reviews">289 reviews</span>
+            </div>
+          </div>
+          <p class="clinic-row-desc">French-founded clinic in Silom with a reputation for precision manual therapy and clinical Pilates. Popular with expats and professionals seeking evidence-based treatment for back pain and postural issues.</p>
+          <div class="clinic-row-meta">
+            <span class="clinic-open-badge"><span class="open-dot"></span>Open now · closes 7pm</span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              Silom Road, Bang Rak
+            </span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              English speaking
+            </span>
+          </div>
+          <div class="clinic-row-footer">
+            <div class="clinic-tags">
+              <span class="clinic-tag">Back pain</span>
+              <span class="clinic-tag">Pilates</span>
+              <span class="clinic-tag">Posture</span>
+            </div>
+            <span class="view-btn">View clinic <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Row 4 -->
+      <a href="https://thailand-clinics.com/places/pain-away-clinic/" class="clinic-row">
+        <div class="clinic-row-photo" style="background: linear-gradient(135deg, #5c4a2a 0%, #40331a 100%);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <div class="rank-badge">4</div>
+        </div>
+        <div class="clinic-row-body">
+          <div class="clinic-row-top">
+            <div>
+              <p class="clinic-row-tag">Physiotherapy · Pain Management</p>
+              <h2 class="clinic-row-name">Samitivej Sports & Spine</h2>
+            </div>
+            <div class="clinic-row-rating">
+              <span class="rating-score">4.6</span>
+              <div class="rating-stars-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-reviews">198 reviews</span>
+            </div>
+          </div>
+          <p class="clinic-row-desc">Hospital-grade sports medicine and spine rehabilitation centre within Samitivej Hospital complex. Offers full diagnostic capability alongside physiotherapy, making it ideal for complex or chronic cases.</p>
+          <div class="clinic-row-meta">
+            <span class="clinic-closed-badge"><span class="closed-dot"></span>Closed · opens 8am tomorrow</span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              Sukhumvit 49, Watthana
+            </span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              English speaking
+            </span>
+          </div>
+          <div class="clinic-row-footer">
+            <div class="clinic-tags">
+              <span class="clinic-tag">Spine</span>
+              <span class="clinic-tag">Sports medicine</span>
+              <span class="clinic-tag">Post-surgery</span>
+            </div>
+            <span class="view-btn">View clinic <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- Row 5 -->
+      <a href="https://thailand-clinics.com/places/jr-physio-chinatown/" class="clinic-row">
+        <div class="clinic-row-photo" style="background: linear-gradient(135deg, #2a4a5c 0%, #1a3240 100%);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <div class="rank-badge">5</div>
+        </div>
+        <div class="clinic-row-body">
+          <div class="clinic-row-top">
+            <div>
+              <p class="clinic-row-tag">Physiotherapy · Bone Alignment</p>
+              <h2 class="clinic-row-name">JR Physio Clinic (Chinatown)</h2>
+            </div>
+            <div class="clinic-row-rating">
+              <span class="rating-score">5.0</span>
+              <div class="rating-stars-sm">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <span class="rating-reviews">164 reviews</span>
+            </div>
+          </div>
+          <p class="clinic-row-desc">Perfect 5-star neighbourhood clinic in Chinatown specialising in bone alignment, musculoskeletal rehab and office syndrome. A hidden gem with exceptional patient results and a loyal local following.</p>
+          <div class="clinic-row-meta">
+            <span class="clinic-open-badge"><span class="open-dot"></span>Open now · closes 8pm</span>
+            <span class="clinic-meta-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+              Rama IV Road, Pom Prap Sattru Phai
+            </span>
+          </div>
+          <div class="clinic-row-footer">
+            <div class="clinic-tags">
+              <span class="clinic-tag">Bone alignment</span>
+              <span class="clinic-tag">Office syndrome</span>
+              <span class="clinic-tag">Online booking</span>
+            </div>
+            <span class="view-btn">View clinic <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </div>
+      </a>
+
+      <!-- PAGINATION -->
+      <div class="pagination">
+        <a href="#" class="page-btn arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+        <a href="#" class="page-btn active">1</a>
+        <a href="#" class="page-btn">2</a>
+        <a href="#" class="page-btn">3</a>
+        <span style="color:var(--muted); font-size:13px; padding: 0 4px;">…</span>
+        <a href="#" class="page-btn">25</a>
+        <a href="#" class="page-btn arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </a>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    function setSort(btn) {
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function toggleOpen(label) {
+      var t = document.getElementById('openToggle');
+      t.classList.toggle('on');
+    }
+
+    function toggleFilter(el) {
+      el.classList.toggle('checked');
+    }
+
+    function setRating(el) {
+      document.querySelectorAll('.rating-option').forEach(r => r.classList.remove('active'));
+      el.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

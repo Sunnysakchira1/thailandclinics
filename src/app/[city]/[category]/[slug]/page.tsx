@@ -223,7 +223,7 @@ export default async function ClinicProfilePage({ params }: Props) {
   if (!clinic) notFound();
 
   const displayName = clinic.nameEn ?? clinic.name;
-  const siteUrl     = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailandclinics.co";
+  const siteUrl     = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
   const schemas     = buildSchema(clinic, siteUrl);
 
   // Patient reviews and nearby clinics in parallel

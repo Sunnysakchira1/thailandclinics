@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   },
 };
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailandclinics.co";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
 
 const websiteSchema = {
   "@context": "https://schema.org",
