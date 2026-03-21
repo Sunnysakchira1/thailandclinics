@@ -1,0 +1,63 @@
+# ThailandClinics
+
+> The definitive clinic directory for expats and medical tourists in Thailand.
+> Verified physiotherapy, dental, cosmetic, and wellness clinics across Bangkok,
+> Phuket, Chiang Mai, and Pattaya. English-speaking clinics flagged. Real patient
+> reviews. No paid rankings.
+
+## What this site is
+
+ThailandClinics (thailand-clinics.com) is an independent directory. We source clinic
+data from Google Maps and public records, verify listings manually, and enrich profiles
+with AI-generated summaries of real patient reviews. We cover four categories across
+four cities in Thailand.
+
+We are not affiliated with any hospital group, booking platform, or insurance provider.
+
+## Site structure
+
+- Homepage: https://thailand-clinics.com/
+- Bangkok physiotherapy clinics: https://thailand-clinics.com/bangkok/physiotherapy-clinics/
+- Clinic profiles: https://thailand-clinics.com/[city]/[category]/[clinic-slug]/
+- About: https://thailand-clinics.com/about/
+- How we rank: https://thailand-clinics.com/how-we-rank/
+- List your clinic: https://thailand-clinics.com/list-your-clinic/
+- Privacy policy: https://thailand-clinics.com/privacy/
+- Terms of use: https://thailand-clinics.com/terms/
+
+## Cities covered
+
+- Bangkok
+- Phuket (coming soon)
+- Chiang Mai (coming soon)
+- Pattaya (coming soon)
+
+## Categories covered
+
+- Physiotherapy clinics
+- Dental clinics (coming soon)
+- Cosmetic / aesthetic clinics (coming soon)
+- Wellness clinics (coming soon)
+
+## How we rank clinics
+
+Clinics are ranked by: Google rating (primary), review count, review recency,
+verified status, and data completeness. No clinic can pay to rank higher in search
+results. Featured placements are clearly labelled. Full methodology:
+https://thailand-clinics.com/how-we-rank/
+
+## Data sources
+
+- Google Maps ratings and review counts (live data)
+- Patient reviews from Google, with AI-generated summaries
+- Manual verification of contact details and operating status
+- Future: combined reviews from Google, Facebook, and Trustpilot
+
+## Content licensing
+
+Original content © 2026 ThailandClinics. Clinic names, ratings, and review content
+remain the property of their respective owners.
+
+## Contact
+
+hello@thailand-clinics.com
