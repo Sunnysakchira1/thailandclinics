@@ -500,8 +500,7 @@ CSS profile classes added to globals.css:
 
 ### Half done / in progress
 
-- **City landing pages** (/bangkok/, /phuket/, /chiang-mai/, /pattaya/) — queries written,
-  pages not yet built. Queries: getCategoryCountsForCity, getTopClinicsByCity
+- **City landing pages** (/bangkok/, /phuket/, /chiang-mai/, /pattaya/) — built ✓
 - **Multi-source reviews** (Trustpilot + Facebook + Google combined) — referenced on
   how-we-rank as "coming soon", pipeline not built
 - **List your clinic form** — mailto: only, no backend. Options: Formspree, Resend
@@ -523,11 +522,10 @@ CSS profile classes added to globals.css:
 
 ### Next session priorities
 
-1. Build city landing pages /bangkok/, /phuket/, /chiang-mai/, /pattaya/
-   (queries getCategoryCountsForCity + getTopClinicsByCity already exist)
-2. Decide on form backend for /list-your-clinic/ (Formspree, Resend, or keep mailto)
-3. Commit scripts/generate-summaries.ts
-4. Fix sitemap trailing slash issue
+1. Decide on form backend for /list-your-clinic/ (Formspree, Resend, or keep mailto)
+2. Commit scripts/generate-summaries.ts
+3. Fix sitemap trailing slash issue
+4. Add more city/category data (Phuket, Chiang Mai, Pattaya, Dental, Cosmetic, Wellness)
 
 ---
 
