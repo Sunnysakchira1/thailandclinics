@@ -430,83 +430,104 @@ Never:
 
 ## Current Session Priority
 
-### Built this session (2026-03-21)
-
-**Clinic profile page — two new sections added**
-- Section 1 "What patients say": AI summary renders review_positives/review_negatives as
-  two-column table with ✓ (var(--open)) and – (var(--muted)) bullets. Subtitle shows
-  "Based on N reviews · Updated Month YYYY". Gated on >= 2 non-null positives.
-- Section 2 "Patient reviews": queries clinic_reviews table (WHERE text IS NOT NULL,
-  ORDER BY review_date DESC, LIMIT 5). Each card: white bg, star row (filled ★ + empty ☆
-  in var(--star)), author name, date, review text. Footer shows google_reviews_count.
-- New query: getClinicReviews(clinicId) in /lib/db/queries.ts
-- New type: ClinicReviewRow exported from queries.ts
-- New helper: formatReviewDate() handles both "YYYY-MM-DD" and Outscraper
-  "MM/DD/YYYY HH:mm:ss" formats
+### Built this session (2026-03-21, session 1)
 
 **Production domain migrated: thailandclinics.co → thailand-clinics.com**
-- Updated in: .env.local, .env.example, next-sitemap.config.js, src/app/layout.tsx,
-  src/app/page.tsx, src/app/[city]/[category]/[slug]/page.tsx, CLAUDE.md,
-  content/listings.html, public/robots.txt, public/sitemap.xml + sitemap-0.xml
+**5 new static pages:** /about/, /how-we-rank/, /privacy/, /terms/, /list-your-clinic/
+**Footer updated:** Company column links correct, copyright 2026
+**SEO/crawl files:** robots.txt fixed, llms.txt created, sitemap auto-generates at build
+**queries.ts:** getCategoryCountsForCity, getTopClinicsByCity, getCityCountsForCategory,
+getTopClinicsByCategory added
 
-**5 new static pages built**
-- /about/ — who we are, mission, how we work, why trust us, based in Bangkok, contact
-- /how-we-rank/ — 5 ranked signals (01 Google rating → 05 data completeness),
-  multi-source reviews section (Google + Facebook + Trustpilot — future feature),
-  "what we don't do" callout, featured placements disclosure, update cadence
-- /privacy/ — 10-section privacy policy, effective March 2026
-- /terms/ — 9-section terms of use, effective March 2026, governing law = Thailand
-- /list-your-clinic/ — "use client" page, waitlist form (name, clinic, email, city,
-  category), mailto: submit, "free during beta" callout, what's included list
+### Built this session (2026-03-21, session 2)
 
-**Footer updated**
-- Company column now links: About, How we rank, List Your Clinic, Privacy Policy, Terms
-- Removed dead /contact/ placeholder
-- Copyright updated to 2026, brand name ".co" removed
+**Category landing pages — 4 pages built**
+- src/app/(categories)/physiotherapy-clinics/page.tsx
+- src/app/(categories)/dental-clinics/page.tsx
+- src/app/(categories)/cosmetic-clinics/page.tsx
+- src/app/(categories)/wellness-clinics/page.tsx
+- Shared component: src/components/pages/CategoryLandingPage.tsx
+- Route note: static routes in (categories)/ take priority over [city] dynamic segment
 
-**SEO/crawl files**
-- public/robots.txt — domain fixed, correct
-- public/llms.txt — created at /llms.txt covering site purpose, structure, cities,
-  categories, ranking methodology, data sources, contact
-- sitemap.xml/sitemap-0.xml — gitignored, regenerated at build time via next-sitemap.
-  Config already uses correct domain.
+**Nav Browse dropdown**
+- CSS-only hover dropdown in Nav.tsx — 2-column panel: By City + By Category
+- Classes: .nav-browse-wrapper, .nav-browse-dropdown, .nav-browse-col-title, .nav-browse-link
+- Added to globals.css
 
-**queries.ts additions (added by developer, not Claude)**
-- getCategoryCountsForCity(citySlug) — clinic counts per category for a city
-- getTopClinicsByCity(citySlug, limit) — top N clinics across all categories in a city
-- getCityCountsForCategory(catSlug) — clinic counts per city for a category
-- getTopClinicsByCategory(catSlug, limit) — top N clinics for a category across cities
-These suggest city landing pages (/bangkok/) and category landing pages are in progress.
+**Footer Browse column fixed**
+- Dental, Wellness, Cosmetic now link to correct category pages (were all "/")
+- Cities column has trailing slashes
+
+**Clinic profile page — full redesign**
+- File: src/app/[city]/[category]/[slug]/page.tsx
+- New component: src/components/clinic/OpenStatus.tsx ('use client', Bangkok UTC+7)
+
+Layout zones:
+- Zone 1 Hero (white bg): At-a-Glance card (DOM-first → top on mobile, sticky right on
+  desktop via CSS order), H1, rating, overview paragraph, attribute chips
+- Zone 2 "What ThailandClinics Found" (linen-dark bg): key term pills + bolded bullets +
+  "Worth knowing" negatives. Gated on >= 2 non-null review_positives.
+- Patient Voices (linen bg): English-only (>65% Latin alpha), >= 4 stars, limit 3,
+  no author names shown, "via Google" attribution
+- Zone 3 Details (linen bg): collapsible <details> blocks — Opening Hours (today
+  highlighted), Services, Location & Getting There
+- Nearby (linen-dark bg): compact rows sorted by haversine distance, limit 3
+- Mobile sticky CTA: fixed bottom bar with phone + "Call Now" button, hidden >= 1024px
+
+Key helpers in page.tsx:
+- extractKeyTerms(bullets) — matches TECHNIQUE_TERMS + CONDITION_TERMS arrays, max 8
+- boldKeyTerms(text, terms) — wraps matches in <mark> with green-pale bg
+- isEnglish(text) — >65% Latin alpha chars = English
+- truncate(text, maxWords) — word-based truncation for overview paragraph
+- parseHours(raw) — JSON opening hours → ordered day rows
+- haversine(lat1,lng1,lat2,lng2) — distance in km for nearby sort
+
+CSS profile classes added to globals.css:
+.profile-hero, .profile-hero-inner, .profile-hero-grid, .profile-hero-content,
+.profile-glance-card, .profile-editorial, .profile-editorial-inner,
+.profile-verdict-card, .profile-voices, .profile-voices-inner, .profile-voices-grid,
+.profile-details, .profile-details-inner, .profile-detail-block,
+.profile-detail-summary, .profile-detail-content, .profile-nearby,
+.profile-nearby-inner, .profile-sticky-cta, .glance-maps-btn, .nearby-row
+
+**Google Maps URL — canonical format**
+- Use: https://www.google.com/maps/search/?api=1&query=NAME&query_place_id=PLACE_ID
+- Works on iOS app, Android app, and desktop browser
+- DO NOT use cid column — values corrupted by float precision loss (see bug below)
+- DO NOT use place_id: query format — unreliable on mobile
 
 ---
 
 ### Half done / in progress
 
-- **City landing pages** (/bangkok/, /phuket/ etc) — queries are written, pages not built
-- **Category landing pages** (/physiotherapy-clinics/ etc) — queries written, pages not built
-- **Multi-source reviews** (Trustpilot + Facebook + Google combined) — mentioned on
-  how-we-rank page as coming soon, not yet built in pipeline
-- **List your clinic form** — mailto: only, no real backend or form submission handling
-- **Footer Browse column** — Dental, Wellness, Beauty all link to "/" (placeholders)
-- **scripts/generate-summaries.ts** — untracked file, not committed
+- **City landing pages** (/bangkok/, /phuket/, /chiang-mai/, /pattaya/) — queries written,
+  pages not yet built. Queries: getCategoryCountsForCity, getTopClinicsByCity
+- **Multi-source reviews** (Trustpilot + Facebook + Google combined) — referenced on
+  how-we-rank as "coming soon", pipeline not built
+- **List your clinic form** — mailto: only, no backend. Options: Formspree, Resend
+- **scripts/generate-summaries.ts** — untracked, not committed
 
 ---
 
 ### Bugs found but not fixed
 
 - ~~`websiteSchema` name bug~~ — fixed 2026-03-21
-- Sitemap-0.xml clinic profile URLs have no trailing slashes
-  (e.g. `.../thonglor-physio` not `.../thonglor-physio/`) — inconsistent with URL spec
+- ~~Maps URL using corrupted CID~~ — fixed 2026-03-21
+- **`cid` column in DB is permanently corrupted** — Outscraper exported CIDs as floats,
+  SQLite stored them with precision loss (e.g. 7626080000000000000 vs real
+  7626083593050235220). Never use the cid column for URLs. Use google_place_id always.
+- **Sitemap-0.xml clinic profile URLs missing trailing slashes**
+  (e.g. `.../thonglor-physio` not `.../thonglor-physio/`) — inconsistent with canonical URLs
 
 ---
 
 ### Next session priorities
 
-1. Fix websiteSchema name bug in src/app/page.tsx
-2. Build /bangkok/ city landing page (queries already written)
-3. Build category landing pages or add more city data
-4. Decide on form backend for /list-your-clinic/ (Formspree, Resend, or keep mailto)
-5. Commit scripts/generate-summaries.ts
+1. Build city landing pages /bangkok/, /phuket/, /chiang-mai/, /pattaya/
+   (queries getCategoryCountsForCity + getTopClinicsByCity already exist)
+2. Decide on form backend for /list-your-clinic/ (Formspree, Resend, or keep mailto)
+3. Commit scripts/generate-summaries.ts
+4. Fix sitemap trailing slash issue
 
 ---
 
