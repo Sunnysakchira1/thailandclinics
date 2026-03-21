@@ -22,7 +22,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.co
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type":    "WebSite",
-  name:       "ThailandClinics.co",
+  name:       "ThailandClinics",
   url:        siteUrl,
   potentialAction: {
     "@type":      "SearchAction",
@@ -602,19 +602,18 @@ export default async function HomePage() {
 
             {/* Col 2 — Browse */}
             <FooterCol title="Browse" links={[
-              { label: "Physiotherapy", href: "/bangkok/physiotherapy-clinics/" },
-              { label: "Dental",        href: "/" },
-              { label: "Wellness",      href: "/" },
-              { label: "Beauty",        href: "/" },
+              { label: "Physiotherapy", href: "/physiotherapy-clinics/" },
+              { label: "Dental",        href: "/dental-clinics/" },
+              { label: "Cosmetic",      href: "/cosmetic-clinics/" },
+              { label: "Wellness",      href: "/wellness-clinics/" },
             ]} />
 
             {/* Col 3 — Cities */}
             <FooterCol title="Cities" links={[
-              { label: "Bangkok",    href: "/bangkok" },
-              { label: "Chiang Mai", href: "/chiang-mai" },
-              { label: "Phuket",     href: "/phuket" },
-              { label: "Pattaya",    href: "/pattaya" },
-              { label: "Koh Samui",  href: "/" },
+              { label: "Bangkok",    href: "/bangkok/" },
+              { label: "Chiang Mai", href: "/chiang-mai/" },
+              { label: "Phuket",     href: "/phuket/" },
+              { label: "Pattaya",    href: "/pattaya/" },
             ]} />
 
             {/* Col 4 — Company */}

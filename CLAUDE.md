@@ -1,4 +1,4 @@
-# ThailandClinics.co — Claude Code Project Intelligence
+# ThailandClinics — Claude Code Project Intelligence
 
 ## Identity
 A high-trust healthcare clinic discovery platform for Thailand.
@@ -494,8 +494,7 @@ These suggest city landing pages (/bangkok/) and category landing pages are in p
 
 ### Bugs found but not fixed
 
-- `src/app/page.tsx` line 25: `websiteSchema` has `name: "ThailandClinics.co"` — should
-  be `"ThailandClinics"` (stale after domain migration)
+- ~~`websiteSchema` name bug~~ — fixed 2026-03-21
 - Sitemap-0.xml clinic profile URLs have no trailing slashes
   (e.g. `.../thonglor-physio` not `.../thonglor-physio/`) — inconsistent with URL spec
 

@@ -48,10 +48,50 @@ export default function Nav() {
 
       {/* ── Right nav ────────────────────────────────────────── */}
       <div className="nav-links">
+
+        {/* Browse dropdown */}
+        <div className="nav-browse-wrapper">
+          <span
+            style={{
+              fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
+              fontSize:      "13.5px",
+              fontWeight:    400,
+              color:         "var(--charcoal-soft)",
+              letterSpacing: "0.02em",
+              cursor:        "default",
+            }}
+            className="nav-link"
+          >
+            Browse
+          </span>
+          <div className="nav-browse-dropdown">
+            <div>
+              <p className="nav-browse-col-title">By City</p>
+              {[
+                { label: "Bangkok",    href: "/bangkok/" },
+                { label: "Phuket",     href: "/phuket/" },
+                { label: "Chiang Mai", href: "/chiang-mai/" },
+                { label: "Pattaya",    href: "/pattaya/" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href} className="nav-browse-link">{label}</Link>
+              ))}
+            </div>
+            <div>
+              <p className="nav-browse-col-title">By Category</p>
+              {[
+                { label: "Physiotherapy", href: "/physiotherapy-clinics/" },
+                { label: "Dental",        href: "/dental-clinics/" },
+                { label: "Cosmetic",      href: "/cosmetic-clinics/" },
+                { label: "Wellness",      href: "/wellness-clinics/" },
+              ].map(({ label, href }) => (
+                <Link key={label} href={href} className="nav-browse-link">{label}</Link>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {[
-          { label: "Browse",  href: "/bangkok/physiotherapy-clinics/" },
-          { label: "Cities",  href: "/" },
-          { label: "About",   href: "/about/" },
+          { label: "About", href: "/about/" },
         ].map(({ label, href }) => (
           <Link
             key={label}

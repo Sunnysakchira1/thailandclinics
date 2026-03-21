@@ -405,4 +405,63 @@ body {
   .profile-sidebar  { width: 100%; position: static; top: auto; }
   .review-grid      { grid-template-columns: 1fr; }
   .review-col:first-child { border-right: none; border-bottom: 1px solid var(--border-soft); }
+
+  /* City & category landing pages — mobile */
+  .city-hero-pad    { padding: 28px 20px 24px; }
+  .city-content-pad { padding: 28px 20px 48px !important; }
+  .city-cat-grid    { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
+  .city-cat-tile    { min-height: 110px !important; }
+  .city-tile-card   { padding: 16px 14px !important; min-height: 80px !important; }
+
+  /* Compact clinic rows — mobile */
+  .compact-row      { padding: 12px 16px; }
 }
+
+/* ─── Compact row hover ─────────────────────────────────────────── */
+.compact-row:hover { background: #fdfcfa; }
+.compact-row:hover .compact-row-name { color: var(--green); }
+.compact-row:hover .compact-row-arrow { transform: translateX(3px); }
+.compact-row-arrow { transition: transform 0.15s; }
+
+/* ─── City tile hover ───────────────────────────────────────────── */
+.city-cat-tile:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,71,49,0.08); }
+.city-tile-card:hover { border-color: var(--green) !important; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,71,49,0.08); }
+
+/* ─── Nav Browse dropdown ───────────────────────────────────────── */
+.nav-browse-wrapper { position: relative; }
+.nav-browse-wrapper:hover .nav-browse-dropdown { display: grid; }
+.nav-browse-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--white);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  box-shadow: 0 12px 32px rgba(26,26,26,0.10);
+  padding: 16px;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+  min-width: 320px;
+  z-index: 200;
+}
+.nav-browse-col-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.nav-browse-link {
+  display: block;
+  font-size: 13px;
+  color: var(--charcoal-soft);
+  text-decoration: none;
+  padding: 5px 0;
+  transition: color 0.15s;
+}
+.nav-browse-link:hover { color: var(--green); }
