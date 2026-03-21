@@ -429,14 +429,85 @@ Never:
 ---
 
 ## Current Session Priority
-[REPLACE THIS AT THE START OF EVERY SESSION]
 
-Examples:
-- "Phase 1: Initialising Next.js project and folder structure"
-- "Phase 2: Setting up Turso database and pushing schema"
-- "Phase 3: Building ClinicCard and ClinicRow components"
-- "Importing Bangkok physiotherapy CSV — 363 clinics"
-- "Building /bangkok/physiotherapy-clinics/ category page"
+### Built this session (2026-03-21)
+
+**Clinic profile page — two new sections added**
+- Section 1 "What patients say": AI summary renders review_positives/review_negatives as
+  two-column table with ✓ (var(--open)) and – (var(--muted)) bullets. Subtitle shows
+  "Based on N reviews · Updated Month YYYY". Gated on >= 2 non-null positives.
+- Section 2 "Patient reviews": queries clinic_reviews table (WHERE text IS NOT NULL,
+  ORDER BY review_date DESC, LIMIT 5). Each card: white bg, star row (filled ★ + empty ☆
+  in var(--star)), author name, date, review text. Footer shows google_reviews_count.
+- New query: getClinicReviews(clinicId) in /lib/db/queries.ts
+- New type: ClinicReviewRow exported from queries.ts
+- New helper: formatReviewDate() handles both "YYYY-MM-DD" and Outscraper
+  "MM/DD/YYYY HH:mm:ss" formats
+
+**Production domain migrated: thailandclinics.co → thailand-clinics.com**
+- Updated in: .env.local, .env.example, next-sitemap.config.js, src/app/layout.tsx,
+  src/app/page.tsx, src/app/[city]/[category]/[slug]/page.tsx, CLAUDE.md,
+  content/listings.html, public/robots.txt, public/sitemap.xml + sitemap-0.xml
+
+**5 new static pages built**
+- /about/ — who we are, mission, how we work, why trust us, based in Bangkok, contact
+- /how-we-rank/ — 5 ranked signals (01 Google rating → 05 data completeness),
+  multi-source reviews section (Google + Facebook + Trustpilot — future feature),
+  "what we don't do" callout, featured placements disclosure, update cadence
+- /privacy/ — 10-section privacy policy, effective March 2026
+- /terms/ — 9-section terms of use, effective March 2026, governing law = Thailand
+- /list-your-clinic/ — "use client" page, waitlist form (name, clinic, email, city,
+  category), mailto: submit, "free during beta" callout, what's included list
+
+**Footer updated**
+- Company column now links: About, How we rank, List Your Clinic, Privacy Policy, Terms
+- Removed dead /contact/ placeholder
+- Copyright updated to 2026, brand name ".co" removed
+
+**SEO/crawl files**
+- public/robots.txt — domain fixed, correct
+- public/llms.txt — created at /llms.txt covering site purpose, structure, cities,
+  categories, ranking methodology, data sources, contact
+- sitemap.xml/sitemap-0.xml — gitignored, regenerated at build time via next-sitemap.
+  Config already uses correct domain.
+
+**queries.ts additions (added by developer, not Claude)**
+- getCategoryCountsForCity(citySlug) — clinic counts per category for a city
+- getTopClinicsByCity(citySlug, limit) — top N clinics across all categories in a city
+- getCityCountsForCategory(catSlug) — clinic counts per city for a category
+- getTopClinicsByCategory(catSlug, limit) — top N clinics for a category across cities
+These suggest city landing pages (/bangkok/) and category landing pages are in progress.
+
+---
+
+### Half done / in progress
+
+- **City landing pages** (/bangkok/, /phuket/ etc) — queries are written, pages not built
+- **Category landing pages** (/physiotherapy-clinics/ etc) — queries written, pages not built
+- **Multi-source reviews** (Trustpilot + Facebook + Google combined) — mentioned on
+  how-we-rank page as coming soon, not yet built in pipeline
+- **List your clinic form** — mailto: only, no real backend or form submission handling
+- **Footer Browse column** — Dental, Wellness, Beauty all link to "/" (placeholders)
+- **scripts/generate-summaries.ts** — untracked file, not committed
+
+---
+
+### Bugs found but not fixed
+
+- `src/app/page.tsx` line 25: `websiteSchema` has `name: "ThailandClinics.co"` — should
+  be `"ThailandClinics"` (stale after domain migration)
+- Sitemap-0.xml clinic profile URLs have no trailing slashes
+  (e.g. `.../thonglor-physio` not `.../thonglor-physio/`) — inconsistent with URL spec
+
+---
+
+### Next session priorities
+
+1. Fix websiteSchema name bug in src/app/page.tsx
+2. Build /bangkok/ city landing page (queries already written)
+3. Build category landing pages or add more city data
+4. Decide on form backend for /list-your-clinic/ (Formspree, Resend, or keep mailto)
+5. Commit scripts/generate-summaries.ts
 
 ---
 
