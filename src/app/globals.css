@@ -141,6 +141,111 @@ body {
   box-shadow: 0 12px 32px rgba(26,26,26,0.08);
 }
 
+/* ─── Listing page — clinic rows ────────────────────────────────── */
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.clinic-row-list {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  background: var(--white);
+  border-bottom: 1px solid var(--border-soft);
+  text-decoration: none;
+  position: relative;
+  transition: background 0.15s;
+  animation: fadeInRow 0.4s ease both;
+}
+
+.clinic-row-list:nth-child(1) { animation-delay: 0.05s; }
+.clinic-row-list:nth-child(2) { animation-delay: 0.10s; }
+.clinic-row-list:nth-child(3) { animation-delay: 0.15s; }
+.clinic-row-list:nth-child(4) { animation-delay: 0.20s; }
+.clinic-row-list:nth-child(5) { animation-delay: 0.25s; }
+.clinic-row-list:nth-child(6) { animation-delay: 0.30s; }
+.clinic-row-list:nth-child(7) { animation-delay: 0.35s; }
+
+.clinic-row-list:hover { background: #fdfcfa; }
+.clinic-row-list:hover .clinic-row-list-name { color: var(--green); }
+.clinic-row-list:hover .clinic-row-arrow { transform: translateX(3px); }
+.clinic-row-arrow { transition: transform 0.15s; }
+
+/* ─── Listing layout ────────────────────────────────────────────── */
+.listings-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: calc(100vh - 180px);
+}
+
+.listings-sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--border-soft);
+  padding: 28px 24px;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.listings-sidebar::-webkit-scrollbar { width: 4px; }
+.listings-sidebar::-webkit-scrollbar-track { background: transparent; }
+.listings-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Tablet: hide sidebar, show filter button */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .listings-grid { display: block; }
+  .listings-sidebar { display: none; position: static; height: auto; }
+  .listings-sidebar.open {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 280px;
+    z-index: 200;
+    overflow-y: auto;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+  }
+  .sidebar-close-row { display: flex !important; }
+  .sidebar-backdrop  { display: block !important; }
+  .mobile-filter-btn { display: flex !important; }
+  .nav-search-bar    { display: none !important; }
+}
+
+/* Desktop padding for listing nav/title/sort */
+.listing-nav-pad   { padding: 0 40px; }
+.listing-title-pad { padding: 20px 40px; }
+.listing-sort-pad  { padding: 12px 40px; }
+
+@media (max-width: 767px) {
+  .listings-grid { display: block; }
+  .listings-sidebar { display: none; position: static; height: auto; }
+  .listings-sidebar.open {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 280px;
+    z-index: 200;
+    overflow-y: auto;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.12);
+  }
+  .sidebar-close-row { display: flex !important; }
+  .sidebar-backdrop  { display: block !important; }
+  .mobile-filter-btn { display: flex !important; }
+  .nav-search-bar    { display: none !important; }
+  .listing-nav-links { display: none !important; }
+  .listing-nav-pad   { padding: 0 20px; }
+  .listing-title-pad { padding: 14px 20px; }
+  .listing-sort-pad  { padding: 10px 20px; }
+  .clinic-row-list        { grid-template-columns: 120px 1fr; }
+  .clinic-row-list-desc   { display: none; }
+  .clinic-row-top         { flex-direction: column !important; gap: 4px !important; }
+  .clinic-row-rating-count { display: none; }
+  .clinic-row-rating      { font-size: 13px !important; }
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    RESPONSIVE LAYOUT
    All desktop values here; overrides in tablet/mobile blocks below.
