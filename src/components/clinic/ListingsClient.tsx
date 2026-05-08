@@ -456,7 +456,21 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
 
         {/* LISTINGS */}
         <main>
-          {filteredClinics.length === 0 ? (
+          {allClinics.length === 0 ? (
+            <div style={{
+              padding: '64px 40px', textAlign: 'center', background: 'var(--white)',
+            }}>
+              <p style={{ fontFamily: 'var(--font-cormorant)', fontSize: '22px', color: 'var(--charcoal-soft)' }}>
+                {catName} in {cityName} — coming soon
+              </p>
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13.5px', color: 'var(--muted)', marginTop: '8px' }}>
+                We're verifying clinics in this category. Check back soon, or{' '}
+                <a href="/list-your-clinic/" style={{ color: 'var(--green)', textDecoration: 'none', borderBottom: '1px solid var(--green)' }}>
+                  submit your clinic
+                </a>.
+              </p>
+            </div>
+          ) : filteredClinics.length === 0 ? (
             <div style={{
               padding: '64px 40px', textAlign: 'center', background: 'var(--white)',
             }}>
