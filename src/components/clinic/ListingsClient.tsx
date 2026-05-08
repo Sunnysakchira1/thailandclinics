@@ -323,9 +323,9 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
           listStyle: 'none', flexShrink: 0,
         }}>
           <li><Link href="/" className="nav-link" style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)', textDecoration: 'none' }}>Browse</Link></li>
-          <li><Link href="/about" className="nav-link" style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)', textDecoration: 'none' }}>About</Link></li>
+          <li><Link href="/about/" className="nav-link" style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)', textDecoration: 'none' }}>About</Link></li>
           <li>
-            <Link href="/add-listing" className="nav-cta" style={{
+            <Link href="/list-your-clinic/" className="nav-cta" style={{
               fontSize: '13px', fontWeight: 500, color: 'var(--green)',
               border: '1px solid var(--green)', padding: '6px 14px',
               borderRadius: '4px', textDecoration: 'none',

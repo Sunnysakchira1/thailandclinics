@@ -5,6 +5,12 @@ const { createClient } = require("@libsql/client");
 module.exports = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://thailand-clinics.com",
 
+  // Write to /out so Cloudflare Pages serves it (output: 'export' builds to /out)
+  outDir: "./out",
+
+  // Ensure all URLs have trailing slashes (matches canonical URLs)
+  trailingSlash: true,
+
   // robots.txt is managed manually in /public/robots.txt
   generateRobotsTxt: false,
 

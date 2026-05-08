@@ -43,7 +43,7 @@ function catLabel(slug: string) {
 
 function catTitleLabel(slug: string) {
   const map: Record<string, string> = {
-    "physiotherapy-clinics": "Physio Clinics",
+    "physiotherapy-clinics": "Physiotherapy Clinics",
     "dental-clinics":        "Dental Clinics",
     "cosmetic-clinics":      "Cosmetic Clinics",
     "wellness-clinics":      "Wellness Clinics",
