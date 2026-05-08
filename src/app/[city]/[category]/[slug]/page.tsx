@@ -762,7 +762,9 @@ export default async function ClinicProfilePage({ params }: Props) {
                     style={{ display: "block", border: "none" }}
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    src={`https://www.google.com/maps?q=${clinic.lat},${clinic.lng}&z=15&output=embed`}
+                    src={clinic.googlePlaceId
+                      ? `https://www.google.com/maps?q=place_id:${clinic.googlePlaceId}&output=embed`
+                      : `https://www.google.com/maps?q=${clinic.lat},${clinic.lng}&z=15&output=embed`}
                   />
                 </div>
               </div>
