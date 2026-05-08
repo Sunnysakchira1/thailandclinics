@@ -1,7 +1,5 @@
 /** @type {import('next-sitemap').IConfig} */
 
-const { createClient } = require("@libsql/client");
-
 module.exports = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "https://thailand-clinics.com",
 
@@ -14,8 +12,8 @@ module.exports = {
   // robots.txt is managed manually in /public/robots.txt
   generateRobotsTxt: false,
 
-  // Exclude non-indexed routes
-  exclude: ["/api/*", "/admin/*"],
+  // Exclude non-indexed routes and Next.js special files
+  exclude: ["/api/*", "/admin/*", "/icon.svg"],
 
   // Override priorities and changefreq per CLAUDE.md spec
   transform: async (config, path) => {
@@ -46,35 +44,6 @@ module.exports = {
     };
   },
 
-  // Add all dynamic clinic profile URLs from the database
-  additionalPaths: async () => {
-    const url       = process.env.TURSO_URL;
-    const authToken = process.env.TURSO_AUTH_TOKEN;
-
-    if (!url || !authToken) {
-      console.warn("⚠  next-sitemap: TURSO_URL/TURSO_AUTH_TOKEN not set — skipping clinic URLs");
-      return [];
-    }
-
-    try {
-      const client = createClient({ url, authToken });
-      const result = await client.execute(`
-        SELECT c.slug, ci.slug AS city_slug, ca.slug AS cat_slug
-        FROM clinics c
-        JOIN cities     ci ON c.city_id     = ci.id
-        JOIN categories ca ON c.category_id = ca.id
-        ORDER BY c.id
-      `);
-
-      return result.rows.map((row) => ({
-        loc:        `/${row.city_slug}/${row.cat_slug}/${row.slug}/`,
-        changefreq: "monthly",
-        priority:   0.8,
-        lastmod:    new Date().toISOString(),
-      }));
-    } catch (err) {
-      console.error("next-sitemap: failed to fetch clinic URLs from DB:", err.message);
-      return [];
-    }
-  },
+  // No additionalPaths needed — output: 'export' generates all pages statically,
+  // so next-sitemap discovers them by scanning the /out directory directly.
 };
