@@ -620,6 +620,7 @@ export default async function HomePage() {
             <FooterCol title="Company" links={[
               { label: "About",            href: "/about/" },
               { label: "How we rank",      href: "/how-we-rank/" },
+              { label: "Blog",             href: "/blog/" },
               { label: "List Your Clinic", href: "/list-your-clinic/" },
               { label: "Privacy Policy",   href: "/privacy/" },
               { label: "Terms of Use",     href: "/terms/" },

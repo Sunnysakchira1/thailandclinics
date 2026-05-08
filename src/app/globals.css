@@ -653,3 +653,54 @@ details[open] > .profile-detail-summary::after {
   /* Add bottom padding so sticky CTA doesn't cover content */
   main { padding-bottom: 80px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   BLOG
+═══════════════════════════════════════════════════════════════════ */
+
+/* Blog grid — 3 columns desktop */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+/* Blog card */
+.blog-card {
+  background:   var(--white);
+  border:       1px solid var(--border-soft);
+  border-radius: 8px;
+  overflow:     hidden;
+  display:      flex;
+  flex-direction: column;
+  transition:   transform 0.2s ease, box-shadow 0.2s ease;
+}
+.blog-card:hover {
+  transform:  translateY(-2px);
+  box-shadow: 0 4px 16px rgba(26,26,26,0.08);
+}
+.blog-card:hover .blog-card-title { color: var(--green) !important; }
+
+/* MDX inline link hover */
+.mdx-link:hover { text-decoration: underline; }
+
+/* MDX table row hover */
+.mdx-tbody tr:hover td { background: var(--linen-dark); }
+
+/* Blog header + content padding */
+.blog-header-pad  { padding: 56px 48px 48px; }
+.blog-content-pad { padding: 48px; }
+
+/* ── Tablet ────────────────────────────────────────────────────── */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .blog-grid        { grid-template-columns: repeat(2, 1fr); }
+  .blog-header-pad  { padding: 40px 24px 36px; }
+  .blog-content-pad { padding: 40px 24px; }
+}
+
+/* ── Mobile ────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .blog-grid        { grid-template-columns: 1fr; }
+  .blog-header-pad  { padding: 28px 20px 24px; }
+  .blog-content-pad { padding: 28px 20px; }
+}
