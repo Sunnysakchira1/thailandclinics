@@ -1047,9 +1047,7 @@ export default async function HomePage() {
                       fontSize:   "18px",
                       lineHeight: 1,
                       userSelect: "none",
-                    }}>
-                      +
-                    </span>
+                    }} />
                   </summary>
                   <p style={{
                     fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
