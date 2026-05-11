@@ -704,3 +704,69 @@ details[open] > .profile-detail-summary::after {
   .blog-header-pad  { padding: 28px 20px 24px; }
   .blog-content-pad { padding: 28px 20px; }
 }
+
+/* Why Thailand section */
+.why-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+@media (max-width: 640px) {
+  .why-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+.price-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 14px 20px;
+  align-items: center;
+}
+@media (max-width: 480px) {
+  .price-table-row {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+}
+
+/* How it works section */
+.how-it-works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+}
+.how-it-works-step {
+  position: relative;
+  text-align: center;
+  padding: 0 24px;
+}
+.how-it-works-connector {
+  position: absolute;
+  top: 22px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
+  height: 1px;
+  background: var(--border);
+  z-index: 0;
+}
+@media (max-width: 640px) {
+  .how-it-works-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .how-it-works-connector {
+    display: none;
+  }
+}
+
+/* FAQ section */
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item[open] .faq-chevron::before { content: "−"; }
+.faq-item:not([open]) .faq-chevron::before { content: "+"; }
+.faq-item .faq-chevron { font-size: 20px; }
