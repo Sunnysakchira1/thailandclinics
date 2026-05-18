@@ -113,7 +113,6 @@ export default function SearchBar() {
           <option value="chiang-mai">Chiang Mai</option>
           <option value="phuket">Phuket</option>
           <option value="pattaya">Pattaya</option>
-          <option value="koh-samui">Koh Samui</option>
         </select>
         <button
           type="submit"
