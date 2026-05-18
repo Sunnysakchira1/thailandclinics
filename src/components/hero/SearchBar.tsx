@@ -22,6 +22,13 @@ const KEYWORD_MAP: Record<string, string[]> = {
   ],
 }
 
+const SPECIALTIES = [
+  { slug: 'physiotherapy-clinics', label: 'Physiotherapy clinics' },
+  { slug: 'dental-clinics',        label: 'Dental clinics' },
+  { slug: 'cosmetic-clinics',      label: 'Cosmetic clinics' },
+  { slug: 'wellness-clinics',      label: 'Wellness clinics' },
+]
+
 function findCategory(query: string): string | null {
   const lower = query.toLowerCase()
   for (const [slug, keywords] of Object.entries(KEYWORD_MAP)) {
@@ -34,10 +41,12 @@ export default function SearchBar() {
   const router = useRouter()
   const [query, setQuery] = useState('')
   const [city, setCity] = useState('bangkok')
+  const [showDropdown, setShowDropdown] = useState(false)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!query.trim()) return
+    setShowDropdown(false)
     const category = findCategory(query)
     if (category) {
       router.push(`/${city}/${category}/`)
@@ -46,30 +55,40 @@ export default function SearchBar() {
     }
   }
 
+  function handleSpecialtyClick(slug: string) {
+    setShowDropdown(false)
+    router.push(`/${city}/${slug}/`)
+  }
+
   return (
-    <form
-      onSubmit={handleSubmit}
+    <div
       className="animate-fade-up delay-300"
-      style={{
-        display:      'flex',
-        alignItems:   'center',
-        maxWidth:     '620px',
-        margin:       '0 auto',
-        border:       '1px solid var(--border)',
-        borderRadius: '6px',
-        background:   'var(--white)',
-        overflow:     'hidden',
-        boxShadow:    '0 2px 24px rgba(26,71,49,0.06)',
-        opacity:      0,
-      }}
+      style={{ position: 'relative', maxWidth: '620px', margin: '0 auto', opacity: 0 }}
     >
+      <form
+        onSubmit={handleSubmit}
+        style={{
+          display:      'flex',
+          alignItems:   'center',
+          border:       '1px solid var(--border)',
+          borderRadius: showDropdown ? '6px 6px 0 0' : '6px',
+          background:   'var(--white)',
+          overflow:     'hidden',
+          boxShadow:    '0 2px 24px rgba(26,71,49,0.06)',
+          transition:   'border-radius 0.15s',
+        }}
+      >
         <input
           type="text"
           value={query}
           onChange={e => setQuery(e.target.value)}
+          onFocus={() => setShowDropdown(true)}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           placeholder="Physiotherapy, dental, wellness…"
           autoComplete="off"
           aria-label="Search for clinics"
+          aria-expanded={showDropdown}
+          aria-haspopup="listbox"
           style={{
             flex:       1,
             padding:    '0 20px',
@@ -131,6 +150,60 @@ export default function SearchBar() {
         >
           Search
         </button>
-    </form>
+      </form>
+
+      {showDropdown && (
+        <ul
+          role="listbox"
+          style={{
+            position:        'absolute',
+            top:             '100%',
+            left:            0,
+            right:           0,
+            margin:          0,
+            padding:         '6px 0',
+            listStyle:       'none',
+            background:      'var(--white)',
+            border:          '1px solid var(--border)',
+            borderTop:       'none',
+            borderRadius:    '0 0 6px 6px',
+            boxShadow:       '0 8px 24px rgba(26,26,26,0.08)',
+            zIndex:          50,
+          }}
+        >
+          {SPECIALTIES.map(s => (
+            <li key={s.slug} role="option" aria-selected={false}>
+              <button
+                type="button"
+                onMouseDown={e => { e.preventDefault(); handleSpecialtyClick(s.slug) }}
+                style={{
+                  display:    'block',
+                  width:      '100%',
+                  padding:    '11px 20px',
+                  textAlign:  'left',
+                  background: 'none',
+                  border:     'none',
+                  cursor:     'pointer',
+                  fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)",
+                  fontSize:   '14px',
+                  color:      'var(--charcoal)',
+                  transition: 'background 0.15s, color 0.15s',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'var(--green-pale)'
+                  ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--green)'
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLButtonElement).style.background = 'none'
+                  ;(e.currentTarget as HTMLButtonElement).style.color = 'var(--charcoal)'
+                }}
+              >
+                {s.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   )
 }
