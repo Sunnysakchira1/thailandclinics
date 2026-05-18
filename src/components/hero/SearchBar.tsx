@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 const KEYWORD_MAP: Record<string, string[]> = {
   'physiotherapy-clinics': [
     'physio', 'physical therapy', 'rehab', 'sport', 'injury',
-    'back', 'pain', 'shoulder', 'knee', 'spine',
+    'back pain', 'neck pain', 'knee pain', 'joint pain', 'shoulder', 'knee', 'spine',
   ],
   'dental-clinics': [
     'dental', 'dentist', 'teeth', 'tooth', 'brace',
