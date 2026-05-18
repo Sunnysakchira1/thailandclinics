@@ -51,19 +51,20 @@ export default function Nav() {
 
         {/* Browse dropdown */}
         <div className="nav-browse-wrapper">
-          <span
+          <Link
+            href="/browse/"
             style={{
               fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
               fontSize:      "13.5px",
               fontWeight:    400,
               color:         "var(--charcoal-soft)",
               letterSpacing: "0.02em",
-              cursor:        "default",
+              textDecoration: "none",
             }}
             className="nav-link"
           >
             Browse
-          </span>
+          </Link>
           <div className="nav-browse-dropdown">
             <div>
               <p className="nav-browse-col-title">By City</p>

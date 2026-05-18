@@ -769,3 +769,6 @@ details[open] > .profile-detail-summary::after {
 .faq-item[open] .faq-chevron::before { content: "−"; }
 .faq-item:not([open]) .faq-chevron::before { content: "+"; }
 .faq-item .faq-chevron { font-size: 20px; }
+
+/* Browse page */
+.browse-tile:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(26,26,26,0.08); }
