@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 
 const KEYWORD_MAP: Record<string, string[]> = {
   'physiotherapy-clinics': [
-    'physio', 'therapy', 'rehab', 'sport', 'injury',
-    'back', 'pain', 'shoulder', 'knee', 'spine', 'massage',
+    'physio', 'physical therapy', 'rehab', 'sport', 'injury',
+    'back', 'pain', 'shoulder', 'knee', 'spine',
   ],
   'dental-clinics': [
     'dental', 'dentist', 'teeth', 'tooth', 'brace',
@@ -17,7 +17,7 @@ const KEYWORD_MAP: Record<string, string[]> = {
     'beauty', 'aesthetic', 'face', 'lip',
   ],
   'wellness-clinics': [
-    'wellness', 'yoga', 'spa', 'meditation',
+    'wellness', 'yoga', 'spa', 'massage', 'meditation',
     'mental', 'stress', 'holistic',
   ],
 }
@@ -72,6 +72,7 @@ export default function SearchBar() {
           onChange={e => setQuery(e.target.value)}
           placeholder="Physiotherapy, dental, wellness…"
           autoComplete="off"
+          aria-label="Search for clinics"
           style={{
             flex:       1,
             padding:    '0 20px',
@@ -89,6 +90,7 @@ export default function SearchBar() {
         <select
           value={city}
           onChange={e => setCity(e.target.value)}
+          aria-label="Select city"
           style={{
             padding:            '0 32px 0 16px',
             height:             '54px',
