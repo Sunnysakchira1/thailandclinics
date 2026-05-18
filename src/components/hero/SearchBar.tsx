@@ -47,7 +47,8 @@ export default function SearchBar() {
   }
 
   return (
-    <div
+    <form
+      onSubmit={handleSubmit}
       className="animate-fade-up delay-300"
       style={{
         display:      'flex',
@@ -62,10 +63,6 @@ export default function SearchBar() {
         opacity:      0,
       }}
     >
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: 'contents' as const }}
-      >
         <input
           type="text"
           value={query}
@@ -134,7 +131,6 @@ export default function SearchBar() {
         >
           Search
         </button>
-      </form>
-    </div>
+    </form>
   )
 }
