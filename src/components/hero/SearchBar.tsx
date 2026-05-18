@@ -45,8 +45,11 @@ export default function SearchBar() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!query.trim()) return
     setShowDropdown(false)
+    if (!query.trim()) {
+      router.push(`/${city}/`)
+      return
+    }
     const category = findCategory(query)
     if (category) {
       router.push(`/${city}/${category}/`)
@@ -63,7 +66,7 @@ export default function SearchBar() {
   return (
     <div
       className="animate-fade-up delay-300"
-      style={{ position: 'relative', maxWidth: '620px', margin: '0 auto', opacity: 0 }}
+      style={{ position: 'relative', maxWidth: '620px', margin: '0 auto', opacity: 0, zIndex: 10 }}
     >
       <form
         onSubmit={handleSubmit}
@@ -73,7 +76,6 @@ export default function SearchBar() {
           border:       '1px solid var(--border)',
           borderRadius: showDropdown ? '6px 6px 0 0' : '6px',
           background:   'var(--white)',
-          overflow:     'hidden',
           boxShadow:    '0 2px 24px rgba(26,71,49,0.06)',
           transition:   'border-radius 0.15s',
         }}
