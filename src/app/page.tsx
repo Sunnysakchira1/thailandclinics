@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
+import SearchBar from "@/components/hero/SearchBar";
 import { getClinicCount, getTopClinicsByReviews } from "@/lib/db/queries";
 import { getBlogPosts } from "@/lib/blog";
 
@@ -199,85 +200,7 @@ export default async function HomePage() {
             </p>
 
             {/* Search bar */}
-            <div
-              className="animate-fade-up delay-300"
-              style={{
-                display:      "flex",
-                alignItems:   "center",
-                maxWidth:     "620px",
-                margin:       "0 auto",
-                border:       "1px solid var(--border)",
-                borderRadius: "6px",
-                background:   "var(--white)",
-                overflow:     "hidden",
-                boxShadow:    "0 2px 24px rgba(26,71,49,0.06)",
-                opacity:      0,
-              }}
-            >
-              <input
-                type="text"
-                placeholder="Physiotherapy, dental, wellness…"
-                autoComplete="off"
-                style={{
-                  flex:       1,
-                  padding:    "0 20px",
-                  height:     "54px",
-                  border:     "none",
-                  outline:    "none",
-                  fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)",
-                  fontSize:   "15px",
-                  color:      "var(--charcoal)",
-                  background: "transparent",
-                  minWidth:   0,
-                }}
-              />
-              <div style={{ width: "1px", height: "28px", background: "var(--border)", flexShrink: 0 }} />
-              <select
-                defaultValue="bangkok"
-                style={{
-                  padding:            "0 32px 0 16px",
-                  height:             "54px",
-                  border:             "none",
-                  outline:            "none",
-                  fontFamily:         "var(--font-dm-sans, 'DM Sans', sans-serif)",
-                  fontSize:           "15px",
-                  color:              "var(--charcoal-soft)",
-                  background:         "transparent",
-                  cursor:             "pointer",
-                  appearance:         "none",
-                  WebkitAppearance:   "none",
-                  backgroundImage:    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a8278' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
-                  backgroundRepeat:   "no-repeat",
-                  backgroundPosition: "right 12px center",
-                  flexShrink:         0,
-                }}
-              >
-                <option value="bangkok">Bangkok</option>
-                <option value="chiang-mai">Chiang Mai</option>
-                <option value="phuket">Phuket</option>
-                <option value="pattaya">Pattaya</option>
-                <option value="koh-samui">Koh Samui</option>
-              </select>
-              <button
-                className="search-btn"
-                style={{
-                  height:        "54px",
-                  padding:       "0 28px",
-                  background:    "var(--green)",
-                  color:         "var(--white)",
-                  border:        "none",
-                  fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
-                  fontSize:      "14px",
-                  fontWeight:    500,
-                  letterSpacing: "0.04em",
-                  cursor:        "pointer",
-                  flexShrink:    0,
-                  transition:    "background 0.2s",
-                }}
-              >
-                Search
-              </button>
-            </div>
+            <SearchBar />
 
             {/* Stats row */}
             <div
