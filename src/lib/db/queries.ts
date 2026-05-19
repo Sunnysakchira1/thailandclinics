@@ -211,6 +211,48 @@ export async function getTopClinicsByReviews(
     .limit(limit);
 }
 
+/** Featured clinics first (by position), then top by reviews — for homepage */
+export async function getHomepageClinics(
+  citySlug: string,
+  categorySlug: string,
+  limit: number
+): Promise<ClinicListItem[]> {
+  return db
+    .select({
+      id:                   clinics.id,
+      name:                 clinics.name,
+      nameEn:               clinics.nameEn,
+      slug:                 clinics.slug,
+      district:             clinics.district,
+      googleRating:         clinics.googleRating,
+      googleReviewsCount:   clinics.googleReviewsCount,
+      verified:             clinics.verified,
+      englishSpeaking:      clinics.englishSpeaking,
+      nearBts:              clinics.nearBts,
+      nearMrt:              clinics.nearMrt,
+      openWeekends:         clinics.openWeekends,
+      featured:             clinics.featured,
+      featuredPosition:     clinics.featuredPosition,
+      photoUrl:             clinics.photoUrl,
+      services:             clinics.services,
+      hasParking:           clinics.hasParking,
+      wheelchairAccessible: clinics.wheelchairAccessible,
+      appointmentRequired:  clinics.appointmentRequired,
+      acceptsCard:          clinics.acceptsCard,
+      acceptsNfc:           clinics.acceptsNfc,
+      openLate:             clinics.openLate,
+    })
+    .from(clinics)
+    .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+    .innerJoin(categories, eq(clinics.categoryId, categories.id))
+    .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug)))
+    .orderBy(
+      sql`CASE WHEN ${clinics.featured} = 1 AND ${clinics.featuredPosition} IS NOT NULL THEN ${clinics.featuredPosition} ELSE 9999 END`,
+      desc(clinics.googleReviewsCount)
+    )
+    .limit(limit);
+}
+
 export type ClinicReviewRow = {
   id:         number;
   authorName: string;

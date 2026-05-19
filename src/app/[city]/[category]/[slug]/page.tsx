@@ -93,6 +93,133 @@ function boldKeyTerms(text: string, terms: string[]): React.ReactNode {
   return parts.length ? <>{parts}</> : text;
 }
 
+/* ─── Service cards ──────────────────────────────────────────────── */
+const SERVICE_LABELS: Record<string, string> = {
+  "sports-rehab":           "Sports rehab",
+  "manual-therapy":         "Manual therapy",
+  "dry-needling":           "Dry needling",
+  "lymphatic-drainage":     "Lymphatic drainage",
+  "pilates":                "Pilates",
+  "post-surgery-rehab":     "Post-surgery rehab",
+  "pediatric-physio":       "Paediatric physio",
+  "neuro-rehab":            "Neuro rehab",
+  "back-spine":             "Back & spine",
+  "traditional-massage":    "Traditional massage",
+  "tcm-acupuncture":        "TCM / Acupuncture",
+  "general-dentistry":      "General dentistry",
+  "orthodontics":           "Orthodontics",
+  "implants":               "Implants",
+  "whitening":              "Whitening",
+  "root-canal":             "Root canal",
+  "cosmetic-dentistry":     "Cosmetic dentistry",
+  "pediatric-dentistry":    "Paediatric dentistry",
+  "botox-fillers":          "Botox & fillers",
+  "laser-treatments":       "Laser treatments",
+  "skin-care":              "Skin care",
+  "body-contouring":        "Body contouring",
+  "prp":                    "PRP",
+  "hair-removal":           "Hair removal",
+  "anti-aging":             "Anti-aging",
+  "yoga":                   "Yoga",
+  "massage":                "Massage",
+  "meditation":             "Meditation",
+  "nutrition":              "Nutrition",
+  "mental-health":          "Mental health",
+  "traditional-thai-massage": "Thai massage",
+  "detox":                  "Detox",
+};
+
+const SERVICE_DESCRIPTIONS: Record<string, string> = {
+  "sports-rehab":           "Injury recovery for active patients",
+  "manual-therapy":         "Hands-on joint & soft tissue treatment",
+  "dry-needling":           "Trigger point needle release",
+  "lymphatic-drainage":     "Fluid & swelling reduction",
+  "pilates":                "Core strength & movement rehab",
+  "post-surgery-rehab":     "Recovery after operations",
+  "pediatric-physio":       "Physiotherapy for children",
+  "neuro-rehab":            "Neurological recovery programs",
+  "back-spine":             "Back pain & spinal conditions",
+  "traditional-massage":    "Classic therapeutic massage",
+  "tcm-acupuncture":        "Traditional Chinese medicine",
+  "general-dentistry":      "Routine dental care & prevention",
+  "orthodontics":           "Braces & teeth alignment",
+  "implants":               "Permanent tooth replacement",
+  "whitening":              "Professional teeth whitening",
+  "root-canal":             "Root canal & nerve treatment",
+  "cosmetic-dentistry":     "Smile design & veneers",
+  "pediatric-dentistry":    "Dental care for children",
+  "botox-fillers":          "Injectables & facial volumising",
+  "laser-treatments":       "Laser skin resurfacing & IPL",
+  "skin-care":              "Facials & skin health",
+  "body-contouring":        "Non-surgical fat reduction",
+  "prp":                    "Platelet-rich plasma therapy",
+  "hair-removal":           "Permanent hair reduction",
+  "anti-aging":             "Wrinkle & collagen treatments",
+  "yoga":                   "Yoga classes & instruction",
+  "massage":                "Therapeutic massage",
+  "meditation":             "Mindfulness & meditation",
+  "nutrition":              "Dietary & nutritional guidance",
+  "mental-health":          "Counselling & mental wellness",
+  "traditional-thai-massage": "Authentic Thai massage",
+  "detox":                  "Cleansing & detox programs",
+};
+
+const SERVICE_KEYWORDS: Record<string, string[]> = {
+  "sports-rehab":           ["sport","athlete","run","marathon","football","soccer","tennis","golf","cycling","injury recovery","ACL","ligament"],
+  "manual-therapy":         ["manual","hands-on","manipulation","mobilisation","mobilization","joint","therapist worked"],
+  "dry-needling":           ["needle","dry needling","needling","trigger point","acupuncture needle"],
+  "lymphatic-drainage":     ["lymph","drainage","swelling","edema","oedema","fluid"],
+  "pilates":                ["pilates","core","reformer","strengthening"],
+  "post-surgery-rehab":     ["surgery","operation","post-op","post op","after surgery","knee replacement","hip replacement","rehab after"],
+  "pediatric-physio":       ["child","kid","paediatric","pediatric","baby","infant","son","daughter"],
+  "neuro-rehab":            ["stroke","neuro","neurological","nerve damage","MS","Parkinson","brain"],
+  "back-spine":             ["back","spine","disc","sciatica","lower back","herniated","lumbar","cervical","neck","scoliosis"],
+  "traditional-massage":    ["traditional massage","deep tissue","sports massage","therapeutic massage"],
+  "tcm-acupuncture":        ["acupuncture","TCM","traditional chinese","cupping","herbal","moxibustion"],
+  "general-dentistry":      ["cleaning","check-up","filling","cavity","dental check","routine"],
+  "orthodontics":           ["braces","orthodontic","alignment","Invisalign","retainer","straight teeth"],
+  "implants":               ["implant","crown","bridge","missing tooth"],
+  "whitening":              ["whiten","bleach","bright","white teeth","smile"],
+  "root-canal":             ["root canal","nerve","endodontic","tooth pain"],
+  "cosmetic-dentistry":     ["veneer","cosmetic","smile design","makeover","composite"],
+  "pediatric-dentistry":    ["child","kid","paediatric","pediatric"],
+  "botox-fillers":          ["botox","filler","injection","lip","jawline","hyaluronic"],
+  "laser-treatments":       ["laser","IPL","light therapy","pigmentation","resurfacing"],
+  "skin-care":              ["skin","facial","pore","moistur","glow","complexion","hydra"],
+  "body-contouring":        ["contour","slim","fat reduction","cool","sculpt"],
+  "prp":                    ["PRP","platelet","plasma","growth factor"],
+  "hair-removal":           ["hair removal","wax","laser hair","shaving","unwanted hair"],
+  "anti-aging":             ["aging","ageing","wrinkle","anti-age","collagen","tightening","lifting"],
+  "yoga":                   ["yoga","pose","stretch","vinyasa","hatha"],
+  "massage":                ["massage","relaxation","stress","tension","body work"],
+  "meditation":             ["meditat","mindful","breathwork","calm","inner peace"],
+  "nutrition":              ["nutriti","diet","food","eating","weight","meal plan"],
+  "mental-health":          ["mental","anxiety","stress","depression","counsell","therapy","burnout"],
+  "traditional-thai-massage": ["thai massage","traditional thai","nuad","pressure point"],
+  "detox":                  ["detox","cleanse","flush","toxin","juice"],
+};
+
+function findReviewSnippet(serviceSlug: string, reviews: { text: string | null; rating: number }[]): string | null {
+  const keywords = SERVICE_KEYWORDS[serviceSlug] ?? [];
+  for (const review of reviews) {
+    if (!review.text || review.rating < 4) continue;
+    const text = review.text;
+    const lower = text.toLowerCase();
+    for (const kw of keywords) {
+      if (lower.includes(kw.toLowerCase())) {
+        const sentences = text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+        for (const sentence of sentences) {
+          if (sentence.toLowerCase().includes(kw.toLowerCase()) && sentence.length > 25 && sentence.length < 200) {
+            const words = sentence.split(/\s+/);
+            return (words.length > 16 ? words.slice(0, 16).join(" ") + "…" : sentence);
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
 /** Parse opening hours JSON → ordered rows */
 const DAY_ORDER = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 
@@ -718,19 +845,54 @@ export default async function ClinicProfilePage({ params }: Props) {
             )}
 
             {/* Services */}
-            {clinic.services && (
-              <details className="profile-detail-block" open>
-                <summary className="profile-detail-summary">Services</summary>
-                <div className="profile-detail-content">
-                  <p style={{
-                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                    fontSize: "14px", color: "var(--charcoal-soft)", lineHeight: 1.7, margin: 0,
-                  }}>
-                    {clinic.services}
-                  </p>
-                </div>
-              </details>
-            )}
+            {(() => {
+              let serviceList: string[] = [];
+              try { serviceList = clinic.services ? JSON.parse(clinic.services) : []; } catch { /**/ }
+              if (!serviceList.length) return null;
+              return (
+                <details className="profile-detail-block" open>
+                  <summary className="profile-detail-summary">Services</summary>
+                  <div className="profile-detail-content">
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                      gap: "10px",
+                    }}>
+                      {serviceList.map((slug) => {
+                        const label   = SERVICE_LABELS[slug] ?? slug;
+                        const snippet = findReviewSnippet(slug, allReviews);
+                        const sub     = snippet ?? SERVICE_DESCRIPTIONS[slug] ?? "";
+                        return (
+                          <div key={slug} style={{
+                            background: "var(--white)",
+                            border: "1px solid var(--border-soft)",
+                            borderLeft: "3px solid var(--green-pale)",
+                            borderRadius: "6px",
+                            padding: "12px 14px",
+                          }}>
+                            <p style={{
+                              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                              fontSize: "13.5px", fontWeight: 500,
+                              color: "var(--charcoal)", margin: "0 0 5px",
+                            }}>{label}</p>
+                            {sub && (
+                              <p style={{
+                                fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                                fontSize: "12px",
+                                fontStyle: snippet ? "italic" : "normal",
+                                color: "var(--muted)", margin: 0, lineHeight: 1.5,
+                              }}>
+                                {snippet ? `"${sub}"` : sub}
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </details>
+              );
+            })()}
 
             {/* Location */}
             <details className="profile-detail-block" open>

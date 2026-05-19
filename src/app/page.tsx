@@ -3,7 +3,7 @@ import Link from "next/link";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import SearchBar from "@/components/hero/SearchBar";
-import { getClinicCount, getTopClinicsByReviews } from "@/lib/db/queries";
+import { getClinicCount, getHomepageClinics } from "@/lib/db/queries";
 import { getBlogPosts } from "@/lib/blog";
 
 /* ─── SEO ────────────────────────────────────────────────────────── */
@@ -124,7 +124,7 @@ const faqSchema = {
 export default async function HomePage() {
   const [physioCount, topClinics] = await Promise.all([
     getClinicCount("bangkok", "physiotherapy-clinics"),
-    getTopClinicsByReviews("bangkok", "physiotherapy-clinics", 3),
+    getHomepageClinics("bangkok", "physiotherapy-clinics", 3),
   ]);
 
   const blogPosts = getBlogPosts(3);
@@ -328,7 +328,7 @@ export default async function HomePage() {
                       overflow:     "hidden",
                       cursor:       "pointer",
                     }}>
-                      {/* Photo placeholder */}
+                      {/* Photo */}
                       <div style={{
                         width:          "100%",
                         aspectRatio:    "4/3",
@@ -337,12 +337,16 @@ export default async function HomePage() {
                         alignItems:     "center",
                         justifyContent: "center",
                         position:       "relative",
+                        overflow:       "hidden",
                       }}>
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="1.2">
-                          <rect x="3" y="3" width="18" height="18" rx="2"/>
-                          <circle cx="8.5" cy="8.5" r="1.5"/>
-                          <path d="M21 15l-5-5L5 21"/>
-                        </svg>
+                        {clinic.photoUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={clinic.photoUrl}
+                            alt={displayName}
+                            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                          />
+                        )}
                         {i === 0 && (
                           <div style={{
                             position:      "absolute",
