@@ -101,7 +101,11 @@ function SidebarContent({
   allClinics, ratingMin, setRatingMin,
   selectedDistricts, toggleDistrict,
   englishOnly, setEnglishOnly,
-  neighbourhoodCounts, ratingCounts, englishCount,
+  nearBtsOnly, setNearBtsOnly,
+  nearMrtOnly, setNearMrtOnly,
+  openWeekends, setOpenWeekends,
+  neighbourhoodCounts, ratingCounts,
+  englishCount, btsCount, mrtCount, weekendsCount,
 }: {
   allClinics: ClinicListItem[];
   ratingMin: number | null;
@@ -110,9 +114,18 @@ function SidebarContent({
   toggleDistrict: (d: string) => void;
   englishOnly: boolean;
   setEnglishOnly: (v: boolean) => void;
+  nearBtsOnly: boolean;
+  setNearBtsOnly: (v: boolean) => void;
+  nearMrtOnly: boolean;
+  setNearMrtOnly: (v: boolean) => void;
+  openWeekends: boolean;
+  setOpenWeekends: (v: boolean) => void;
   neighbourhoodCounts: [string, number][];
   ratingCounts: { label: string; stars: number; min: number; count: number }[];
   englishCount: number;
+  btsCount: number;
+  mrtCount: number;
+  weekendsCount: number;
 }) {
   const filterTitle: React.CSSProperties = {
     fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em',
@@ -176,7 +189,7 @@ function SidebarContent({
       )}
 
       {/* Language */}
-      <div>
+      <div style={filterGroup}>
         <p style={filterTitle}>Language</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div onClick={() => setEnglishOnly(!englishOnly)} style={{
@@ -190,6 +203,47 @@ function SidebarContent({
           </div>
         </div>
       </div>
+
+      {/* Transit */}
+      <div style={filterGroup}>
+        <p style={filterTitle}>Transit access</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div onClick={() => setNearBtsOnly(!nearBtsOnly)} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Checkbox checked={nearBtsOnly} />
+              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Near BTS</span>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{btsCount}</span>
+          </div>
+          <div onClick={() => setNearMrtOnly(!nearMrtOnly)} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Checkbox checked={nearMrtOnly} />
+              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Near MRT</span>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{mrtCount}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Availability */}
+      <div>
+        <p style={filterTitle}>Availability</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div onClick={() => setOpenWeekends(!openWeekends)} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Checkbox checked={openWeekends} />
+              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Open weekends</span>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{weekendsCount}</span>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -200,7 +254,9 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const [ratingMin, setRatingMin]           = useState<number | null>(null);
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
   const [englishOnly, setEnglishOnly]       = useState(false);
-  const [openNow, setOpenNow]               = useState(false);
+  const [nearBtsOnly, setNearBtsOnly]       = useState(false);
+  const [nearMrtOnly, setNearMrtOnly]       = useState(false);
+  const [openWeekends, setOpenWeekends]     = useState(false);
   const [sidebarOpen, setSidebarOpen]       = useState(false);
 
   /* ── Computed counts ─────────────────────────────────────────── */
@@ -218,18 +274,21 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
       count: allClinics.filter(c => (c.googleRating ?? 0) >= t.min).length,
     })), [allClinics]);
 
-  const englishCount = useMemo(
-    () => allClinics.filter(c => c.englishSpeaking).length,
-    [allClinics]);
+  const englishCount  = useMemo(() => allClinics.filter(c => c.englishSpeaking).length, [allClinics]);
+  const btsCount      = useMemo(() => allClinics.filter(c => c.nearBts).length,         [allClinics]);
+  const mrtCount      = useMemo(() => allClinics.filter(c => c.nearMrt).length,         [allClinics]);
+  const weekendsCount = useMemo(() => allClinics.filter(c => c.openWeekends).length,    [allClinics]);
 
   /* ── Filtered + sorted list ──────────────────────────────────── */
   const filteredClinics = useMemo(() => {
     let list = [...allClinics];
 
-    if (ratingMin !== null) list = list.filter(c => (c.googleRating ?? 0) >= ratingMin);
+    if (ratingMin !== null)          list = list.filter(c => (c.googleRating ?? 0) >= ratingMin);
     if (selectedDistricts.length > 0) list = list.filter(c => c.district && selectedDistricts.includes(c.district));
-    if (englishOnly) list = list.filter(c => c.englishSpeaking);
-    if (openNow) list = list.filter(c => c.openWeekends);
+    if (englishOnly)                 list = list.filter(c => c.englishSpeaking);
+    if (nearBtsOnly)                 list = list.filter(c => c.nearBts);
+    if (nearMrtOnly)                 list = list.filter(c => c.nearMrt);
+    if (openWeekends)                list = list.filter(c => c.openWeekends);
 
     if (sort === 'rating') {
       list.sort((a, b) => {
@@ -243,7 +302,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     }
 
     return list;
-  }, [allClinics, sort, ratingMin, selectedDistricts, englishOnly, openNow]);
+  }, [allClinics, sort, ratingMin, selectedDistricts, englishOnly, nearBtsOnly, nearMrtOnly, openWeekends]);
 
   function toggleDistrict(d: string) {
     setSelectedDistricts(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
@@ -255,7 +314,11 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     allClinics, ratingMin, setRatingMin,
     selectedDistricts, toggleDistrict,
     englishOnly, setEnglishOnly,
-    neighbourhoodCounts, ratingCounts, englishCount,
+    nearBtsOnly, setNearBtsOnly,
+    nearMrtOnly, setNearMrtOnly,
+    openWeekends, setOpenWeekends,
+    neighbourhoodCounts, ratingCounts,
+    englishCount, btsCount, mrtCount, weekendsCount,
   };
 
   return (
@@ -399,27 +462,6 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
           Filters
         </button>
 
-        {/* Open now toggle */}
-        <label onClick={() => setOpenNow(!openNow)} style={{
-          display: 'flex', alignItems: 'center', gap: '8px',
-          fontSize: '13px', color: 'var(--charcoal-soft)',
-          cursor: 'pointer', userSelect: 'none',
-        }}>
-          <div style={{
-            width: '36px', height: '20px', borderRadius: '10px',
-            background: openNow ? 'var(--green)' : 'var(--border)',
-            position: 'relative', transition: 'background 0.2s',
-          }}>
-            <div style={{
-              position: 'absolute', top: '3px',
-              left: openNow ? '19px' : '3px',
-              width: '14px', height: '14px', borderRadius: '50%',
-              background: 'var(--white)', transition: 'left 0.2s',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
-            }} />
-          </div>
-          Open weekends
-        </label>
       </div>
 
       {/* ── MAIN LAYOUT ──────────────────────────────────────────── */}
