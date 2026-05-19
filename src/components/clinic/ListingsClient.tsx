@@ -477,6 +477,9 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
 
     if (sort === 'rating') {
       list.sort((a, b) => {
+        const aPos = a.featured && a.featuredPosition != null ? a.featuredPosition : Infinity;
+        const bPos = b.featured && b.featuredPosition != null ? b.featuredPosition : Infinity;
+        if (aPos !== bPos) return aPos - bPos;
         const rd = (b.googleRating ?? 0) - (a.googleRating ?? 0);
         return rd !== 0 ? rd : (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0);
       });
