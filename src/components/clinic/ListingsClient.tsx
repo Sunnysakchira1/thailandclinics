@@ -15,6 +15,62 @@ interface Props {
   catName: string;
 }
 
+/* ─── Service taxonomy ───────────────────────────────────────────── */
+const SERVICE_LABELS: Record<string, string> = {
+  'sports-rehab':          'Sports rehab',
+  'manual-therapy':        'Manual therapy',
+  'dry-needling':          'Dry needling',
+  'lymphatic-drainage':    'Lymphatic drainage',
+  'pilates':               'Pilates',
+  'post-surgery-rehab':    'Post-surgery rehab',
+  'pediatric-physio':      'Paediatric physio',
+  'neuro-rehab':           'Neuro rehab',
+  'back-spine':            'Back & spine',
+  'traditional-massage':   'Traditional massage',
+  'tcm-acupuncture':       'TCM / Acupuncture',
+  'general-dentistry':     'General dentistry',
+  'orthodontics':          'Orthodontics',
+  'implants':              'Implants',
+  'whitening':             'Whitening',
+  'root-canal':            'Root canal',
+  'cosmetic-dentistry':    'Cosmetic dentistry',
+  'pediatric-dentistry':   'Paediatric dentistry',
+  'botox-fillers':         'Botox & fillers',
+  'laser-treatments':      'Laser treatments',
+  'skin-care':             'Skin care',
+  'body-contouring':       'Body contouring',
+  'prp':                   'PRP',
+  'hair-removal':          'Hair removal',
+  'anti-aging':            'Anti-aging',
+  'yoga':                  'Yoga',
+  'massage':               'Massage',
+  'meditation':            'Meditation',
+  'nutrition':             'Nutrition',
+  'mental-health':         'Mental health',
+  'traditional-thai-massage': 'Thai massage',
+  'detox':                 'Detox',
+};
+
+const SERVICE_TAXONOMY: Record<string, string[]> = {
+  'physiotherapy-clinics': [
+    'sports-rehab', 'manual-therapy', 'dry-needling', 'lymphatic-drainage',
+    'pilates', 'post-surgery-rehab', 'pediatric-physio', 'neuro-rehab',
+    'back-spine', 'traditional-massage', 'tcm-acupuncture',
+  ],
+  'dental-clinics': [
+    'general-dentistry', 'orthodontics', 'implants', 'whitening',
+    'root-canal', 'cosmetic-dentistry', 'pediatric-dentistry',
+  ],
+  'cosmetic-clinics': [
+    'botox-fillers', 'laser-treatments', 'skin-care', 'body-contouring',
+    'prp', 'hair-removal', 'anti-aging',
+  ],
+  'wellness-clinics': [
+    'yoga', 'massage', 'meditation', 'nutrition', 'mental-health',
+    'traditional-thai-massage', 'detox',
+  ],
+};
+
 /* ─── Constants ──────────────────────────────────────────────────── */
 const PHOTO_BG = [
   'linear-gradient(135deg, #2a5c40 0%, #1a3d2b 100%)',
@@ -98,8 +154,10 @@ function Checkbox({ checked }: { checked: boolean }) {
 
 /* ─── Sidebar content ────────────────────────────────────────────── */
 function SidebarContent({
-  allClinics, ratingMin, setRatingMin,
+  allClinics, catSlug,
+  ratingMin, setRatingMin,
   selectedDistricts, toggleDistrict,
+  selectedServices, toggleService,
   englishOnly, setEnglishOnly,
   nearBtsOnly, setNearBtsOnly,
   nearMrtOnly, setNearMrtOnly,
@@ -108,15 +166,18 @@ function SidebarContent({
   wheelchairOnly, setWheelchairOnly,
   openLateOnly, setOpenLateOnly,
   acceptsCardOnly, setAcceptsCardOnly,
-  neighbourhoodCounts, ratingCounts,
+  neighbourhoodCounts, ratingCounts, serviceCounts,
   englishCount, btsCount, mrtCount, weekendsCount,
   parkingCount, wheelchairCount, openLateCount, acceptsCardCount,
 }: {
   allClinics: ClinicListItem[];
+  catSlug: string;
   ratingMin: number | null;
   setRatingMin: (v: number | null) => void;
   selectedDistricts: string[];
   toggleDistrict: (d: string) => void;
+  selectedServices: string[];
+  toggleService: (s: string) => void;
   englishOnly: boolean;
   setEnglishOnly: (v: boolean) => void;
   nearBtsOnly: boolean;
@@ -135,6 +196,7 @@ function SidebarContent({
   setAcceptsCardOnly: (v: boolean) => void;
   neighbourhoodCounts: [string, number][];
   ratingCounts: { label: string; stars: number; min: number; count: number }[];
+  serviceCounts: Record<string, number>;
   englishCount: number;
   btsCount: number;
   mrtCount: number;
@@ -184,6 +246,32 @@ function SidebarContent({
           ))}
         </div>
       </div>
+
+      {/* Services */}
+      {SERVICE_TAXONOMY[catSlug] && (
+        <div style={filterGroup}>
+          <p style={filterTitle}>Services</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {SERVICE_TAXONOMY[catSlug].map(slug => {
+              const count = serviceCounts[slug] ?? 0;
+              if (count === 0) return null;
+              return (
+                <div key={slug} onClick={() => toggleService(slug)} style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <Checkbox checked={selectedServices.includes(slug)} />
+                    <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>
+                      {SERVICE_LABELS[slug] ?? slug}
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Neighbourhood */}
       {neighbourhoodCounts.length > 0 && (
@@ -321,6 +409,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const [wheelchairOnly, setWheelchairOnly] = useState(false);
   const [openLateOnly, setOpenLateOnly]     = useState(false);
   const [acceptsCardOnly, setAcceptsCardOnly] = useState(false);
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen]       = useState(false);
 
   /* ── Computed counts ─────────────────────────────────────────── */
@@ -342,6 +431,20 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const btsCount        = useMemo(() => allClinics.filter(c => c.nearBts).length,             [allClinics]);
   const mrtCount        = useMemo(() => allClinics.filter(c => c.nearMrt).length,             [allClinics]);
   const weekendsCount   = useMemo(() => allClinics.filter(c => c.openWeekends).length,        [allClinics]);
+  const serviceCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const c of allClinics) {
+      if (!c.services) continue;
+      try {
+        const parsed = JSON.parse(c.services) as unknown;
+        if (Array.isArray(parsed)) {
+          for (const s of parsed) if (typeof s === 'string') counts[s] = (counts[s] || 0) + 1;
+        }
+      } catch { /* ignore */ }
+    }
+    return counts;
+  }, [allClinics]);
+
   const parkingCount    = useMemo(() => allClinics.filter(c => c.hasParking).length,           [allClinics]);
   const wheelchairCount = useMemo(() => allClinics.filter(c => c.wheelchairAccessible).length, [allClinics]);
   const openLateCount   = useMemo(() => allClinics.filter(c => c.openLate).length,             [allClinics]);
@@ -361,6 +464,16 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     if (wheelchairOnly)              list = list.filter(c => c.wheelchairAccessible);
     if (openLateOnly)                list = list.filter(c => c.openLate);
     if (acceptsCardOnly)             list = list.filter(c => c.acceptsCard);
+    if (selectedServices.length > 0) {
+      list = list.filter(c => {
+        if (!c.services) return false;
+        try {
+          const parsed = JSON.parse(c.services) as unknown;
+          if (!Array.isArray(parsed)) return false;
+          return selectedServices.every(s => (parsed as string[]).includes(s));
+        } catch { return false; }
+      });
+    }
 
     if (sort === 'rating') {
       list.sort((a, b) => {
@@ -374,17 +487,23 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     }
 
     return list;
-  }, [allClinics, sort, ratingMin, selectedDistricts, englishOnly, nearBtsOnly, nearMrtOnly, openWeekends, parkingOnly, wheelchairOnly, openLateOnly, acceptsCardOnly]);
+  }, [allClinics, sort, ratingMin, selectedDistricts, englishOnly, nearBtsOnly, nearMrtOnly, openWeekends, parkingOnly, wheelchairOnly, openLateOnly, acceptsCardOnly, selectedServices]);
 
   function toggleDistrict(d: string) {
     setSelectedDistricts(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
   }
 
+  function toggleService(s: string) {
+    setSelectedServices(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+  }
+
   const catShort = catName.replace(' Clinics', '');
 
   const sidebarProps = {
-    allClinics, ratingMin, setRatingMin,
+    allClinics, catSlug,
+    ratingMin, setRatingMin,
     selectedDistricts, toggleDistrict,
+    selectedServices, toggleService,
     englishOnly, setEnglishOnly,
     nearBtsOnly, setNearBtsOnly,
     nearMrtOnly, setNearMrtOnly,
@@ -393,7 +512,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     wheelchairOnly, setWheelchairOnly,
     openLateOnly, setOpenLateOnly,
     acceptsCardOnly, setAcceptsCardOnly,
-    neighbourhoodCounts, ratingCounts,
+    neighbourhoodCounts, ratingCounts, serviceCounts,
     englishCount, btsCount, mrtCount, weekendsCount,
     parkingCount, wheelchairCount, openLateCount, acceptsCardCount,
   };

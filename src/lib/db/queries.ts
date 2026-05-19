@@ -25,6 +25,7 @@ export type ClinicListItem = {
   featured:             boolean | null;
   featuredPosition:     number | null;
   photoUrl:             string | null;
+  services:             string | null;
 };
 
 export type ClinicProfile = {
@@ -90,6 +91,7 @@ export async function getClinicsBySlug(
       featured:             clinics.featured,
       featuredPosition:     clinics.featuredPosition,
       photoUrl:             clinics.photoUrl,
+      services:             clinics.services,
       hasParking:           clinics.hasParking,
       wheelchairAccessible: clinics.wheelchairAccessible,
       appointmentRequired:  clinics.appointmentRequired,
@@ -193,6 +195,7 @@ export async function getTopClinicsByReviews(
       featured:             clinics.featured,
       featuredPosition:     clinics.featuredPosition,
       photoUrl:             clinics.photoUrl,
+      services:             clinics.services,
       hasParking:           clinics.hasParking,
       wheelchairAccessible: clinics.wheelchairAccessible,
       appointmentRequired:  clinics.appointmentRequired,
@@ -351,6 +354,7 @@ export async function getNearbyPool(
       featured:             clinics.featured,
       featuredPosition:     clinics.featuredPosition,
       photoUrl:             clinics.photoUrl,
+      services:             clinics.services,
       hasParking:           clinics.hasParking,
       wheelchairAccessible: clinics.wheelchairAccessible,
       appointmentRequired:  clinics.appointmentRequired,
