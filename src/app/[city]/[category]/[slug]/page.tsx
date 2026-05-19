@@ -435,6 +435,28 @@ export default async function ClinicProfilePage({ params }: Props) {
 
       <main style={{ backgroundColor: "var(--linen)", minHeight: "100vh" }}>
 
+        {/* ── Clinic photo banner ──────────────────────────────── */}
+        {clinic.photoUrl && (
+          <div style={{
+            width: "100%",
+            height: "clamp(200px, 28vw, 340px)",
+            overflow: "hidden",
+            position: "relative",
+            background: "var(--linen-dark)",
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={clinic.photoUrl}
+              alt={displayName}
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(to bottom, transparent 50%, rgba(26,26,26,0.25) 100%)",
+            }} />
+          </div>
+        )}
+
         {/* ══════════════════════════════════════════════════════════
             ZONE 1 — HERO
             White background. Two columns on desktop.
