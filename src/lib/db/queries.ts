@@ -15,10 +15,16 @@ export type ClinicListItem = {
   englishSpeaking:    boolean | null;
   nearBts:            boolean | null;
   nearMrt:            boolean | null;
-  openWeekends:       boolean | null;
-  featured:           boolean | null;
-  featuredPosition:   number | null;
-  photoUrl:           string | null;
+  openWeekends:         boolean | null;
+  hasParking:           boolean | null;
+  wheelchairAccessible: boolean | null;
+  appointmentRequired:  boolean | null;
+  acceptsCard:          boolean | null;
+  acceptsNfc:           boolean | null;
+  openLate:             boolean | null;
+  featured:             boolean | null;
+  featuredPosition:     number | null;
+  photoUrl:             string | null;
 };
 
 export type ClinicProfile = {
@@ -81,9 +87,15 @@ export async function getClinicsBySlug(
       nearBts:            clinics.nearBts,
       nearMrt:            clinics.nearMrt,
       openWeekends:       clinics.openWeekends,
-      featured:           clinics.featured,
-      featuredPosition:   clinics.featuredPosition,
-      photoUrl:           clinics.photoUrl,
+      featured:             clinics.featured,
+      featuredPosition:     clinics.featuredPosition,
+      photoUrl:             clinics.photoUrl,
+      hasParking:           clinics.hasParking,
+      wheelchairAccessible: clinics.wheelchairAccessible,
+      appointmentRequired:  clinics.appointmentRequired,
+      acceptsCard:          clinics.acceptsCard,
+      acceptsNfc:           clinics.acceptsNfc,
+      openLate:             clinics.openLate,
     })
     .from(clinics)
     .innerJoin(cities,     eq(clinics.cityId,     cities.id))
@@ -166,21 +178,27 @@ export async function getTopClinicsByReviews(
 ): Promise<ClinicListItem[]> {
   return db
     .select({
-      id:                 clinics.id,
-      name:               clinics.name,
-      nameEn:             clinics.nameEn,
-      slug:               clinics.slug,
-      district:           clinics.district,
-      googleRating:       clinics.googleRating,
-      googleReviewsCount: clinics.googleReviewsCount,
-      verified:           clinics.verified,
-      englishSpeaking:    clinics.englishSpeaking,
-      nearBts:            clinics.nearBts,
-      nearMrt:            clinics.nearMrt,
-      openWeekends:       clinics.openWeekends,
-      featured:           clinics.featured,
-      featuredPosition:   clinics.featuredPosition,
-      photoUrl:           clinics.photoUrl,
+      id:                   clinics.id,
+      name:                 clinics.name,
+      nameEn:               clinics.nameEn,
+      slug:                 clinics.slug,
+      district:             clinics.district,
+      googleRating:         clinics.googleRating,
+      googleReviewsCount:   clinics.googleReviewsCount,
+      verified:             clinics.verified,
+      englishSpeaking:      clinics.englishSpeaking,
+      nearBts:              clinics.nearBts,
+      nearMrt:              clinics.nearMrt,
+      openWeekends:         clinics.openWeekends,
+      featured:             clinics.featured,
+      featuredPosition:     clinics.featuredPosition,
+      photoUrl:             clinics.photoUrl,
+      hasParking:           clinics.hasParking,
+      wheelchairAccessible: clinics.wheelchairAccessible,
+      appointmentRequired:  clinics.appointmentRequired,
+      acceptsCard:          clinics.acceptsCard,
+      acceptsNfc:           clinics.acceptsNfc,
+      openLate:             clinics.openLate,
     })
     .from(clinics)
     .innerJoin(cities,     eq(clinics.cityId,     cities.id))
@@ -318,21 +336,27 @@ export async function getNearbyPool(
 ): Promise<ClinicListItem[]> {
   return db
     .select({
-      id:                 clinics.id,
-      name:               clinics.name,
-      nameEn:             clinics.nameEn,
-      slug:               clinics.slug,
-      district:           clinics.district,
-      googleRating:       clinics.googleRating,
-      googleReviewsCount: clinics.googleReviewsCount,
-      verified:           clinics.verified,
-      englishSpeaking:    clinics.englishSpeaking,
-      nearBts:            clinics.nearBts,
-      nearMrt:            clinics.nearMrt,
-      openWeekends:       clinics.openWeekends,
-      featured:           clinics.featured,
-      featuredPosition:   clinics.featuredPosition,
-      photoUrl:           clinics.photoUrl,
+      id:                   clinics.id,
+      name:                 clinics.name,
+      nameEn:               clinics.nameEn,
+      slug:                 clinics.slug,
+      district:             clinics.district,
+      googleRating:         clinics.googleRating,
+      googleReviewsCount:   clinics.googleReviewsCount,
+      verified:             clinics.verified,
+      englishSpeaking:      clinics.englishSpeaking,
+      nearBts:              clinics.nearBts,
+      nearMrt:              clinics.nearMrt,
+      openWeekends:         clinics.openWeekends,
+      featured:             clinics.featured,
+      featuredPosition:     clinics.featuredPosition,
+      photoUrl:             clinics.photoUrl,
+      hasParking:           clinics.hasParking,
+      wheelchairAccessible: clinics.wheelchairAccessible,
+      appointmentRequired:  clinics.appointmentRequired,
+      acceptsCard:          clinics.acceptsCard,
+      acceptsNfc:           clinics.acceptsNfc,
+      openLate:             clinics.openLate,
     })
     .from(clinics)
     .innerJoin(cities,     eq(clinics.cityId,     cities.id))

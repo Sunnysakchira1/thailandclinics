@@ -104,8 +104,13 @@ function SidebarContent({
   nearBtsOnly, setNearBtsOnly,
   nearMrtOnly, setNearMrtOnly,
   openWeekends, setOpenWeekends,
+  parkingOnly, setParkingOnly,
+  wheelchairOnly, setWheelchairOnly,
+  openLateOnly, setOpenLateOnly,
+  acceptsCardOnly, setAcceptsCardOnly,
   neighbourhoodCounts, ratingCounts,
   englishCount, btsCount, mrtCount, weekendsCount,
+  parkingCount, wheelchairCount, openLateCount, acceptsCardCount,
 }: {
   allClinics: ClinicListItem[];
   ratingMin: number | null;
@@ -120,12 +125,24 @@ function SidebarContent({
   setNearMrtOnly: (v: boolean) => void;
   openWeekends: boolean;
   setOpenWeekends: (v: boolean) => void;
+  parkingOnly: boolean;
+  setParkingOnly: (v: boolean) => void;
+  wheelchairOnly: boolean;
+  setWheelchairOnly: (v: boolean) => void;
+  openLateOnly: boolean;
+  setOpenLateOnly: (v: boolean) => void;
+  acceptsCardOnly: boolean;
+  setAcceptsCardOnly: (v: boolean) => void;
   neighbourhoodCounts: [string, number][];
   ratingCounts: { label: string; stars: number; min: number; count: number }[];
   englishCount: number;
   btsCount: number;
   mrtCount: number;
   weekendsCount: number;
+  parkingCount: number;
+  wheelchairCount: number;
+  openLateCount: number;
+  acceptsCardCount: number;
 }) {
   const filterTitle: React.CSSProperties = {
     fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em',
@@ -230,7 +247,7 @@ function SidebarContent({
       </div>
 
       {/* Availability */}
-      <div>
+      <div style={filterGroup}>
         <p style={filterTitle}>Availability</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div onClick={() => setOpenWeekends(!openWeekends)} style={{
@@ -241,6 +258,49 @@ function SidebarContent({
               <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Open weekends</span>
             </div>
             <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{weekendsCount}</span>
+          </div>
+          <div onClick={() => setOpenLateOnly(!openLateOnly)} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Checkbox checked={openLateOnly} />
+              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Open late</span>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{openLateCount}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Facilities */}
+      <div>
+        <p style={filterTitle}>Facilities</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div onClick={() => setParkingOnly(!parkingOnly)} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Checkbox checked={parkingOnly} />
+              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Has parking</span>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{parkingCount}</span>
+          </div>
+          <div onClick={() => setWheelchairOnly(!wheelchairOnly)} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Checkbox checked={wheelchairOnly} />
+              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Wheelchair accessible</span>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{wheelchairCount}</span>
+          </div>
+          <div onClick={() => setAcceptsCardOnly(!acceptsCardOnly)} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Checkbox checked={acceptsCardOnly} />
+              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Accepts card</span>
+            </div>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{acceptsCardCount}</span>
           </div>
         </div>
       </div>
@@ -257,6 +317,10 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const [nearBtsOnly, setNearBtsOnly]       = useState(false);
   const [nearMrtOnly, setNearMrtOnly]       = useState(false);
   const [openWeekends, setOpenWeekends]     = useState(false);
+  const [parkingOnly, setParkingOnly]       = useState(false);
+  const [wheelchairOnly, setWheelchairOnly] = useState(false);
+  const [openLateOnly, setOpenLateOnly]     = useState(false);
+  const [acceptsCardOnly, setAcceptsCardOnly] = useState(false);
   const [sidebarOpen, setSidebarOpen]       = useState(false);
 
   /* ── Computed counts ─────────────────────────────────────────── */
@@ -274,10 +338,14 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
       count: allClinics.filter(c => (c.googleRating ?? 0) >= t.min).length,
     })), [allClinics]);
 
-  const englishCount  = useMemo(() => allClinics.filter(c => c.englishSpeaking).length, [allClinics]);
-  const btsCount      = useMemo(() => allClinics.filter(c => c.nearBts).length,         [allClinics]);
-  const mrtCount      = useMemo(() => allClinics.filter(c => c.nearMrt).length,         [allClinics]);
-  const weekendsCount = useMemo(() => allClinics.filter(c => c.openWeekends).length,    [allClinics]);
+  const englishCount    = useMemo(() => allClinics.filter(c => c.englishSpeaking).length,    [allClinics]);
+  const btsCount        = useMemo(() => allClinics.filter(c => c.nearBts).length,             [allClinics]);
+  const mrtCount        = useMemo(() => allClinics.filter(c => c.nearMrt).length,             [allClinics]);
+  const weekendsCount   = useMemo(() => allClinics.filter(c => c.openWeekends).length,        [allClinics]);
+  const parkingCount    = useMemo(() => allClinics.filter(c => c.hasParking).length,           [allClinics]);
+  const wheelchairCount = useMemo(() => allClinics.filter(c => c.wheelchairAccessible).length, [allClinics]);
+  const openLateCount   = useMemo(() => allClinics.filter(c => c.openLate).length,             [allClinics]);
+  const acceptsCardCount = useMemo(() => allClinics.filter(c => c.acceptsCard).length,         [allClinics]);
 
   /* ── Filtered + sorted list ──────────────────────────────────── */
   const filteredClinics = useMemo(() => {
@@ -289,6 +357,10 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     if (nearBtsOnly)                 list = list.filter(c => c.nearBts);
     if (nearMrtOnly)                 list = list.filter(c => c.nearMrt);
     if (openWeekends)                list = list.filter(c => c.openWeekends);
+    if (parkingOnly)                 list = list.filter(c => c.hasParking);
+    if (wheelchairOnly)              list = list.filter(c => c.wheelchairAccessible);
+    if (openLateOnly)                list = list.filter(c => c.openLate);
+    if (acceptsCardOnly)             list = list.filter(c => c.acceptsCard);
 
     if (sort === 'rating') {
       list.sort((a, b) => {
@@ -302,7 +374,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     }
 
     return list;
-  }, [allClinics, sort, ratingMin, selectedDistricts, englishOnly, nearBtsOnly, nearMrtOnly, openWeekends]);
+  }, [allClinics, sort, ratingMin, selectedDistricts, englishOnly, nearBtsOnly, nearMrtOnly, openWeekends, parkingOnly, wheelchairOnly, openLateOnly, acceptsCardOnly]);
 
   function toggleDistrict(d: string) {
     setSelectedDistricts(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
@@ -317,8 +389,13 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     nearBtsOnly, setNearBtsOnly,
     nearMrtOnly, setNearMrtOnly,
     openWeekends, setOpenWeekends,
+    parkingOnly, setParkingOnly,
+    wheelchairOnly, setWheelchairOnly,
+    openLateOnly, setOpenLateOnly,
+    acceptsCardOnly, setAcceptsCardOnly,
     neighbourhoodCounts, ratingCounts,
     englishCount, btsCount, mrtCount, weekendsCount,
+    parkingCount, wheelchairCount, openLateCount, acceptsCardCount,
   };
 
   return (
@@ -552,11 +629,24 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     position: 'relative', flexShrink: 0, overflow: 'hidden',
                   }}>
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1">
-                      <rect x="3" y="3" width="18" height="18" rx="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <path d="M21 15l-5-5L5 21" />
-                    </svg>
+                    {clinic.photoUrl ? (
+                      <img
+                        src={clinic.photoUrl}
+                        alt={displayName}
+                        onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
+                        style={{
+                          position: 'absolute', inset: 0,
+                          width: '100%', height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    ) : (
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15l-5-5L5 21" />
+                      </svg>
+                    )}
                     <div style={{
                       position: 'absolute', top: '16px', left: '16px',
                       width: '28px', height: '28px',
