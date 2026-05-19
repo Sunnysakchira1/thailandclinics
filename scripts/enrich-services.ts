@@ -53,11 +53,12 @@ const SERVICE_TAXONOMY: Record<string, string[]> = {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type ClinicRow = {
-  id:            number | bigint
-  name:          string
-  name_en:       string | null
-  about:         string | null
-  category_slug: string
+  id:               number | bigint
+  name:             string
+  name_en:          string | null
+  about:            string | null
+  review_positives: string | null
+  category_slug:    string
 }
 
 type AnthropicResponse = {
@@ -72,15 +73,25 @@ function buildPrompt(clinic: ClinicRow, taxonomy: string[]): string {
   const displayName  = clinic.name_en || clinic.name
   const aboutSection = clinic.about ?? 'not available'
 
+  let reviewSection = 'not available'
+  if (clinic.review_positives) {
+    try {
+      const bullets = JSON.parse(clinic.review_positives) as unknown[]
+      const filtered = bullets.filter((b): b is string => typeof b === 'string' && b.length > 0)
+      if (filtered.length > 0) reviewSection = filtered.join('; ')
+    } catch { /* leave as not available */ }
+  }
+
   return `You are classifying a clinic's services.
 
 Clinic name: ${displayName}
 Category: ${clinic.category_slug}
 About (Google data): ${aboutSection}
+Patient review highlights: ${reviewSection}
 
 From this list of services for ${clinic.category_slug}, select which ones this clinic likely offers.
-Only select services clearly indicated by the name or about data.
-If uncertain, do not include it.
+Prioritise evidence from patient review highlights — they directly describe treatments received.
+Only select services clearly indicated by the data. If uncertain, do not include it.
 
 Available services: ${taxonomy.join(', ')}
 
@@ -135,12 +146,12 @@ function parseAndValidate(raw: string, taxonomy: string[]): string[] {
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  // Fetch all clinics with services IS NULL, joined with category slug
+  // Fetch clinics with no services data or empty array (reprocess with improved prompt)
   const result = await client.execute(`
-    SELECT c.id, c.name, c.name_en, c.about, cat.slug as category_slug
+    SELECT c.id, c.name, c.name_en, c.about, c.review_positives, cat.slug as category_slug
     FROM clinics c
     JOIN categories cat ON c.category_id = cat.id
-    WHERE c.services IS NULL
+    WHERE c.services IS NULL OR c.services = '[]'
     ORDER BY c.google_reviews_count DESC
   `)
 
