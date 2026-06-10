@@ -1,7 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const transliterate = require("transliterate") as (s: string) => string;
+import anyAscii from "any-ascii";
 
-const THAI_CHAR = /[\u0E00-\u0E7F]/;
+const THAI_CHAR = /[฀-๿]/;
 
 /**
  * Extract an English name from a mixed Thai/English Outscraper name field.
@@ -48,10 +47,10 @@ export function extractEnglishName(raw: string): string | null {
  * Generate a URL-safe slug following CLAUDE.md rules.
  * Decision tree:
  *   1. name_en exists → slugify it
- *   2. contains Thai → transliterate → slugify
+ *   2. contains Thai → anyAscii transliterate → slugify
  *   3. neither       → slugify directly
  *
- * Fallback: if slug < 4 chars → "clinic-" + last 6 of placeId
+ * Fallback: if slug < 4 chars → "clinic-" + sanitized last 6 of placeId
  */
 export function generateSlug(
   name: string,
@@ -63,15 +62,16 @@ export function generateSlug(
   if (nameEn) {
     base = slugifyString(nameEn);
   } else if (THAI_CHAR.test(name)) {
-    const transliterated = transliterate(name);
+    const transliterated = anyAscii(name);
     base = slugifyString(transliterated);
   } else {
     base = slugifyString(name);
   }
 
-  // Fallback for very short slugs
+  // Fallback for very short slugs — sanitize place_id chars before use
   if (base.length < 4) {
-    base = "clinic-" + placeId.slice(-6).toLowerCase();
+    const safeId = placeId.slice(-8).toLowerCase().replace(/[^a-z0-9]/g, "").slice(-6);
+    base = "clinic-" + (safeId || placeId.slice(-6).replace(/[^a-z0-9]/g, ""));
   }
 
   return base;
@@ -88,7 +88,7 @@ function slugifyString(s: string): string {
     .replace(/['"()/.,']/g, "")
     // Spaces and remaining separators → hyphens
     .replace(/[\s_]+/g, "-")
-    // Remove any leftover non-ASCII (Thai after transliterate edge cases)
+    // Remove any leftover non-ASCII (edge cases)
     .replace(/[^\x00-\x7F]/g, "")
     // Collapse double hyphens
     .replace(/-{2,}/g, "-")
