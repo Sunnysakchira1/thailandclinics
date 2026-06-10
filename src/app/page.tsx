@@ -3,6 +3,7 @@ import Link from "next/link";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import SearchBar from "@/components/hero/SearchBar";
+import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import { getClinicCount, getHomepageClinics } from "@/lib/db/queries";
 import { getBlogPosts } from "@/lib/blog";
 
@@ -338,14 +339,7 @@ export default async function HomePage() {
                         position:       "relative",
                         overflow:       "hidden",
                       }}>
-                        {clinic.photoUrl && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={clinic.photoUrl}
-                            alt={displayName}
-                            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-                          />
-                        )}
+                        <ClinicPhoto url={clinic.photoUrl} name={displayName} />
                         {i === 0 && (
                           <div style={{
                             position:      "absolute",

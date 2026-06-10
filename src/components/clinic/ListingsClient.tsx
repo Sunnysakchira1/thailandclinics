@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { ClinicListItem } from '@/lib/db/queries';
+import ClinicPhoto from '@/components/clinic/ClinicPhoto';
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 type SortOption = 'rating' | 'reviews' | 'alpha';
@@ -751,24 +752,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     position: 'relative', flexShrink: 0, overflow: 'hidden',
                   }}>
-                    {clinic.photoUrl ? (
-                      <img
-                        src={clinic.photoUrl}
-                        alt={displayName}
-                        onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
-                        style={{
-                          position: 'absolute', inset: 0,
-                          width: '100%', height: '100%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                    ) : (
-                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.45)" strokeWidth="1">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <path d="M21 15l-5-5L5 21" />
-                      </svg>
-                    )}
+                    <ClinicPhoto url={clinic.photoUrl} name={displayName} />
                     <div style={{
                       position: 'absolute', top: '16px', left: '16px',
                       width: '28px', height: '28px',
