@@ -39,6 +39,19 @@ export function extractEnglishName(raw: string): string | null {
     }
   }
 
+  // Pattern 3.5 — Longest Latin run anywhere in the name (additive fallback)
+  // Handles "Thai…, English Name", "Thai… English Name" etc. that patterns 1-3 miss.
+  // e.g. "อ้อม ฟิสิโอ … , Aom Physiotherapy Clinic" → "Aom Physiotherapy Clinic"
+  const latinRuns = s.match(/[A-Za-z][A-Za-z0-9 .,&'’\-]*[A-Za-z]/g);
+  if (latinRuns) {
+    const best = latinRuns
+      .map((r) => r.replace(/^[\s,.\-]+|[\s,.\-]+$/g, "").replace(/\s+/g, " ").trim())
+      .sort((a, b) => b.length - a.length)[0];
+    if (best && best.length > 5) {
+      return best;
+    }
+  }
+
   // Pattern 4 — Fully Thai, no Latin → null (will transliterate for slug only)
   return null;
 }

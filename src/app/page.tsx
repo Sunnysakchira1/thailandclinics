@@ -44,7 +44,7 @@ const CARD_GRADIENTS = [
 const CITY_TILES = [
   { name: "Bangkok",    slug: "bangkok",    bg: "linear-gradient(160deg, #2a5c40 0%, #1a3d2b 100%)", count: "329+ clinics" },
   { name: "Chiang Mai", slug: "chiang-mai", bg: "linear-gradient(160deg, #5c432a 0%, #3d2d1a 100%)", count: "Coming soon" },
-  { name: "Phuket",     slug: "phuket",     bg: "linear-gradient(160deg, #2a4a5c 0%, #1a3040 100%)", count: "Coming soon" },
+  { name: "Phuket",     slug: "phuket",     bg: "linear-gradient(160deg, #2a4a5c 0%, #1a3040 100%)", count: "46 clinics" },
   { name: "Pattaya",    slug: "pattaya",    bg: "linear-gradient(160deg, #5c2a3e 0%, #3d1a28 100%)", count: "Coming soon" },
 ];
 
