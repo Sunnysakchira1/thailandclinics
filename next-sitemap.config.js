@@ -13,7 +13,7 @@ module.exports = {
   generateRobotsTxt: false,
 
   // Exclude non-indexed routes and Next.js special files
-  exclude: ["/api/*", "/admin/*", "/icon.svg"],
+  exclude: ["/api/*", "/admin/*", "/icon.svg", "/brand-guidelines"],
 
   // Override priorities and changefreq per CLAUDE.md spec
   transform: async (config, path) => {
