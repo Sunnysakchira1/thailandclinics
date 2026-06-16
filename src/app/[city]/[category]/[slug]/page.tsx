@@ -5,6 +5,7 @@ import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
+import TCVerifiedBadge from "@/components/clinic/TCVerifiedBadge";
 import {
   getClinicProfile,
   getClinicReviews,
@@ -701,14 +702,20 @@ export default async function ClinicProfilePage({ params }: Props) {
           <div className="profile-editorial">
             <div className="profile-editorial-inner">
 
-              {/* Section eyebrow */}
-              <p style={{
-                fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.16em",
-                textTransform: "uppercase", color: "var(--terracotta)", marginBottom: "16px",
+              {/* Section eyebrow + TC Verified trust mark */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: "14px",
+                flexWrap: "wrap", marginBottom: "16px",
               }}>
-                What ThailandClinics Found
-              </p>
+                <p style={{
+                  fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                  fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.16em",
+                  textTransform: "uppercase", color: "var(--terracotta)", margin: 0,
+                }}>
+                  What ThailandClinics Found
+                </p>
+                <TCVerifiedBadge />
+              </div>
 
               {/* Key terms pills */}
               {keyTerms.length > 0 && (
@@ -822,12 +829,18 @@ export default async function ClinicProfilePage({ params }: Props) {
                     }}>
                       "{r.text}"
                     </p>
-                    <p style={{
-                      fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                      fontSize: "11px", color: "var(--muted)", margin: 0,
+                    <div style={{
+                      display: "flex", alignItems: "center", justifyContent: "space-between",
+                      gap: "10px", flexWrap: "wrap",
                     }}>
-                      via Google
-                    </p>
+                      <span style={{
+                        fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                        fontSize: "11px", color: "var(--muted)",
+                      }}>
+                        via Google
+                      </span>
+                      <TCVerifiedBadge size="sm" />
+                    </div>
                   </div>
                 ))}
               </div>
