@@ -172,6 +172,22 @@ export async function getClinicCount(
   return Number(rows[0]?.value ?? 0);
 }
 
+/** Count all clinics in a city (across every category) */
+export async function getCityClinicCount(citySlug: string): Promise<number> {
+  const rows = await db
+    .select({ value: sql<number>`count(*)` })
+    .from(clinics)
+    .innerJoin(cities, eq(clinics.cityId, cities.id))
+    .where(eq(cities.slug, citySlug));
+  return Number(rows[0]?.value ?? 0);
+}
+
+/** Count every clinic on the site */
+export async function getTotalClinicCount(): Promise<number> {
+  const rows = await db.select({ value: sql<number>`count(*)` }).from(clinics);
+  return Number(rows[0]?.value ?? 0);
+}
+
 /** Top N clinics by review count for a city+category */
 export async function getTopClinicsByReviews(
   citySlug: string,

@@ -4,7 +4,7 @@ import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import SearchBar from "@/components/hero/SearchBar";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
-import { getClinicCount, getHomepageClinics } from "@/lib/db/queries";
+import { getClinicCount, getCityClinicCount, getTotalClinicCount, getHomepageClinics } from "@/lib/db/queries";
 import { getBlogPosts } from "@/lib/blog";
 
 /* ─── SEO ────────────────────────────────────────────────────────── */
@@ -42,7 +42,7 @@ const CARD_GRADIENTS = [
 ];
 
 const CITY_TILES = [
-  { name: "Bangkok",    slug: "bangkok",    bg: "linear-gradient(160deg, #2a5c40 0%, #1a3d2b 100%)", count: "329+ clinics" },
+  { name: "Bangkok",    slug: "bangkok",    bg: "linear-gradient(160deg, #2a5c40 0%, #1a3d2b 100%)", count: "477+ clinics" },
   { name: "Chiang Mai", slug: "chiang-mai", bg: "linear-gradient(160deg, #5c432a 0%, #3d2d1a 100%)", count: "Coming soon" },
   { name: "Phuket",     slug: "phuket",     bg: "linear-gradient(160deg, #2a4a5c 0%, #1a3040 100%)", count: "46 clinics" },
   { name: "Pattaya",    slug: "pattaya",    bg: "linear-gradient(160deg, #5c2a3e 0%, #3d1a28 100%)", count: "Coming soon" },
@@ -122,8 +122,11 @@ const faqSchema = {
 
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const [physioCount, topClinics] = await Promise.all([
+  const [physioCount, cosmeticCount, bangkokCount, totalCount, topClinics] = await Promise.all([
     getClinicCount("bangkok", "physiotherapy-clinics"),
+    getClinicCount("bangkok", "cosmetic-clinics"),
+    getCityClinicCount("bangkok"),
+    getTotalClinicCount(),
     getHomepageClinics("bangkok", "physiotherapy-clinics", 3),
   ]);
 
@@ -218,7 +221,7 @@ export default async function HomePage() {
                 opacity:        0,
               }}
             >
-              <span><strong style={{ color: "var(--charcoal)", fontWeight: 500 }}>250+</strong> verified clinics</span>
+              <span><strong style={{ color: "var(--charcoal)", fontWeight: 500 }}>{totalCount}+</strong> verified clinics</span>
               <StatDot />
               <span><strong style={{ color: "var(--charcoal)", fontWeight: 500 }}>5 cities</strong> across Thailand</span>
               <StatDot />
@@ -252,6 +255,21 @@ export default async function HomePage() {
                 </div>
               </Link>
 
+              {/* Beauty — LIVE */}
+              <Link href="/bangkok/cosmetic-clinics/" style={{ textDecoration: "none" }}>
+                <div className="category-tile" style={catTileBase}>
+                  <svg style={catIconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                    <line x1="9" y1="9" x2="9.01" y2="9"/>
+                    <line x1="15" y1="9" x2="15.01" y2="9"/>
+                  </svg>
+                  <div style={catNameStyle}>Beauty</div>
+                  <div style={catCountStyle}>{cosmeticCount}+ clinics</div>
+                  <div className="category-arrow" style={catArrowStyle}>Browse →</div>
+                </div>
+              </Link>
+
               {/* Dental — Coming Soon */}
               <div style={{ ...catTileBase, opacity: 0.6, cursor: "default" }}>
                 <svg style={catIconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
@@ -267,18 +285,6 @@ export default async function HomePage() {
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z"/>
                 </svg>
                 <div style={catNameStyle}>Wellness</div>
-                <div style={catCountStyle}>Coming soon</div>
-              </div>
-
-              {/* Beauty — Coming Soon */}
-              <div style={{ ...catTileBase, opacity: 0.6, cursor: "default" }}>
-                <svg style={catIconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                  <line x1="9" y1="9" x2="9.01" y2="9"/>
-                  <line x1="15" y1="9" x2="15.01" y2="9"/>
-                </svg>
-                <div style={catNameStyle}>Beauty</div>
                 <div style={catCountStyle}>Coming soon</div>
               </div>
 
@@ -495,7 +501,7 @@ export default async function HomePage() {
                         fontSize:   "12px",
                         color:      "rgba(255,255,255,0.65)",
                       }}>
-                        {city.count}
+                        {city.slug === "bangkok" ? `${bangkokCount}+ clinics` : city.count}
                       </div>
                     </div>
                   </div>
