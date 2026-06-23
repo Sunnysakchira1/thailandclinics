@@ -4,6 +4,7 @@ import {
   real,
   sqliteTable,
   text,
+  uniqueIndex,
 } from "drizzle-orm/sqlite-core";
 
 /* ─── cities ──────────────────────────────────────────────────────── */
@@ -31,6 +32,8 @@ export const clinics = sqliteTable("clinics", {
   slug:       text("slug").notNull().unique(),
   cityId:     integer("city_id").notNull().references(() => cities.id),
   categoryId: integer("category_id").notNull().references(() => categories.id),
+  brandId:    integer("brand_id").references(() => brands.id),
+  branchSlug: text("branch_slug"),
 
   // Display names
   nameEn: text("name_en"),   // English name — used for slug generation
@@ -87,6 +90,25 @@ export const clinics = sqliteTable("clinics", {
   updatedAt:      text("updated_at").notNull().default(sql`(datetime('now'))`),
   lastVerifiedAt: text("last_verified_at"),
 });
+
+/* ─── brands ──────────────────────────────────────────────────────── */
+export const brands = sqliteTable("brands", {
+  id:          integer("id").primaryKey({ autoIncrement: true }),
+  name:        text("name").notNull(),
+  slug:        text("slug").notNull(),
+  cityId:      integer("city_id").notNull().references(() => cities.id),
+  categoryId:  integer("category_id").notNull().references(() => categories.id),
+  about:       text("about"),
+  website:     text("website"),
+  logoUrl:     text("logo_url"),
+  branchCount:  integer("branch_count").notNull().default(0),
+  avgRating:    real("avg_rating"),
+  totalReviews: integer("total_reviews").notNull().default(0),
+  createdAt:   text("created_at").notNull().default(sql`(datetime('now'))`),
+  updatedAt:   text("updated_at").notNull().default(sql`(datetime('now'))`),
+}, (t) => ({
+  brandSlugUnique: uniqueIndex("brands_city_cat_slug_unq").on(t.cityId, t.categoryId, t.slug),
+}));
 
 /* ─── clinic_reviews ──────────────────────────────────────────────── */
 export const clinicReviews = sqliteTable("clinic_reviews", {
