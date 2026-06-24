@@ -466,7 +466,10 @@ export async function getBrandHub(citySlug: string, categorySlug: string, brandS
   return { ...b, branches };
 }
 
-export async function getBranchProfile(brandSlug: string, branchSlug: string) {
+export async function getBranchProfile(
+  brandSlug: string,
+  branchSlug: string,
+): Promise<(ClinicProfile & { brandName: string; brandSlug: string; branchSlug: string | null; brandId: number | null }) | null> {
   const [row] = await db.select({
     id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, nameTh: clinics.nameTh, slug: clinics.slug,
     district: clinics.district, address: clinics.address, postalCode: clinics.postalCode,
@@ -503,7 +506,7 @@ export type ListingEntry = ClinicListItem & { isBrand: boolean; brandSlug?: stri
 export async function getListingEntries(citySlug: string, categorySlug: string): Promise<ListingEntry[]> {
   // standalone clinics (brand_id IS NULL)
   const standalone = (await getClinicsBySlug(citySlug, categorySlug))
-    .filter((c: any) => c.brandId == null)
+    .filter((c) => c.brandId == null)
     .map((c) => ({ ...c, isBrand: false }));
   // brands as single entries
   const brandRows = await db.select({
