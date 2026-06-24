@@ -18,7 +18,7 @@ const KNOWN_DISTRICT_HINTS = ["siam","silom","sathon","sathorn","thonglor","thon
 
 const norm = (s: string) => (s || "").toLowerCase().replace(/[^a-z0-9ก-๙ ]/g, " ").replace(/\s+/g, " ").trim();
 const domain = (url: string | null) => { try { return url ? new URL(url).hostname.replace(/^www\./, "") : null; } catch { return null; } };
-const brandKey = (name: string) => norm(name).split(" ").filter(w => w && !STOP.includes(w)).slice(0, 2).join(" ");
+const brandKey = (name: string) => norm(name).split(" ").filter(Boolean).slice(0, 2).join(" ");
 const slugify = (s: string) => norm(s).replace(/[ก-๙]/g, "").trim().replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
 
 async function main() {
