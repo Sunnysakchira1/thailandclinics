@@ -443,6 +443,7 @@ export type BranchRow = {
   branchSlug: string | null; name: string; nameEn: string | null; district: string | null;
   googleRating: number | null; googleReviewsCount: number | null;
   lat: number; lng: number; openingHours: string | null; photoUrl: string | null;
+  googlePlaceId: string | null;
 };
 
 export async function getBrandHub(citySlug: string, categorySlug: string, brandSlug: string) {
@@ -461,6 +462,7 @@ export async function getBrandHub(citySlug: string, categorySlug: string, brandS
     branchSlug: clinics.branchSlug, name: clinics.name, nameEn: clinics.nameEn, district: clinics.district,
     googleRating: clinics.googleRating, googleReviewsCount: clinics.googleReviewsCount,
     lat: clinics.lat, lng: clinics.lng, openingHours: clinics.openingHours, photoUrl: clinics.photoUrl,
+    googlePlaceId: clinics.googlePlaceId,
   }).from(clinics).where(eq(clinics.brandId, b.id))
     .orderBy(desc(clinics.googleReviewsCount));
   return { ...b, branches };
@@ -498,6 +500,7 @@ export async function getBrandSiblings(brandId: number, excludeBranchSlug: strin
     branchSlug: clinics.branchSlug, name: clinics.name, nameEn: clinics.nameEn, district: clinics.district,
     googleRating: clinics.googleRating, googleReviewsCount: clinics.googleReviewsCount,
     lat: clinics.lat, lng: clinics.lng, openingHours: clinics.openingHours, photoUrl: clinics.photoUrl,
+    googlePlaceId: clinics.googlePlaceId,
   }).from(clinics).where(and(eq(clinics.brandId, brandId), ne(clinics.branchSlug, excludeBranchSlug)));
 }
 
