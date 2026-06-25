@@ -219,145 +219,83 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                       <ClinicPhoto url={branch.photoUrl} name={displayName} />
                     </div>
 
-                    {/* Content — Link only when branchSlug exists */}
-                    {branch.branchSlug ? (
-                      <Link
-                        href={branchHref}
-                        className="nearby-row"
-                        style={{
-                          flex: 1, display: "flex", alignItems: "center",
-                          justifyContent: "space-between", gap: "16px",
-                          padding: "16px 20px", textDecoration: "none",
-                          background: "var(--white)", transition: "background 0.15s",
-                        }}
-                      >
-                        <div style={{ flex: 1, minWidth: 0 }}>
+                    {/* Content row — plain div, no wrapping Link, so Maps <a> and View <Link> are siblings */}
+                    <div
+                      className="nearby-row"
+                      style={{
+                        flex: 1, display: "flex", alignItems: "center",
+                        justifyContent: "space-between", gap: "16px",
+                        padding: "16px 20px",
+                        background: "var(--white)",
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{
+                          fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)",
+                          fontSize: "20px", fontWeight: 500, color: "var(--charcoal)",
+                          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                          marginBottom: "3px",
+                        }}>
+                          {displayName}
+                        </p>
+                        {branch.district && (
                           <p style={{
-                            fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)",
-                            fontSize: "20px", fontWeight: 500, color: "var(--charcoal)",
-                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                            marginBottom: "3px",
-                          }}>
-                            {displayName}
-                          </p>
-                          {branch.district && (
-                            <p style={{
-                              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                              fontSize: "12.5px", color: "var(--muted)", marginBottom: "6px",
-                            }}>
-                              {branch.district}
-                            </p>
-                          )}
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                            {branch.googleRating !== null && (
-                              <span style={{
-                                fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                                fontSize: "13px", color: "var(--charcoal-soft)",
-                              }}>
-                                <span style={{ color: "var(--star)" }}>★</span>{" "}
-                                {branch.googleRating.toFixed(1)}
-                                {branch.googleReviewsCount !== null && (
-                                  <span style={{ color: "var(--muted)" }}>
-                                    {" "}({branch.googleReviewsCount.toLocaleString()})
-                                  </span>
-                                )}
-                              </span>
-                            )}
-                            <OpenStatus hoursJson={branch.openingHours} />
-                          </div>
-                        </div>
-
-                        {/* Right: maps link + view arrow */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
-                          <a
-                            href={mapsUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                              fontSize: "12px", color: "var(--muted)", textDecoration: "none",
-                              display: "inline-flex", alignItems: "center", gap: "4px",
-                            }}
-                          >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                            </svg>
-                            Map
-                          </a>
-                          <span style={{
                             fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                            fontSize: "13px", color: "var(--green)", fontWeight: 500,
+                            fontSize: "12.5px", color: "var(--muted)", marginBottom: "6px",
                           }}>
-                            View →
-                          </span>
-                        </div>
-                      </Link>
-                    ) : (
-                      <div
-                        className="nearby-row"
-                        style={{
-                          flex: 1, display: "flex", alignItems: "center",
-                          justifyContent: "space-between", gap: "16px",
-                          padding: "16px 20px",
-                          background: "var(--white)",
-                        }}
-                      >
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{
-                            fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)",
-                            fontSize: "20px", fontWeight: 500, color: "var(--charcoal)",
-                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                            marginBottom: "3px",
-                          }}>
-                            {displayName}
+                            {branch.district}
                           </p>
-                          {branch.district && (
-                            <p style={{
+                        )}
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
+                          {branch.googleRating !== null && (
+                            <span style={{
                               fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                              fontSize: "12.5px", color: "var(--muted)", marginBottom: "6px",
+                              fontSize: "13px", color: "var(--charcoal-soft)",
                             }}>
-                              {branch.district}
-                            </p>
+                              <span style={{ color: "var(--star)" }}>★</span>{" "}
+                              {branch.googleRating.toFixed(1)}
+                              {branch.googleReviewsCount !== null && (
+                                <span style={{ color: "var(--muted)" }}>
+                                  {" "}({branch.googleReviewsCount.toLocaleString()})
+                                </span>
+                              )}
+                            </span>
                           )}
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                            {branch.googleRating !== null && (
-                              <span style={{
-                                fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                                fontSize: "13px", color: "var(--charcoal-soft)",
-                              }}>
-                                <span style={{ color: "var(--star)" }}>★</span>{" "}
-                                {branch.googleRating.toFixed(1)}
-                                {branch.googleReviewsCount !== null && (
-                                  <span style={{ color: "var(--muted)" }}>
-                                    {" "}({branch.googleReviewsCount.toLocaleString()})
-                                  </span>
-                                )}
-                              </span>
-                            )}
-                            <OpenStatus hoursJson={branch.openingHours} />
-                          </div>
-                        </div>
-
-                        {/* Right: maps link only (no View arrow — no profile page) */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
-                          <a
-                            href={mapsUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                              fontSize: "12px", color: "var(--muted)", textDecoration: "none",
-                              display: "inline-flex", alignItems: "center", gap: "4px",
-                            }}
-                          >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
-                            </svg>
-                            Map
-                          </a>
+                          <OpenStatus hoursJson={branch.openingHours} />
                         </div>
                       </div>
-                    )}
+
+                      {/* Right: sibling links — Maps <a> + View <Link> (only when branchSlug exists) */}
+                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+                        <a
+                          href={mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                            fontSize: "12px", color: "var(--muted)", textDecoration: "none",
+                            display: "inline-flex", alignItems: "center", gap: "4px",
+                          }}
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
+                          </svg>
+                          Map
+                        </a>
+                        {branch.branchSlug && (
+                          <Link
+                            href={branchHref}
+                            style={{
+                              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                              fontSize: "13px", color: "var(--green)", fontWeight: 500,
+                              textDecoration: "none",
+                            }}
+                          >
+                            View →
+                          </Link>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 );
               })}

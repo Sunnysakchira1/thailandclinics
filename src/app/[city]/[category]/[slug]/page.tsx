@@ -279,7 +279,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (hub) {
     const catShort = hub.categoryName.replace(" Clinics", "");
     const title = `${hub.name} — ${catShort} in ${hub.cityName} | ThailandClinics`;
-    const description = `${hub.name} has ${hub.branchCount ?? "multiple"} ${catShort.toLowerCase()} locations in ${hub.cityName}. View all branches, ratings and contact details.`;
+    const description = `Explore ${hub.branchCount ?? "all"} ${catShort.toLowerCase()} branches of ${hub.name} across ${hub.cityName}. Compare ratings, reviews, opening hours and contact details for each location.`;
     return {
       title, description,
       alternates: { canonical: `/${hub.citySlug}/${hub.categorySlug}/${hub.slug}/` },
