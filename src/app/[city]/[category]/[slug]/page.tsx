@@ -260,20 +260,32 @@ function normaliseTime(t: string): string {
 
 /* ─── Static params ─────────────────────────────────────────────── */
 export async function generateStaticParams() {
-  const { db } = await import("@/lib/db/index");
-  const { clinics: c, cities: ct, categories: cat } = await import("@/lib/db/schema");
-  const { eq: eqF } = await import("drizzle-orm");
-  const rows = await db
-    .select({ slug: c.slug, citySlug: ct.slug, categorySlug: cat.slug })
-    .from(c).innerJoin(ct, eqF(c.cityId, ct.id)).innerJoin(cat, eqF(c.categoryId, cat.id));
-  return rows.map((r) => ({ city: r.citySlug, category: r.categorySlug, slug: r.slug }));
+  const { getStandaloneClinicSlugs, getBrandSlugs } = await import("@/lib/db/queries");
+  const [clinicsR, brandsR] = await Promise.all([getStandaloneClinicSlugs(), getBrandSlugs()]);
+  return [
+    ...clinicsR.map((r) => ({ city: r.citySlug, category: r.categorySlug, slug: r.slug })),
+    ...brandsR.map((r) => ({ city: r.citySlug, category: r.categorySlug, slug: r.slug })),
+  ];
 }
 
 /* ─── Metadata ───────────────────────────────────────────────────── */
 type Props = { params: Promise<{ city: string; category: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { city, category, slug } = await params;
+  // Try brand first
+  const { getBrandHub } = await import("@/lib/db/queries");
+  const hub = await getBrandHub(city, category, slug);
+  if (hub) {
+    const catShort = hub.categoryName.replace(" Clinics", "");
+    const title = `${hub.name} — ${catShort} in ${hub.cityName} | ThailandClinics`;
+    const description = `${hub.name} has ${hub.branchCount ?? "multiple"} ${catShort.toLowerCase()} locations in ${hub.cityName}. View all branches, ratings and contact details.`;
+    return {
+      title, description,
+      alternates: { canonical: `/${hub.citySlug}/${hub.categorySlug}/${hub.slug}/` },
+      openGraph: { title, description },
+    };
+  }
   const clinic = await getClinicProfile(slug);
   if (!clinic) return {};
   const displayName = clinic.nameEn ?? clinic.name;
@@ -357,8 +369,18 @@ function Stars({ rating, size = 13 }: { rating: number; size?: number }) {
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default async function ClinicProfilePage({ params }: Props) {
   const { city, category, slug } = await params;
+
+  // Try brand hub first
+  const { getBrandHub } = await import("@/lib/db/queries");
+  const hub = await getBrandHub(city, category, slug);
+  if (hub) {
+    const BrandHubPage = (await import("@/components/brand/BrandHubPage")).default;
+    return <BrandHubPage hub={hub} />;
+  }
+
   const clinic = await getClinicProfile(slug);
-  if (!clinic) notFound();
+  // 404 if not found OR if it's a branch clinic (branch clinics live at nested URL only)
+  if (!clinic || clinic.brandId != null) notFound();
 
   const displayName = clinic.nameEn ?? clinic.name;
   const siteUrl     = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";

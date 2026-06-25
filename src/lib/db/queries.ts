@@ -63,6 +63,7 @@ export type ClinicProfile = {
   reviewSummaryCount:     number | null;
   reviewSummaryUpdatedAt: string | null;
   lastVerifiedAt:     string | null;
+  brandId:            number | null;
   // joined
   cityName:     string;
   citySlug:     string;
@@ -146,6 +147,7 @@ export async function getClinicProfile(
       reviewSummaryCount:     clinics.reviewSummaryCount,
       reviewSummaryUpdatedAt: clinics.reviewSummaryUpdatedAt,
       lastVerifiedAt:     clinics.lastVerifiedAt,
+      brandId:            clinics.brandId,
       cityName:     cities.name,
       citySlug:     cities.slug,
       categoryName: categories.name,

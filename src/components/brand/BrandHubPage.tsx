@@ -273,7 +273,6 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                             href={mapsUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
                             style={{
                               fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                               fontSize: "12px", color: "var(--muted)", textDecoration: "none",
