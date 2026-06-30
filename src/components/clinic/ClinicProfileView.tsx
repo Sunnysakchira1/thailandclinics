@@ -4,7 +4,7 @@ import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import TCVerifiedBadge from "@/components/clinic/TCVerifiedBadge";
-import type { ClinicProfile, ClinicReviewRow } from "@/lib/db/queries";
+import type { ClinicProfile, ClinicReviewRow, BranchRow } from "@/lib/db/queries";
 
 /* ─── Helpers ────────────────────────────────────────────────────── */
 export function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -253,9 +253,17 @@ function normaliseTime(t: string): string {
 }
 
 /* ─── Schema ─────────────────────────────────────────────────────── */
-export function buildClinicSchema(clinic: ClinicProfile, siteUrl: string) {
+export function buildClinicSchema(
+  clinic: ClinicProfile,
+  siteUrl: string,
+  brandOpt?: { name: string; slug: string; branchCount: number },
+  branchSlugOpt?: string,
+) {
   const displayName = clinic.nameEn ?? clinic.name;
-  const profileUrl  = `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/${clinic.slug}/`;
+  // For branch pages the canonical URL is the nested form
+  const profileUrl = brandOpt && branchSlugOpt
+    ? `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/${brandOpt.slug}/${branchSlugOpt}/`
+    : `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/${clinic.slug}/`;
   const mapsUrl     = clinic.googlePlaceId
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(displayName)}&query_place_id=${clinic.googlePlaceId}`
     : `https://maps.google.com/?q=${clinic.lat},${clinic.lng}`;
@@ -289,14 +297,23 @@ export function buildClinicSchema(clinic: ClinicProfile, siteUrl: string) {
   const hours = hoursToSchema(clinic.openingHours);
   if (hours.length) localBusiness.openingHoursSpecification = hours;
 
+  const breadcrumbItems: Record<string, unknown>[] = [
+    { "@type": "ListItem", position: 1, name: "Home",              item: siteUrl },
+    { "@type": "ListItem", position: 2, name: clinic.cityName,     item: `${siteUrl}/${clinic.citySlug}/` },
+    { "@type": "ListItem", position: 3, name: clinic.categoryName, item: `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/` },
+  ];
+  if (brandOpt && branchSlugOpt) {
+    breadcrumbItems.push({
+      "@type": "ListItem", position: 4, name: brandOpt.name,
+      item: `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/${brandOpt.slug}/`,
+    });
+    breadcrumbItems.push({ "@type": "ListItem", position: 5, name: displayName, item: profileUrl });
+  } else {
+    breadcrumbItems.push({ "@type": "ListItem", position: 4, name: displayName, item: profileUrl });
+  }
   const breadcrumb = {
     "@context": "https://schema.org", "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",              item: siteUrl },
-      { "@type": "ListItem", position: 2, name: clinic.cityName,     item: `${siteUrl}/${clinic.citySlug}/` },
-      { "@type": "ListItem", position: 3, name: clinic.categoryName, item: `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/` },
-      { "@type": "ListItem", position: 4, name: displayName,         item: profileUrl },
-    ],
+    itemListElement: breadcrumbItems,
   };
   return [localBusiness, breadcrumb];
 }
@@ -333,17 +350,23 @@ export type NearbyClinic = {
 /* ─── Props ──────────────────────────────────────────────────────── */
 export type ClinicProfileViewProps = {
   /** Full clinic profile (standalone clinic OR a brand branch — only ClinicProfile fields are read). */
-  clinic:   ClinicProfile;
+  clinic:      ClinicProfile;
   /** Recent reviews with text. */
-  reviews:  ClinicReviewRow[];
+  reviews:     ClinicReviewRow[];
   /** Nearby clinics, pre-sorted by distance and already sliced. Links use clinic.citySlug/categorySlug. */
-  nearby:   NearbyClinic[];
+  nearby:      NearbyClinic[];
   /** Pre-built schema objects (LocalBusiness + BreadcrumbList). */
-  schemas:  Record<string, unknown>[];
+  schemas:     Record<string, unknown>[];
+  /** Brand context — present only on branch pages. */
+  brand?:      { name: string; slug: string; branchCount: number };
+  /** This branch's own branchSlug — present only on branch pages. */
+  branchSlug?: string;
+  /** Sibling branches (excluding this one) — present only on branch pages, sorted by caller. */
+  siblings?:   BranchRow[];
 };
 
 /* ─── View ───────────────────────────────────────────────────────── */
-export default function ClinicProfileView({ clinic, reviews, nearby, schemas }: ClinicProfileViewProps) {
+export default function ClinicProfileView({ clinic, reviews, nearby, schemas, brand, branchSlug, siblings }: ClinicProfileViewProps) {
   const allReviews = reviews;
   const displayName = clinic.nameEn ?? clinic.name;
   const mapsUrl     = clinic.googlePlaceId
@@ -529,12 +552,21 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas }: 
                   fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                   fontSize: "12px", color: "var(--muted)", marginBottom: "20px",
                 }}>
-                  {[
-                    { label: "Home",              href: "/" },
-                    { label: clinic.cityName,     href: `/${clinic.citySlug}/` },
-                    { label: clinic.categoryName, href: `/${clinic.citySlug}/${clinic.categorySlug}/` },
-                    { label: displayName,         href: null },
-                  ].map((crumb, i) => (
+                  {(brand && branchSlug
+                    ? [
+                        { label: "Home",              href: "/" },
+                        { label: clinic.cityName,     href: `/${clinic.citySlug}/` },
+                        { label: clinic.categoryName, href: `/${clinic.citySlug}/${clinic.categorySlug}/` },
+                        { label: brand.name,          href: `/${clinic.citySlug}/${clinic.categorySlug}/${brand.slug}/` },
+                        { label: displayName,         href: null },
+                      ]
+                    : [
+                        { label: "Home",              href: "/" },
+                        { label: clinic.cityName,     href: `/${clinic.citySlug}/` },
+                        { label: clinic.categoryName, href: `/${clinic.citySlug}/${clinic.categorySlug}/` },
+                        { label: displayName,         href: null },
+                      ]
+                  ).map((crumb, i) => (
                     <span key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                       {i > 0 && <span style={{ opacity: 0.4 }}>›</span>}
                       {crumb.href
@@ -570,6 +602,30 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas }: 
                 }}>
                   {displayName}
                 </h1>
+
+                {/* Part-of-brand cross-link — branch pages only */}
+                {brand && branchSlug && (
+                  <p style={{
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                    fontSize: "13px", color: "var(--muted)",
+                    marginBottom: "16px", lineHeight: 1.4,
+                  }}>
+                    Part of{" "}
+                    <Link
+                      href={`/${clinic.citySlug}/${clinic.categorySlug}/${brand.slug}/`}
+                      style={{ color: "var(--green)", textDecoration: "none", fontWeight: 500 }}
+                    >
+                      {brand.name}
+                    </Link>
+                    {" "}—{" "}
+                    <Link
+                      href={`/${clinic.citySlug}/${clinic.categorySlug}/${brand.slug}/`}
+                      style={{ color: "var(--green)", textDecoration: "none" }}
+                    >
+                      view all {brand.branchCount} locations →
+                    </Link>
+                  </p>
+                )}
 
                 {/* Rating */}
                 {clinic.googleRating !== null && (
@@ -1033,6 +1089,97 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas }: 
             </div>
           </div>
         )}
+
+        {/* ══════════════════════════════════════════════════════════
+            OTHER BRAND LOCATIONS — branch pages only
+        ══════════════════════════════════════════════════════════ */}
+        {brand && branchSlug && siblings && siblings.length > 0 && (() => {
+          // Sort siblings by haversine distance from current branch
+          const sorted = [...siblings]
+            .filter((s) => s.branchSlug != null)
+            .map((s) => ({ ...s, dist: haversine(clinic.lat, clinic.lng, s.lat, s.lng) }))
+            .sort((a, b) => a.dist - b.dist);
+          if (!sorted.length) return null;
+          return (
+            <div className="profile-nearby" style={{ background: "var(--linen)" }}>
+              <div className="profile-nearby-inner">
+                <p style={{
+                  fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                  fontSize: "10.5px", fontWeight: 600, letterSpacing: "0.1em",
+                  textTransform: "uppercase", color: "var(--terracotta)", marginBottom: "10px",
+                }}>
+                  Other locations
+                </p>
+                <h2 style={{
+                  fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)",
+                  fontSize: "26px", fontWeight: 400, color: "var(--charcoal)", marginBottom: "20px",
+                }}>
+                  Other {brand.name} locations
+                </h2>
+                <div style={{ background: "var(--white)", border: "1px solid var(--border-soft)", borderRadius: "6px", overflow: "hidden" }}>
+                  {sorted.map((s) => {
+                    const sName = s.nameEn ?? s.name;
+                    return (
+                      <Link
+                        key={s.branchSlug}
+                        href={`/${clinic.citySlug}/${clinic.categorySlug}/${brand.slug}/${s.branchSlug}/`}
+                        className="nearby-row"
+                        style={{
+                          display: "flex", alignItems: "center", justifyContent: "space-between",
+                          gap: "16px", padding: "16px 20px",
+                          borderBottom: "1px solid var(--border-soft)",
+                          textDecoration: "none", background: "var(--white)",
+                          transition: "background 0.15s", minHeight: "56px",
+                        }}
+                      >
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{
+                            fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)",
+                            fontSize: "18px", fontWeight: 500, color: "var(--charcoal)",
+                            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                            marginBottom: "2px",
+                          }}>{sName}</p>
+                          {s.district && (
+                            <p style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "12px", color: "var(--muted)" }}>
+                              {s.district}
+                            </p>
+                          )}
+                        </div>
+                        {s.googleRating !== null && (
+                          <div style={{ display: "flex", alignItems: "center", gap: "5px", flexShrink: 0 }}>
+                            <span style={{ color: "var(--star)", fontSize: "12px" }}>★</span>
+                            <span style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13px", fontWeight: 500, color: "var(--charcoal)" }}>
+                              {s.googleRating.toFixed(1)}
+                            </span>
+                            {s.googleReviewsCount != null && (
+                              <span style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "12px", color: "var(--muted)" }}>
+                                ({s.googleReviewsCount.toLocaleString()})
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        <span style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13px", color: "var(--green)", fontWeight: 500, flexShrink: 0 }}>
+                          View →
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+                <div style={{
+                  marginTop: "20px", paddingTop: "16px", borderTop: "1px solid var(--border-soft)",
+                  fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13px",
+                }}>
+                  <Link
+                    href={`/${clinic.citySlug}/${clinic.categorySlug}/${brand.slug}/`}
+                    style={{ color: "var(--muted)", textDecoration: "none" }}
+                  >
+                    ← All {brand.name} locations
+                  </Link>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </main>
 
       {/* ══════════════════════════════════════════════════════════

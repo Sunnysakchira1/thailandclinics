@@ -4,6 +4,7 @@ import {
   getBranchProfile,
   getBranchParams,
   getClinicReviews,
+  getBrandSiblings,
 } from "@/lib/db/queries";
 import ClinicProfileView, {
   buildClinicSchema,
@@ -55,13 +56,18 @@ export default async function BranchProfilePage({ params }: Props) {
   if (!profile) notFound();
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
-  const schemas = buildClinicSchema(profile, siteUrl);
 
-  /* Fetch reviews + nearby pool in parallel.
-     Nearby uses the same inline query the standalone profile uses (selects lat/lng
-     for haversine). Note: nearby links are flat /{city}/{category}/{slug}/ URLs — if a
-     nearby clinic is itself a branch, that flat URL 301-redirects in prod (acceptable). */
-  const [reviews, nearbyPool] = await Promise.all([
+  // Brand context for cross-linking
+  const brand = {
+    name:        profile.brandName,
+    slug:        profile.brandSlug,
+    branchCount: profile.brandBranchCount,
+  };
+
+  const schemas = buildClinicSchema(profile, siteUrl, brand, branch);
+
+  /* Fetch reviews, nearby pool, and brand siblings in parallel */
+  const [reviews, nearbyPool, siblings] = await Promise.all([
     getClinicReviews(profile.id, 20),
     (async () => {
       const { db } = await import("@/lib/db/index");
@@ -77,6 +83,9 @@ export default async function BranchProfilePage({ params }: Props) {
       .innerJoin(cat, eqF(c.categoryId, cat.id))
       .where(andF(eqF(ct.slug, city), eqF(cat.slug, category), neF(c.id, profile.id)));
     })(),
+    profile.brandId != null
+      ? getBrandSiblings(profile.brandId, branch)
+      : Promise.resolve([]),
   ]);
 
   /* Nearby — sort by haversine distance, take 3 (same approach as standalone) */
@@ -91,6 +100,9 @@ export default async function BranchProfilePage({ params }: Props) {
       reviews={reviews}
       nearby={nearby}
       schemas={schemas}
+      brand={brand}
+      branchSlug={branch}
+      siblings={siblings}
     />
   );
 }
