@@ -473,7 +473,7 @@ export async function getBrandHub(citySlug: string, categorySlug: string, brandS
 export async function getBranchProfile(
   brandSlug: string,
   branchSlug: string,
-): Promise<(ClinicProfile & { brandName: string; brandSlug: string; branchSlug: string | null; brandId: number | null }) | null> {
+): Promise<(ClinicProfile & { brandName: string; brandSlug: string; brandBranchCount: number; branchSlug: string | null; brandId: number | null }) | null> {
   const [row] = await db.select({
     id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, nameTh: clinics.nameTh, slug: clinics.slug,
     district: clinics.district, address: clinics.address, postalCode: clinics.postalCode,
@@ -488,6 +488,7 @@ export async function getBranchProfile(
     lastVerifiedAt: clinics.lastVerifiedAt, cityName: cities.name, citySlug: cities.slug,
     categoryName: categories.name, categorySlug: categories.slug, branchSlug: clinics.branchSlug,
     brandId: clinics.brandId, brandName: brands.name, brandSlug: brands.slug,
+    brandBranchCount: brands.branchCount,
   }).from(clinics)
     .innerJoin(cities, eq(clinics.cityId, cities.id))
     .innerJoin(categories, eq(clinics.categoryId, categories.id))
