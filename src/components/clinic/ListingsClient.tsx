@@ -2,14 +2,14 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import type { ClinicListItem } from '@/lib/db/queries';
+import type { ListingEntry } from '@/lib/db/queries';
 import ClinicPhoto from '@/components/clinic/ClinicPhoto';
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 type SortOption = 'rating' | 'reviews' | 'alpha';
 
 interface Props {
-  clinics: ClinicListItem[];
+  clinics: ListingEntry[];
   citySlug: string;
   catSlug: string;
   cityName: string;
@@ -155,7 +155,7 @@ function Checkbox({ checked }: { checked: boolean }) {
 
 /* ─── Sidebar content ────────────────────────────────────────────── */
 function SidebarContent({
-  allClinics, catSlug,
+  allClinics, catSlug, totalClinics,
   ratingMin, setRatingMin,
   selectedDistricts, toggleDistrict,
   selectedServices, toggleService,
@@ -171,7 +171,8 @@ function SidebarContent({
   englishCount, btsCount, mrtCount, weekendsCount,
   parkingCount, wheelchairCount, openLateCount, acceptsCardCount,
 }: {
-  allClinics: ClinicListItem[];
+  allClinics: ListingEntry[];
+  totalClinics: number;
   catSlug: string;
   ratingMin: number | null;
   setRatingMin: (v: number | null) => void;
@@ -229,7 +230,7 @@ function SidebarContent({
             transition: 'background 0.15s',
           }}>
             <span style={{ fontSize: '13px', color: 'var(--charcoal-soft)' }}>Any rating</span>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{allClinics.length}</span>
+            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{totalClinics}</span>
           </div>
           {ratingCounts.map(r => (
             <div key={r.min} onClick={() => setRatingMin(r.min)} style={{
@@ -399,6 +400,9 @@ function SidebarContent({
 
 /* ─── Main component ─────────────────────────────────────────────── */
 export default function ListingsClient({ clinics: allClinics, citySlug, catSlug, cityName, catName }: Props) {
+  /* ── Derived totals for count line ──────────────────────────────
+     totalClinics = standalone count + sum of branchCount on brand entries.
+     brandCount   = number of isBrand entries.                        */
   const [sort, setSort]                     = useState<SortOption>('rating');
   const [ratingMin, setRatingMin]           = useState<number | null>(null);
   const [selectedDistricts, setSelectedDistricts] = useState<string[]>([]);
@@ -413,7 +417,14 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen]       = useState(false);
 
-  /* ── Computed counts ─────────────────────────────────────────── */
+  /* ── Derived clinic totals (for count line) ─────────────────── */
+  const totalClinics = useMemo(() =>
+    allClinics.reduce((sum, e) =>
+      e.isBrand ? sum + (e.branchCount ?? 0) : sum + 1, 0),
+  [allClinics]);
+  const brandCount = useMemo(() => allClinics.filter(e => e.isBrand).length, [allClinics]);
+
+  /* ── Computed counts (facets use standalone entries only) ────── */
   const neighbourhoodCounts = useMemo<[string, number][]>(() => {
     const counts: Record<string, number> = {};
     for (const c of allClinics) {
@@ -455,18 +466,29 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const filteredClinics = useMemo(() => {
     let list = [...allClinics];
 
-    if (ratingMin !== null)          list = list.filter(c => (c.googleRating ?? 0) >= ratingMin);
-    if (selectedDistricts.length > 0) list = list.filter(c => c.district && selectedDistricts.includes(c.district));
-    if (englishOnly)                 list = list.filter(c => c.englishSpeaking);
-    if (nearBtsOnly)                 list = list.filter(c => c.nearBts);
-    if (nearMrtOnly)                 list = list.filter(c => c.nearMrt);
-    if (openWeekends)                list = list.filter(c => c.openWeekends);
-    if (parkingOnly)                 list = list.filter(c => c.hasParking);
-    if (wheelchairOnly)              list = list.filter(c => c.wheelchairAccessible);
-    if (openLateOnly)                list = list.filter(c => c.openLate);
-    if (acceptsCardOnly)             list = list.filter(c => c.acceptsCard);
+    // v1 any-match simplification: brand entries have no per-branch attribute
+    // flags (district/services are null, englishSpeaking/nearBts/etc are false).
+    // Rather than wrongly hiding brands when a filter is active, brand entries
+    // always pass attribute/neighbourhood/service filters. Only standalone
+    // clinics are filtered by those dimensions. Rating filter applies to both
+    // (brands have a real aggregated rating).
+    if (ratingMin !== null) {
+      list = list.filter(c => c.isBrand || (c.googleRating ?? 0) >= ratingMin);
+    }
+    if (selectedDistricts.length > 0) {
+      list = list.filter(c => c.isBrand || (c.district != null && selectedDistricts.includes(c.district)));
+    }
+    if (englishOnly)    list = list.filter(c => c.isBrand || c.englishSpeaking);
+    if (nearBtsOnly)    list = list.filter(c => c.isBrand || c.nearBts);
+    if (nearMrtOnly)    list = list.filter(c => c.isBrand || c.nearMrt);
+    if (openWeekends)   list = list.filter(c => c.isBrand || c.openWeekends);
+    if (parkingOnly)    list = list.filter(c => c.isBrand || c.hasParking);
+    if (wheelchairOnly) list = list.filter(c => c.isBrand || c.wheelchairAccessible);
+    if (openLateOnly)   list = list.filter(c => c.isBrand || c.openLate);
+    if (acceptsCardOnly) list = list.filter(c => c.isBrand || c.acceptsCard);
     if (selectedServices.length > 0) {
       list = list.filter(c => {
+        if (c.isBrand) return true; // brands always pass service filter (v1 any-match)
         if (!c.services) return false;
         try {
           const parsed = JSON.parse(c.services) as unknown;
@@ -504,7 +526,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const catShort = catName.replace(' Clinics', '');
 
   const sidebarProps = {
-    allClinics, catSlug,
+    allClinics, catSlug, totalClinics,
     ratingMin, setRatingMin,
     selectedDistricts, toggleDistrict,
     selectedServices, toggleService,
@@ -618,7 +640,10 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
             {catName} in <em style={{ fontStyle: 'italic', color: 'var(--green)' }}>{cityName}</em>
           </h1>
           <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
-            <strong style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{filteredClinics.length}</strong> clinics found
+            <strong style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{totalClinics}</strong> clinics
+            {brandCount > 0 && (
+              <> · <strong style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{brandCount}</strong> brands</>
+            )}
           </span>
         </div>
       </div>
@@ -729,18 +754,24 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
               const rank = i + 1;
               const bg = PHOTO_BG[i % PHOTO_BG.length];
               const isFeatured = !!clinic.featured;
+              // Brand entry: link to hub; standalone: link to clinic profile
+              const href = clinic.isBrand
+                ? `/${citySlug}/${catSlug}/${clinic.brandSlug}/`
+                : `/${citySlug}/${catSlug}/${clinic.slug}/`;
 
               const tags: string[] = [];
-              if (clinic.nearBts && clinic.nearMrt) tags.push('BTS · MRT access');
-              else if (clinic.nearBts) tags.push('Near BTS');
-              else if (clinic.nearMrt) tags.push('Near MRT');
-              if (clinic.openWeekends) tags.push('Open weekends');
-              if (clinic.verified) tags.push('Verified');
+              if (!clinic.isBrand) {
+                if (clinic.nearBts && clinic.nearMrt) tags.push('BTS · MRT access');
+                else if (clinic.nearBts) tags.push('Near BTS');
+                else if (clinic.nearMrt) tags.push('Near MRT');
+                if (clinic.openWeekends) tags.push('Open weekends');
+                if (clinic.verified) tags.push('Verified');
+              }
 
               return (
                 <Link
-                  key={clinic.id}
-                  href={`/${citySlug}/${catSlug}/${clinic.slug}`}
+                  key={clinic.isBrand ? `brand-${clinic.brandSlug}` : clinic.id}
+                  href={href}
                   className="clinic-row-list"
                   style={{
                     borderLeft: isFeatured ? '3px solid var(--green)' : undefined,
@@ -766,8 +797,20 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                   {/* Body */}
                   <div style={{ padding: '20px 24px 20px 20px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
-                    {/* Featured badge */}
-                    {isFeatured && (
+                    {/* Brand badge (locations count) or Featured badge */}
+                    {clinic.isBrand && clinic.branchCount != null && (
+                      <div style={{
+                        display: 'inline-flex', alignItems: 'center', gap: '4px',
+                        fontSize: '10.5px', fontFamily: 'var(--font-sans)', fontWeight: 500,
+                        letterSpacing: '0.08em', textTransform: 'uppercase',
+                        color: 'var(--green)', background: 'var(--green-pale)',
+                        padding: '3px 8px', borderRadius: '3px',
+                        marginBottom: '6px', width: 'fit-content',
+                      }}>
+                        {clinic.branchCount} locations
+                      </div>
+                    )}
+                    {!clinic.isBrand && isFeatured && (
                       <div style={{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.08em',
@@ -818,39 +861,41 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                       )}
                     </div>
 
-                    {/* Meta row */}
-                    <div style={{
-                      display: 'flex', alignItems: 'center', gap: '16px',
-                      marginTop: '8px', flexWrap: 'wrap',
-                    }}>
-                      {clinic.district && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--muted)' }}>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
-                            <circle cx="12" cy="10" r="3" />
-                          </svg>
-                          {clinic.district}
-                        </span>
-                      )}
-                      {clinic.englishSpeaking && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--muted)' }}>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                          </svg>
-                          English speaking
-                        </span>
-                      )}
-                      {(clinic.nearBts || clinic.nearMrt) && (
-                        <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--muted)' }}>
-                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <rect x="3" y="11" width="18" height="10" rx="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                          </svg>
-                          {clinic.nearBts && clinic.nearMrt ? 'BTS · MRT' : clinic.nearBts ? 'Near BTS' : 'Near MRT'}
-                        </span>
-                      )}
-                    </div>
+                    {/* Meta row — only for standalone clinics */}
+                    {!clinic.isBrand && (
+                      <div style={{
+                        display: 'flex', alignItems: 'center', gap: '16px',
+                        marginTop: '8px', flexWrap: 'wrap',
+                      }}>
+                        {clinic.district && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--muted)' }}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
+                              <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            {clinic.district}
+                          </span>
+                        )}
+                        {clinic.englishSpeaking && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--muted)' }}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                              <circle cx="9" cy="7" r="4" />
+                            </svg>
+                            English speaking
+                          </span>
+                        )}
+                        {(clinic.nearBts || clinic.nearMrt) && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12.5px', color: 'var(--muted)' }}>
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                              <rect x="3" y="11" width="18" height="10" rx="2" />
+                              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                            </svg>
+                            {clinic.nearBts && clinic.nearMrt ? 'BTS · MRT' : clinic.nearBts ? 'Near BTS' : 'Near MRT'}
+                          </span>
+                        )}
+                      </div>
+                    )}
 
                     {/* Footer */}
                     <div style={{
@@ -872,7 +917,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                         fontSize: '13px', fontWeight: 500, color: 'var(--green)',
                         whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px',
                       }}>
-                        View clinic
+                        {clinic.isBrand ? 'View all locations' : 'View clinic'}
                         <svg className="clinic-row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M5 12h14M12 5l7 7-7 7" />
                         </svg>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getClinicsBySlug } from "@/lib/db/queries";
+import { getListingEntries } from "@/lib/db/queries";
 import ListingsClient from "@/components/clinic/ListingsClient";
 
 /* ─── Config ─────────────────────────────────────────────────────── */
@@ -79,7 +79,7 @@ export default async function CategoryPage({ params }: Props) {
     notFound();
   }
 
-  const clinicList = await getClinicsBySlug(city, category);
+  const clinicList = await getListingEntries(city, category);
 
   return (
     <ListingsClient
