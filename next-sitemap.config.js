@@ -33,6 +33,10 @@ module.exports = {
       // /[city]/[category]/[slug]
       priority   = 0.8;
       changefreq = "monthly";
+    } else if (depth === 4) {
+      // /[city]/[category]/[brand]/[branch]
+      priority   = 0.8;
+      changefreq = "monthly";
     }
     // blog/guides would be 0.7 monthly (default)
 
