@@ -473,7 +473,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     // clinics are filtered by those dimensions. Rating filter applies to both
     // (brands have a real aggregated rating).
     if (ratingMin !== null) {
-      list = list.filter(c => c.isBrand || (c.googleRating ?? 0) >= ratingMin);
+      list = list.filter(c => (c.googleRating ?? 0) >= ratingMin);
     }
     if (selectedDistricts.length > 0) {
       list = list.filter(c => c.isBrand || (c.district != null && selectedDistricts.includes(c.district)));
@@ -514,6 +514,16 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
 
     return list;
   }, [allClinics, sort, ratingMin, selectedDistricts, englishOnly, nearBtsOnly, nearMrtOnly, openWeekends, parkingOnly, wheelchairOnly, openLateOnly, acceptsCardOnly, selectedServices]);
+
+  /* ── Visible (filtered) counts for header ───────────────────── */
+  const visibleClinicTotal = useMemo(
+    () => filteredClinics.reduce((n, c) => n + (c.isBrand ? (c.branchCount ?? 0) : 1), 0),
+    [filteredClinics]
+  );
+  const visibleBrandCount = useMemo(
+    () => filteredClinics.filter(c => c.isBrand).length,
+    [filteredClinics]
+  );
 
   function toggleDistrict(d: string) {
     setSelectedDistricts(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
@@ -640,9 +650,9 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
             {catName} in <em style={{ fontStyle: 'italic', color: 'var(--green)' }}>{cityName}</em>
           </h1>
           <span style={{ fontSize: '13px', color: 'var(--muted)' }}>
-            <strong style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{totalClinics}</strong> clinics
-            {brandCount > 0 && (
-              <> · <strong style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{brandCount}</strong> brands</>
+            <strong style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{visibleClinicTotal}</strong> clinics
+            {visibleBrandCount > 0 && (
+              <> · <strong style={{ color: 'var(--charcoal)', fontWeight: 500 }}>{visibleBrandCount}</strong> brands</>
             )}
           </span>
         </div>
