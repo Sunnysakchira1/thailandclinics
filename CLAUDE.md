@@ -756,3 +756,20 @@ NEXT_PUBLIC_SITE_URL=https://thailand-clinics.com
 OUTSCRAPER_API_KEY=
 ANTHROPIC_API_KEY=
 ```
+
+---
+
+## ⚠️ SEO ROUTING RULE — ALL SEO WORK RUNS THROUGH CFT ORCHESTRATOR
+
+**Standing instruction (2026-06-12): "SEO runs through CFT."**
+
+Whenever Sunny assigns ANY SEO task — keyword research, content, on-page, technical SEO, link building, entity/Knowledge Graph, audits, topical maps, AI/GEO visibility, recovery, CTR, schema — the **FIRST action is to invoke the `the-orchestrator-cft` skill** to analyze the objective and plan/sequence the work. Do NOT start executing or jump straight into a sub-skill without orchestrating first.
+
+The orchestrator does not hardcode a fixed workflow. It diagnoses state (entity, SERP, technical, authority), identifies gaps and dependencies, then ROUTES to the correct downstream skills, e.g.:
+- Content writing → `locully-content-writer` (still mandatory for the actual writing)
+- SERP/competitor/on-page → `serp-consensus-analyser-cft`, `competitor-content-consensus-cft`, `onpage-optimisation-cft`
+- Topical maps → `modern-topical-mapper-cft`; Links → `link-profile-auditor-cft` / `competitor-backlink-analyser-cft`
+- Entity → `entity-analyzer-cft`; AI citations → `ai-citation-optimizer-cft`; QA → `self-audit-qa-gate-cft`
+- Keyword data → `keyword-research`
+
+This rule sits ABOVE the existing "always invoke the correct skill before writing content" rule: **orchestrate first, then the orchestrator selects the downstream skill.** No conflict — sequencing, not replacement.
