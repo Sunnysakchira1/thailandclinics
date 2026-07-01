@@ -25,15 +25,20 @@ Not a lead gen site. Not a booking platform. Infrastructure.
 
 /[city]/[category]/            → listing page
 /[city]/[category]/[slug]/     → clinic profile
+/[city]/[category]/[brand]/            → brand hub (multi-branch clinics)
+/[city]/[category]/[brand]/[branch]/   → individual branch profile
 /blog/[slug]/                  → editorial content
 /guides/[slug]/                → curated "best of" pages
 
 Examples:
 ✅ /bangkok/physiotherapy-clinics/
 ✅ /bangkok/physiotherapy-clinics/thonglor-physio-center/
+✅ /bangkok/cosmetic-clinics/aura-bangkok-clinic/silom/
 ✅ /blog/best-physiotherapy-clinics-bangkok/
 ❌ /clinics/bangkok/physio/thonglor
 ❌ /th/bangkok/physiotherapy (never add country prefix)
+
+Note: brand/branch nesting (`/[brand]/[branch]/`) is the sanctioned exception to the 3-level rule, introduced 2026-06 for multi-branch clinic chains. All other 4th-level URLs remain prohibited.
 
 ---
 
@@ -61,9 +66,10 @@ Examples:
 
 ### Internal Linking (PageRank Sculpting)
 - Clinic profile → city page, category page, 3 nearby clinics (by lat/lng)
-- Category page → top 5 featured clinics, 2 related categories, city page
+- Category page → top 5 featured clinics, 2 related categories, city page; brand chains surface as a single brand card linking to the brand hub
 - Blog post → 2-3 relevant clinic profiles, parent category page
 - Homepage → all 4 city pages, all 4 category pages
+- Brand hub ↔ all its branch profiles (bidirectional); each branch cross-links its nearest sibling branches (by distance, max 3)
 - Always use descriptive anchor text. Never "click here" or "read more".
 - Example: "physiotherapy clinics in Bangkok" not "see more clinics"
 
@@ -116,8 +122,9 @@ Sitemap: https://thailand-clinics.com/sitemap.xml
 - [ ] Core Web Vitals: LCP < 2.5s, CLS < 0.1, INP < 200ms
 
 ### Site Architecture (Never Violate)
-- Max 3 clicks from homepage to any clinic profile
-- Never create subcategories that add a 4th URL level
+- Max 3 clicks from homepage to any standalone clinic profile
+- Branch profiles are reachable in 4 clicks via their brand hub (homepage → city → category → brand hub → branch) — this is the only sanctioned 4-click path
+- Never create subcategories that add a 4th URL level (brand/branch is the sole exception)
 - Never paginate to /page/2/ — use cursor-based loading or load more
 
 ### Content Intent Rules
@@ -326,6 +333,23 @@ Display logic:
 - Subtitle: "Based on [count] reviews · Updated [Month YYYY]"
 - Each bullet: max 15 words, one sentence
 
+New columns on clinics (2026-06):
+- brand_id (integer, nullable FK → brands.id) ← set for branch clinics, null for standalone
+- branch_slug (text, nullable) ← within-brand slug, unique per brand (e.g. "silom", "asok"); null for standalone
+
+### brands table
+Scoped per city + category. One row per multi-branch chain operating in a given city+category.
+id, name, slug, city_id (FK), category_id (FK),
+about (text, nullable),
+website (text, nullable),
+logo_url (text, nullable),
+branch_count (integer, cached),
+avg_rating (decimal, 1dp, cached),
+total_reviews (integer, cached),
+created_at, updated_at
+
+Slug rules: unique per city+category combination; must NOT collide with standalone clinic slugs in the same city+category. branch_slug must be unique within a brand.
+
 ### clinic_reviews table
 id,
 clinic_id (FK → clinics.id),
@@ -406,7 +430,7 @@ Never:
 ### Technical
 - Never use Vercel — Cloudflare Pages only
 - Never use useState for data that belongs in the database
-- Never create URLs deeper than 3 levels: /city/category/clinic
+- Never exceed 4 URL levels; the ONLY sanctioned 4th level is `[brand]/[branch]` for multi-branch clinics (e.g. /city/category/brand/branch)
 - Never use ?query=params in indexed URLs
 - Never paginate to /page/2/ — use cursor-based loading
 - Never add a feature without asking: does this help users find the right clinic faster?
