@@ -75,7 +75,7 @@ export default async function ClinicProfilePage({ params }: Props) {
     (async () => {
       const { db } = await import("@/lib/db/index");
       const { clinics: c, cities: ct, categories: cat } = await import("@/lib/db/schema");
-      const { eq: eqF, and: andF, ne: neF } = await import("drizzle-orm");
+      const { eq: eqF, and: andF, ne: neF, isNull: isNullF } = await import("drizzle-orm");
       return db.select({
         id: c.id, name: c.name, nameEn: c.nameEn, slug: c.slug,
         district: c.district, lat: c.lat, lng: c.lng,
@@ -84,7 +84,7 @@ export default async function ClinicProfilePage({ params }: Props) {
       .from(c)
       .innerJoin(ct,  eqF(c.cityId,     ct.id))
       .innerJoin(cat, eqF(c.categoryId, cat.id))
-      .where(andF(eqF(ct.slug, city), eqF(cat.slug, category), neF(c.id, clinic.id)));
+      .where(andF(eqF(ct.slug, city), eqF(cat.slug, category), neF(c.id, clinic.id), isNullF(c.brandId)));
     })(),
   ]);
 

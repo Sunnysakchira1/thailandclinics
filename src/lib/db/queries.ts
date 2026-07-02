@@ -267,7 +267,7 @@ export async function getHomepageClinics(
     .from(clinics)
     .innerJoin(cities,     eq(clinics.cityId,     cities.id))
     .innerJoin(categories, eq(clinics.categoryId, categories.id))
-    .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug)))
+    .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug), isNull(clinics.brandId)))
     .orderBy(
       sql`CASE WHEN ${clinics.featured} = 1 AND ${clinics.featuredPosition} IS NOT NULL THEN ${clinics.featuredPosition} ELSE 9999 END`,
       desc(clinics.googleReviewsCount)
@@ -342,7 +342,7 @@ export async function getTopClinicsByCity(
     .from(clinics)
     .innerJoin(cities,      eq(clinics.cityId,     cities.id))
     .innerJoin(categories,  eq(clinics.categoryId, categories.id))
-    .where(eq(cities.slug, citySlug))
+    .where(and(eq(cities.slug, citySlug), isNull(clinics.brandId)))
     .orderBy(desc(clinics.googleReviewsCount), desc(clinics.googleRating))
     .limit(limit) as unknown as ClinicListItem[];
 }
@@ -390,7 +390,7 @@ export async function getTopClinicsByCategory(
     .from(clinics)
     .innerJoin(cities,      eq(clinics.cityId,     cities.id))
     .innerJoin(categories,  eq(clinics.categoryId, categories.id))
-    .where(eq(categories.slug, catSlug))
+    .where(and(eq(categories.slug, catSlug), isNull(clinics.brandId)))
     .orderBy(desc(clinics.googleRating), desc(clinics.googleReviewsCount))
     .limit(limit) as unknown as (ClinicListItem & { citySlug: string })[];
 }
@@ -434,7 +434,8 @@ export async function getNearbyPool(
       and(
         eq(cities.slug,      citySlug),
         eq(categories.slug,  categorySlug),
-        ne(clinics.id,       excludeId)
+        ne(clinics.id,       excludeId),
+        isNull(clinics.brandId)
       )
     );
 }
