@@ -104,6 +104,9 @@ export const brands = sqliteTable("brands", {
   branchCount:  integer("branch_count").notNull().default(0),
   avgRating:    real("avg_rating"),
   totalReviews: integer("total_reviews").notNull().default(0),
+  featured:         integer("featured", { mode: "boolean" }).default(false),
+  featuredPosition: integer("featured_position"),  // pin order in listing (nullable)
+  editorsNote:      text("editors_note"),   // Editor's Pick editorial copy (nullable)
   createdAt:   text("created_at").notNull().default(sql`(datetime('now'))`),
   updatedAt:   text("updated_at").notNull().default(sql`(datetime('now'))`),
 }, (t) => ({

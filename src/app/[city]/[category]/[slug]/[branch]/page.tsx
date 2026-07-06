@@ -103,6 +103,7 @@ export default async function BranchProfilePage({ params }: Props) {
       brand={brand}
       branchSlug={branch}
       siblings={siblings}
+      editorsNote={profile.brandEditorsNote}
     />
   );
 }

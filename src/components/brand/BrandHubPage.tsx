@@ -16,6 +16,8 @@ export type BrandHub = {
   branchCount: number | null;
   avgRating: number | null;
   totalReviews: number | null;
+  featured: boolean | null;
+  editorsNote: string | null;
   cityName: string;
   citySlug: string;
   categoryName: string;
@@ -149,6 +151,39 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
               </>
             )}
           </div>
+
+          {/* Editor's Pick — featured brands */}
+          {hub.editorsNote && (
+            <div style={{
+              display: "flex", alignItems: "flex-start", gap: "12px",
+              background: "var(--green-pale)",
+              border: "1px solid var(--green)",
+              borderLeft: "3px solid var(--green)",
+              borderRadius: "6px",
+              padding: "14px 18px",
+              margin: "0 0 20px",
+              maxWidth: "560px",
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="1.6" style={{ flexShrink: 0, marginTop: "1px" }}>
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              <div>
+                <p style={{
+                  fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                  fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em",
+                  textTransform: "uppercase", color: "var(--green)", marginBottom: "4px",
+                }}>
+                  Editor&rsquo;s Pick
+                </p>
+                <p style={{
+                  fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                  fontSize: "14px", color: "var(--charcoal)", lineHeight: 1.5, margin: 0,
+                }}>
+                  {hub.editorsNote}
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Website link */}
           {hub.website && (

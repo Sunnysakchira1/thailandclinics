@@ -820,7 +820,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                         {clinic.branchCount} locations
                       </div>
                     )}
-                    {!clinic.isBrand && isFeatured && (
+                    {isFeatured && (
                       <div style={{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
                         fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.08em',

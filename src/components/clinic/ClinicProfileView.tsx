@@ -363,10 +363,12 @@ export type ClinicProfileViewProps = {
   branchSlug?: string;
   /** Sibling branches (excluding this one) — present only on branch pages, sorted by caller. */
   siblings?:   BranchRow[];
+  /** Editorial "Editor's Pick" copy — set on branch pages when the brand is featured. */
+  editorsNote?: string | null;
 };
 
 /* ─── View ───────────────────────────────────────────────────────── */
-export default function ClinicProfileView({ clinic, reviews, nearby, schemas, brand, branchSlug, siblings }: ClinicProfileViewProps) {
+export default function ClinicProfileView({ clinic, reviews, nearby, schemas, brand, branchSlug, siblings, editorsNote }: ClinicProfileViewProps) {
   const allReviews = reviews;
   const displayName = clinic.nameEn ?? clinic.name;
   const mapsUrl     = clinic.googlePlaceId
@@ -642,8 +644,8 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
                   </div>
                 )}
 
-                {/* Editor's pick — featured clinics */}
-                {clinic.featured && (
+                {/* Editor's pick — featured clinics (brand note takes precedence over the physio fallback) */}
+                {(editorsNote || clinic.featured) && (
                   <div style={{
                     display: "flex", alignItems: "flex-start", gap: "12px",
                     background: "var(--green-pale)",
@@ -669,7 +671,7 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
                         fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                         fontSize: "14px", color: "var(--charcoal)", lineHeight: 1.5, margin: 0,
                       }}>
-                        Widely recommended as one of the <strong>best physiotherapy clinics in Bangkok</strong> — featured across expat and medical-tourism guides.
+                        {editorsNote ?? <>Widely recommended as one of the <strong>best physiotherapy clinics in Bangkok</strong> — featured across expat and medical-tourism guides.</>}
                       </p>
                     </div>
                   </div>
