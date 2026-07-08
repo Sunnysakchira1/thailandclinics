@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import type { ListingEntry } from '@/lib/db/queries';
+import { weightedRating } from '@/lib/ranking';
 import ClinicPhoto from '@/components/clinic/ClinicPhoto';
 
 /* ─── Types ──────────────────────────────────────────────────────── */
@@ -90,16 +91,6 @@ const RATING_THRESHOLDS = [
 ];
 
 const STAR_PATH = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
-
-/* Volume-aware weighted rating (IMDb-style): a clinic must earn its raw rating
-   with review volume, so heavily-reviewed clinics outrank tiny-sample 5.0s.
-   WR = (v·R + m·C) / (v + m).  C = baseline, m = credibility weight. */
-const WR_BASELINE = 4.6;   // C
-const WR_WEIGHT   = 300;   // m
-function weightedRating(rating: number | null, reviews: number | null): number {
-  const R = rating ?? 0, v = reviews ?? 0;
-  return (v * R + WR_WEIGHT * WR_BASELINE) / (v + WR_WEIGHT);
-}
 
 function rankColor(rank: number): string {
   if (rank === 1) return '#c9a84c';

@@ -1,6 +1,11 @@
 import { eq, desc, and, ne, sql, isNotNull, isNull, count } from "drizzle-orm";
 import { db } from "./index";
 import { clinics, cities, categories, clinicReviews, brands } from "./schema";
+import { WR_BASELINE, WR_WEIGHT } from "../ranking";
+
+/* Volume-aware weighted rating as a SQL ORDER BY fragment — mirrors
+   weightedRating() in ../ranking so every ranking surface uses one formula. */
+const weightedRatingOrder = sql`((COALESCE(${clinics.googleReviewsCount}, 0) * COALESCE(${clinics.googleRating}, 0) + ${WR_WEIGHT} * ${WR_BASELINE}) / (COALESCE(${clinics.googleReviewsCount}, 0) + ${WR_WEIGHT})) DESC`;
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 export type ClinicListItem = {
@@ -106,7 +111,7 @@ export async function getClinicsBySlug(
     .innerJoin(cities,     eq(clinics.cityId,     cities.id))
     .innerJoin(categories, eq(clinics.categoryId, categories.id))
     .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug)))
-    .orderBy(desc(clinics.googleRating), desc(clinics.googleReviewsCount));
+    .orderBy(weightedRatingOrder, desc(clinics.googleReviewsCount));
 }
 
 export async function getClinicProfile(
@@ -270,7 +275,7 @@ export async function getHomepageClinics(
     .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug), isNull(clinics.brandId)))
     .orderBy(
       sql`CASE WHEN ${clinics.featured} = 1 AND ${clinics.featuredPosition} IS NOT NULL THEN ${clinics.featuredPosition} ELSE 9999 END`,
-      desc(clinics.googleReviewsCount)
+      weightedRatingOrder
     )
     .limit(limit);
 }
@@ -343,7 +348,7 @@ export async function getTopClinicsByCity(
     .innerJoin(cities,      eq(clinics.cityId,     cities.id))
     .innerJoin(categories,  eq(clinics.categoryId, categories.id))
     .where(and(eq(cities.slug, citySlug), isNull(clinics.brandId)))
-    .orderBy(desc(clinics.googleReviewsCount), desc(clinics.googleRating))
+    .orderBy(weightedRatingOrder)
     .limit(limit) as unknown as ClinicListItem[];
 }
 
@@ -391,7 +396,7 @@ export async function getTopClinicsByCategory(
     .innerJoin(cities,      eq(clinics.cityId,     cities.id))
     .innerJoin(categories,  eq(clinics.categoryId, categories.id))
     .where(and(eq(categories.slug, catSlug), isNull(clinics.brandId)))
-    .orderBy(desc(clinics.googleRating), desc(clinics.googleReviewsCount))
+    .orderBy(weightedRatingOrder)
     .limit(limit) as unknown as (ClinicListItem & { citySlug: string })[];
 }
 
