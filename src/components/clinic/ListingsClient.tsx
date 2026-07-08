@@ -91,6 +91,16 @@ const RATING_THRESHOLDS = [
 
 const STAR_PATH = 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z';
 
+/* Volume-aware weighted rating (IMDb-style): a clinic must earn its raw rating
+   with review volume, so heavily-reviewed clinics outrank tiny-sample 5.0s.
+   WR = (v·R + m·C) / (v + m).  C = baseline, m = credibility weight. */
+const WR_BASELINE = 4.6;   // C
+const WR_WEIGHT   = 300;   // m
+function weightedRating(rating: number | null, reviews: number | null): number {
+  const R = rating ?? 0, v = reviews ?? 0;
+  return (v * R + WR_WEIGHT * WR_BASELINE) / (v + WR_WEIGHT);
+}
+
 function rankColor(rank: number): string {
   if (rank === 1) return '#c9a84c';
   if (rank === 2) return '#8a8278';
@@ -503,8 +513,9 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
         const aPos = a.featured && a.featuredPosition != null ? a.featuredPosition : Infinity;
         const bPos = b.featured && b.featuredPosition != null ? b.featuredPosition : Infinity;
         if (aPos !== bPos) return aPos - bPos;
-        const rd = (b.googleRating ?? 0) - (a.googleRating ?? 0);
-        return rd !== 0 ? rd : (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0);
+        const wd = weightedRating(b.googleRating, b.googleReviewsCount)
+                 - weightedRating(a.googleRating, a.googleReviewsCount);
+        return wd !== 0 ? wd : (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0);
       });
     } else if (sort === 'reviews') {
       list.sort((a, b) => (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0));
