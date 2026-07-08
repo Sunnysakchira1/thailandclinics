@@ -48,6 +48,10 @@ const SERVICE_TAXONOMY: Record<string, string[]> = {
     'yoga', 'massage', 'meditation', 'nutrition', 'mental-health',
     'traditional-thai-massage', 'detox',
   ],
+  'fertility-clinics': [
+    'ivf', 'icsi', 'iui', 'egg-freezing', 'genetic-screening',
+    'egg-sperm-donation', 'male-fertility', 'fertility-consultation',
+  ],
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
