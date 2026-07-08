@@ -37,6 +37,11 @@ const SPECIALTIES = [
     slug:        "wellness-clinics",
     description: "Yoga, spa, meditation, holistic health.",
   },
+  {
+    label:       "IVF & Fertility",
+    slug:        "fertility-clinics",
+    description: "IVF, ICSI, egg freezing, genetic screening.",
+  },
 ];
 
 export default function BrowsePage() {

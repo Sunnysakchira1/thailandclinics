@@ -59,6 +59,7 @@ const CITY_CATEGORY_PATH: Record<string, string> = {
   dental:        "dental-clinics",
   cosmetic:      "cosmetic-clinics",
   wellness:      "wellness-clinics",
+  fertility:     "fertility-clinics",
 };
 
 const CITY_LABEL: Record<string, string> = {

@@ -36,6 +36,7 @@ const CATEGORIES = [
   { slug: "dental-clinics",        label: "Dental Clinics",        icon: "🦷" },
   { slug: "cosmetic-clinics",      label: "Cosmetic Clinics",      icon: "✨" },
   { slug: "wellness-clinics",      label: "Wellness Clinics",      icon: "🌿" },
+  { slug: "fertility-clinics",     label: "IVF & Fertility Clinics", icon: "🍼" },
 ];
 
 const CAT_COLORS: Record<string, string> = {
@@ -43,6 +44,7 @@ const CAT_COLORS: Record<string, string> = {
   "dental-clinics":        "linear-gradient(135deg, #2a4a5c 0%, #1a3040 100%)",
   "cosmetic-clinics":      "linear-gradient(135deg, #5c2a4a 0%, #3d1a30 100%)",
   "wellness-clinics":      "linear-gradient(135deg, #4a5c2a 0%, #2d3d1a 100%)",
+  "fertility-clinics":     "linear-gradient(135deg, #2a4a5c 0%, #1a2d40 100%)",
 };
 
 /* ─── Metadata ───────────────────────────────────────────────────── */

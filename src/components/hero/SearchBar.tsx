@@ -20,6 +20,10 @@ const KEYWORD_MAP: Record<string, string[]> = {
     'wellness', 'yoga', 'spa', 'massage', 'meditation',
     'mental', 'stress', 'holistic',
   ],
+  'fertility-clinics': [
+    'fertility', 'ivf', 'icsi', 'egg freezing', 'egg', 'sperm',
+    'infertility', 'reproductive', 'iui', 'conceive', 'pregnancy',
+  ],
 }
 
 const SPECIALTIES = [
@@ -27,6 +31,7 @@ const SPECIALTIES = [
   { slug: 'dental-clinics',        label: 'Dental clinics' },
   { slug: 'cosmetic-clinics',      label: 'Cosmetic clinics' },
   { slug: 'wellness-clinics',      label: 'Wellness clinics' },
+  { slug: 'fertility-clinics',     label: 'IVF & fertility clinics' },
 ]
 
 function findCategory(query: string): string | null {

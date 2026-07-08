@@ -10,6 +10,7 @@ const CATEGORIES = [
   "dental-clinics",
   "cosmetic-clinics",
   "wellness-clinics",
+  "fertility-clinics",
 ];
 
 export const dynamicParams = false;
@@ -37,6 +38,7 @@ function catLabel(slug: string) {
     "dental-clinics":        "Dental Clinics",
     "cosmetic-clinics":      "Cosmetic Clinics",
     "wellness-clinics":      "Wellness Clinics",
+    "fertility-clinics":     "IVF & Fertility Clinics",
   };
   return map[slug] ?? slug;
 }
@@ -47,6 +49,7 @@ function catTitleLabel(slug: string) {
     "dental-clinics":        "Dental Clinics",
     "cosmetic-clinics":      "Cosmetic Clinics",
     "wellness-clinics":      "Wellness Clinics",
+    "fertility-clinics":     "IVF & Fertility Clinics",
   };
   return map[slug] ?? slug;
 }

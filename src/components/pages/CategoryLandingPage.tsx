@@ -19,6 +19,7 @@ const CAT_LABELS: Record<string, string> = {
   "dental-clinics":        "Dental Clinics",
   "cosmetic-clinics":      "Cosmetic Clinics",
   "wellness-clinics":      "Wellness Clinics",
+  "fertility-clinics":     "IVF & Fertility Clinics",
 };
 
 const CAT_SHORT: Record<string, string> = {
@@ -26,6 +27,7 @@ const CAT_SHORT: Record<string, string> = {
   "dental-clinics":        "Dental",
   "cosmetic-clinics":      "Cosmetic",
   "wellness-clinics":      "Wellness",
+  "fertility-clinics":     "IVF & Fertility",
 };
 
 const CAT_INTROS: Record<string, string> = {
@@ -33,6 +35,7 @@ const CAT_INTROS: Record<string, string> = {
   "dental-clinics":        "Thailand is one of Asia's top dental tourism destinations, offering implants, veneers, and orthodontics at 50–70% below European and Australian prices.",
   "cosmetic-clinics":      "Bangkok's cosmetic clinics attract medical tourists from across Asia and beyond, offering everything from Botox to full surgical procedures.",
   "wellness-clinics":      "Thailand's wellness clinics blend Eastern and Western approaches, offering IV therapy, health screening, and preventive care.",
+  "fertility-clinics":     "Thailand is a world-leading destination for IVF and fertility care, with internationally accredited clinics offering IVF, ICSI, egg freezing and genetic screening at a fraction of Western costs.",
 };
 
 const CAT_SUBTITLES: Record<string, string> = {
@@ -40,6 +43,7 @@ const CAT_SUBTITLES: Record<string, string> = {
   "dental-clinics":        "Find verified dental clinics across Bangkok, Phuket, Chiang Mai and Pattaya.",
   "cosmetic-clinics":      "Find verified cosmetic clinics across Bangkok, Phuket, Chiang Mai and Pattaya.",
   "wellness-clinics":      "Find verified wellness clinics across Bangkok, Phuket, Chiang Mai and Pattaya.",
+  "fertility-clinics":     "Find verified IVF & fertility clinics across Bangkok, Phuket, Chiang Mai and Pattaya.",
 };
 
 /* ─── Component ──────────────────────────────────────────────────── */

@@ -122,9 +122,10 @@ const faqSchema = {
 
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const [physioCount, cosmeticCount, bangkokCount, totalCount, topClinics] = await Promise.all([
+  const [physioCount, cosmeticCount, fertilityCount, bangkokCount, totalCount, topClinics] = await Promise.all([
     getClinicCount("bangkok", "physiotherapy-clinics"),
     getClinicCount("bangkok", "cosmetic-clinics"),
+    getClinicCount("bangkok", "fertility-clinics"),
     getCityClinicCount("bangkok"),
     getTotalClinicCount(),
     getHomepageClinics("bangkok", "physiotherapy-clinics", 3),
@@ -266,6 +267,18 @@ export default async function HomePage() {
                   </svg>
                   <div style={catNameStyle}>Beauty</div>
                   <div style={catCountStyle}>{cosmeticCount}+ clinics</div>
+                  <div className="category-arrow" style={catArrowStyle}>Browse →</div>
+                </div>
+              </Link>
+
+              {/* IVF & Fertility — LIVE */}
+              <Link href="/bangkok/fertility-clinics/" style={{ textDecoration: "none" }}>
+                <div className="category-tile" style={catTileBase}>
+                  <svg style={catIconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
+                    <path d="M12 21s-7-4.35-9.5-8.5C1 9 2.5 5.5 6 5.5c2 0 3.2 1.1 4 2.3.8-1.2 2-2.3 4-2.3 3.5 0 5 3.5 3.5 7C19 16.65 12 21 12 21z"/>
+                  </svg>
+                  <div style={catNameStyle}>IVF &amp; Fertility</div>
+                  <div style={catCountStyle}>{fertilityCount}+ clinics</div>
                   <div className="category-arrow" style={catArrowStyle}>Browse →</div>
                 </div>
               </Link>
@@ -1083,8 +1096,9 @@ export default async function HomePage() {
             {/* Col 2 — Browse */}
             <FooterCol title="Browse" links={[
               { label: "Physiotherapy", href: "/physiotherapy-clinics/" },
-              { label: "Dental",        href: "/dental-clinics/" },
               { label: "Cosmetic",      href: "/cosmetic-clinics/" },
+              { label: "IVF & Fertility", href: "/fertility-clinics/" },
+              { label: "Dental",        href: "/dental-clinics/" },
               { label: "Wellness",      href: "/wellness-clinics/" },
             ]} />
 

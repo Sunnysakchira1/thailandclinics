@@ -70,6 +70,7 @@ export default function Nav() {
                 { label: "Dental",        href: "/dental-clinics/" },
                 { label: "Cosmetic",      href: "/cosmetic-clinics/" },
                 { label: "Wellness",      href: "/wellness-clinics/" },
+                { label: "IVF & Fertility", href: "/fertility-clinics/" },
               ].map(({ label, href }) => (
                 <Link key={label} href={href} className="nav-browse-link">{label}</Link>
               ))}
