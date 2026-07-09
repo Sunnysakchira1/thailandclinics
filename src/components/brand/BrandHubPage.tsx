@@ -152,7 +152,7 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
             )}
           </div>
 
-          {/* The Locully Special — featured brands (premium placement tier) */}
+          {/* Editor's Pick — featured brands */}
           {hub.editorsNote && (
             <div style={{
               display: "flex", alignItems: "flex-start", gap: "12px",
@@ -173,7 +173,7 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                   fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em",
                   textTransform: "uppercase", color: "var(--green)", marginBottom: "4px",
                 }}>
-                  The Locully Special
+                  Editor&rsquo;s Pick
                 </p>
                 <p style={{
                   fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
