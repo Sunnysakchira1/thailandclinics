@@ -665,7 +665,7 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
                         fontSize: "10.5px", fontWeight: 700, letterSpacing: "0.12em",
                         textTransform: "uppercase", color: "var(--green)", marginBottom: "4px",
                       }}>
-                        Editor&rsquo;s Pick
+                        The Locully Special
                       </p>
                       <p style={{
                         fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
