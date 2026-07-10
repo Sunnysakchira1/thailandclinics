@@ -81,21 +81,22 @@ export default async function CityPage({ params }: Props) {
   const totalClinics = Object.values(countMap).reduce((a, b) => a + b, 0);
 
   /* ─── Schema ─────────────────────────────────────────────────── */
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://thailandclinics.co/" },
-          { "@type": "ListItem", "position": 2, "name": cityName,  "item": `https://thailandclinics.co/${city}/` },
+          { "@type": "ListItem", "position": 1, "name": "Home",    "item": `${siteUrl}/` },
+          { "@type": "ListItem", "position": 2, "name": cityName,  "item": `${siteUrl}/${city}/` },
         ],
       },
       {
         "@type": "ItemList",
         "name": `Clinics in ${cityName}`,
         "numberOfItems": totalClinics,
-        "url": `https://thailandclinics.co/${city}/`,
+        "url": `${siteUrl}/${city}/`,
       },
     ],
   };

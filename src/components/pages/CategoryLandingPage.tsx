@@ -62,20 +62,21 @@ export default async function CategoryLandingPage({ catSlug }: { catSlug: string
   for (const r of cityCounts) countMap[r.citySlug] = r.count;
   const totalClinics = Object.values(countMap).reduce((a, b) => a + b, 0);
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "BreadcrumbList",
         "itemListElement": [
-          { "@type": "ListItem", "position": 1, "name": "Home",    "item": "https://thailandclinics.co/" },
-          { "@type": "ListItem", "position": 2, "name": catName,   "item": `https://thailandclinics.co/${catSlug}/` },
+          { "@type": "ListItem", "position": 1, "name": "Home",    "item": `${siteUrl}/` },
+          { "@type": "ListItem", "position": 2, "name": catName,   "item": `${siteUrl}/${catSlug}/` },
         ],
       },
       {
         "@type": "MedicalSpecialty",
         "name": catName,
-        "url":  `https://thailandclinics.co/${catSlug}/`,
+        "url":  `${siteUrl}/${catSlug}/`,
       },
     ],
   };
