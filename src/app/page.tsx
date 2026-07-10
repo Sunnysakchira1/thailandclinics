@@ -122,10 +122,11 @@ const faqSchema = {
 
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const [physioCount, cosmeticCount, fertilityCount, bangkokCount, totalCount, topClinics] = await Promise.all([
+  const [physioCount, cosmeticCount, fertilityCount, dentalCount, bangkokCount, totalCount, topClinics] = await Promise.all([
     getClinicCount("bangkok", "physiotherapy-clinics"),
     getClinicCount("bangkok", "cosmetic-clinics"),
     getClinicCount("bangkok", "fertility-clinics"),
+    getClinicCount("bangkok", "dental-clinics"),
     getCityClinicCount("bangkok"),
     getTotalClinicCount(),
     getHomepageClinics("bangkok", "physiotherapy-clinics", 3),
@@ -283,14 +284,17 @@ export default async function HomePage() {
                 </div>
               </Link>
 
-              {/* Dental — Coming Soon */}
-              <div style={{ ...catTileBase, opacity: 0.6, cursor: "default" }}>
-                <svg style={catIconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-                  <path d="M12 5c-1.7-1.7-4-2-5.5-.5S5 9 7 11l5 8 5-8c2-2 1.7-5 .5-6.5S13.7 3.3 12 5z"/>
-                </svg>
-                <div style={catNameStyle}>Dental</div>
-                <div style={catCountStyle}>Coming soon</div>
-              </div>
+              {/* Dental — LIVE */}
+              <Link href="/bangkok/dental-clinics/" style={{ textDecoration: "none" }}>
+                <div className="category-tile" style={catTileBase}>
+                  <svg style={catIconStyle} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
+                    <path d="M12 5c-1.7-1.7-4-2-5.5-.5S5 9 7 11l5 8 5-8c2-2 1.7-5 .5-6.5S13.7 3.3 12 5z"/>
+                  </svg>
+                  <div style={catNameStyle}>Dental</div>
+                  <div style={catCountStyle}>{dentalCount}+ clinics</div>
+                  <div className="category-arrow" style={catArrowStyle}>Browse →</div>
+                </div>
+              </Link>
 
               {/* Wellness — Coming Soon */}
               <div style={{ ...catTileBase, opacity: 0.6, cursor: "default" }}>
