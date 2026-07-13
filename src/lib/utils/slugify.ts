@@ -9,7 +9,20 @@ const THAI_CHAR = /[฀-๿]/;
 export function extractEnglishName(raw: string): string | null {
   const s = raw.trim();
 
-  // Pattern 1 — English text inside the first set of parentheses
+  // Pattern 0 — Latin name BEFORE a parenthesis (the paren is a branch/location
+  // qualifier, not the name). Runs before Pattern 1 so we don't grab the qualifier.
+  // e.g. "Bangkok New Smile Dental Clinic (Ratchadapisek) - คลินิก…" → "Bangkok New Smile Dental Clinic";
+  // "DEEP & HARMONICARE IVF CENTER (THAILAND)" → "DEEP & HARMONICARE IVF CENTER".
+  const parenIdx = s.indexOf("(");
+  if (parenIdx > 0) {
+    const before = s.slice(0, parenIdx).trim();
+    if (!THAI_CHAR.test(before) && before.replace(/[^A-Za-z]/g, "").length > 3) {
+      return before.replace(/\s+/g, " ").trim();
+    }
+  }
+
+  // Pattern 1 — English text inside the first set of parentheses (when the text
+  // before the paren is Thai/empty).
   // e.g. "บ้านใจอารีย์ (JR Physio Clinic - China Town)" → "JR Physio Clinic China Town"
   const bracketMatch = s.match(/\(([^)]+)\)/);
   if (bracketMatch) {

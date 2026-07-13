@@ -243,3 +243,7 @@
 /bangkok/dental-clinics/edelweiss-dental-house-vibhavadi-head-office /bangkok/dental-clinics/edelweiss-dental-house/vibhavadi/ 301
 /bangkok/dental-clinics/edelweiss-dental-house-sukhumvit-15-branch/ /bangkok/dental-clinics/edelweiss-dental-house/sukhumvit-15/ 301
 /bangkok/dental-clinics/edelweiss-dental-house-sukhumvit-15-branch /bangkok/dental-clinics/edelweiss-dental-house/sukhumvit-15/ 301
+
+# Dental slug fix — Bangkok New Smile (was mis-slugged "ratchadapisek")
+/bangkok/dental-clinics/ratchadapisek/ /bangkok/dental-clinics/bangkok-new-smile-dental-clinic/ 301
+/bangkok/dental-clinics/ratchadapisek /bangkok/dental-clinics/bangkok-new-smile-dental-clinic/ 301
