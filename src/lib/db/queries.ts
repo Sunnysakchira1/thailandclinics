@@ -586,6 +586,19 @@ export async function getGuideShortlist(citySlug: string, categorySlug: string, 
   return out;
 }
 
+/** Top districts where a city+category's clinics cluster — for the guide's "where to find them" section. */
+export async function getCategoryDistricts(citySlug: string, categorySlug: string, limit: number): Promise<{ district: string; count: number }[]> {
+  const rows = await db.select({ district: clinics.district, n: sql<number>`count(*)` })
+    .from(clinics)
+    .innerJoin(cities, eq(clinics.cityId, cities.id))
+    .innerJoin(categories, eq(clinics.categoryId, categories.id))
+    .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug), isNotNull(clinics.district)))
+    .groupBy(clinics.district)
+    .orderBy(sql`count(*) desc`)
+    .limit(limit);
+  return rows.map((r) => ({ district: r.district as string, count: Number(r.n) }));
+}
+
 export async function getBrandSlugs() {
   return db.select({ slug: brands.slug, citySlug: cities.slug, categorySlug: categories.slug })
     .from(brands).innerJoin(cities, eq(brands.cityId, cities.id))
