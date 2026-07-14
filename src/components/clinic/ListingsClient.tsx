@@ -51,6 +51,12 @@ const SERVICE_LABELS: Record<string, string> = {
   'mental-health':         'Mental health',
   'traditional-thai-massage': 'Thai massage',
   'detox':                 'Detox',
+  'iv-therapy':            'IV therapy',
+  'health-screening':      'Health screening',
+  'hormone-therapy':       'Hormone therapy',
+  'vitamin-therapy':       'Vitamin therapy',
+  'weight-management':     'Weight management',
+  'functional-medicine':   'Functional medicine',
   'ivf':                   'IVF',
   'icsi':                  'ICSI',
   'iui':                   'IUI',
@@ -76,8 +82,8 @@ const SERVICE_TAXONOMY: Record<string, string[]> = {
     'prp', 'hair-removal', 'anti-aging',
   ],
   'wellness-clinics': [
-    'yoga', 'massage', 'meditation', 'nutrition', 'mental-health',
-    'traditional-thai-massage', 'detox',
+    'iv-therapy', 'health-screening', 'anti-aging', 'hormone-therapy',
+    'vitamin-therapy', 'weight-management', 'functional-medicine', 'nutrition',
   ],
   'fertility-clinics': [
     'ivf', 'icsi', 'iui', 'egg-freezing', 'genetic-screening',

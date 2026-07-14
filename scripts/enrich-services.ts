@@ -45,8 +45,8 @@ const SERVICE_TAXONOMY: Record<string, string[]> = {
     'prp', 'hair-removal', 'anti-aging',
   ],
   'wellness-clinics': [
-    'yoga', 'massage', 'meditation', 'nutrition', 'mental-health',
-    'traditional-thai-massage', 'detox',
+    'iv-therapy', 'health-screening', 'anti-aging', 'hormone-therapy',
+    'vitamin-therapy', 'weight-management', 'functional-medicine', 'nutrition',
   ],
   'fertility-clinics': [
     'ivf', 'icsi', 'iui', 'egg-freezing', 'genetic-screening',
