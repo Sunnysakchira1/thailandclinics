@@ -327,18 +327,17 @@ function Para({ children }: { children: React.ReactNode }) {
 }
 function Cta({ href, label, sub }: { href: string; label: string; sub: string }) {
   return (
-    <Link href={href} style={{ textDecoration: "none", display: "block", margin: "0 0 48px" }}>
-      <div className="guide-cta" style={{
-        background: "var(--green)", borderRadius: "6px", padding: "20px 24px",
-        display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap",
+    <div style={{ textAlign: "center", margin: "8px 0 48px" }}>
+      <Link href={href} className="guide-cta" style={{
+        display: "inline-flex", alignItems: "center", gap: "8px",
+        background: "var(--green)", color: "var(--white)", borderRadius: "100px",
+        padding: "14px 30px", textDecoration: "none",
+        fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14.5px", fontWeight: 600, letterSpacing: "0.01em",
       }}>
-        <div>
-          <div style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)", fontSize: "21px", fontWeight: 500, color: "var(--white)", lineHeight: 1.2 }}>{label}</div>
-          <div style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13px", color: "rgba(255,255,255,0.75)", marginTop: "3px" }}>{sub}</div>
-        </div>
-        <span style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 600, color: "var(--white)", whiteSpace: "nowrap" }}>Browse clinics →</span>
-      </div>
-    </Link>
+        {label} <span aria-hidden style={{ fontSize: "15px" }}>→</span>
+      </Link>
+      {sub && <div style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "12.5px", color: "var(--muted)", marginTop: "10px" }}>{sub}</div>}
+    </div>
   );
 }
 
