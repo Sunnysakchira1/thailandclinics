@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getListingEntries } from "@/lib/db/queries";
 import ListingsClient from "@/components/clinic/ListingsClient";
+import { GUIDE_CATEGORIES, guideSlug } from "@/lib/guides";
 
 /* ─── Config ─────────────────────────────────────────────────────── */
 const CITIES = ["bangkok", "phuket", "chiang-mai", "pattaya"];
@@ -83,6 +84,10 @@ export default async function CategoryPage({ params }: Props) {
   }
 
   const clinicList = await getListingEntries(city, category);
+  // Reverse link to the AIO guide — only when a guide exists for this combo.
+  const guideCat = GUIDE_CATEGORIES[category];
+  const guideHref = guideCat && clinicList.length >= 5 ? `/guides/${guideSlug(city, category)}/` : null;
+  const guideLabel = guideCat ? `How to choose a ${guideCat.noun} in ${cityLabel(city)}` : null;
 
   return (
     <ListingsClient
@@ -91,6 +96,8 @@ export default async function CategoryPage({ params }: Props) {
       catSlug={category}
       cityName={cityLabel(city)}
       catName={catLabel(category)}
+      guideHref={guideHref}
+      guideLabel={guideLabel}
     />
   );
 }

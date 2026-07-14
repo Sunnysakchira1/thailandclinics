@@ -15,6 +15,8 @@ interface Props {
   catSlug: string;
   cityName: string;
   catName: string;
+  guideHref?: string | null;
+  guideLabel?: string | null;
 }
 
 /* ─── Service taxonomy ───────────────────────────────────────────── */
@@ -418,7 +420,7 @@ function SidebarContent({
 }
 
 /* ─── Main component ─────────────────────────────────────────────── */
-export default function ListingsClient({ clinics: allClinics, citySlug, catSlug, cityName, catName }: Props) {
+export default function ListingsClient({ clinics: allClinics, citySlug, catSlug, cityName, catName, guideHref, guideLabel }: Props) {
   /* ── Derived totals for count line ──────────────────────────────
      totalClinics = standalone count + sum of branchCount on brand entries.
      brandCount   = number of isBrand entries.                        */
@@ -676,6 +678,16 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
             )}
           </span>
         </div>
+        {guideHref && (
+          <Link href={guideHref} className="listing-guide-link" style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '14px',
+            fontFamily: 'var(--font-dm-sans)', fontSize: '13.5px', color: 'var(--green)',
+            textDecoration: 'none', background: 'var(--green-pale)', border: '1px solid var(--green)',
+            borderRadius: '100px', padding: '7px 16px', width: 'fit-content',
+          }}>
+            <span aria-hidden>📖</span> New guide: {guideLabel} →
+          </Link>
+        )}
       </div>
 
       {/* ── SORT BAR ─────────────────────────────────────────────── */}
