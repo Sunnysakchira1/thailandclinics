@@ -25,9 +25,54 @@ const INCLUDES = [
   {
     icon: "✓",
     title: "Priority visibility",
-    body:  "Featured clinics appear at the top of their category page, ahead of organic rankings.",
+    body:  "Featured clinics appear at the top of their category page, clearly marked, ahead of organic rankings.",
   },
 ];
+
+const STATS = [
+  { value: "690+",    label: "Verified clinics" },
+  { value: "19,000+", label: "Reviews analysed" },
+  { value: "4",       label: "Specialties" },
+  { value: "2",       label: "Cities live, more coming" },
+];
+
+const AUDIENCE = [
+  "Expats living in Thailand who need care they can trust",
+  "Medical tourists planning treatment around a trip",
+  "English-speaking locals comparing clinics before they commit",
+];
+
+const STEPS = [
+  { n: "1", title: "Apply",       body: "Send your clinic details using the form below. Takes about two minutes." },
+  { n: "2", title: "We verify",   body: "We check your clinic against Google data, confirm it's operational, and build your full profile." },
+  { n: "3", title: "You go live", body: "Your verified listing publishes and patients start finding you — usually within 5–7 days." },
+];
+
+const REASONS = [
+  { title: "Independent verification", body: "Every listing is manually checked — a trust signal a plain Google profile can't give you." },
+  { title: "Built for decisions",      body: "Services, languages, transit access, hours and AI-summarised reviews — everything a patient needs to choose you." },
+  { title: "Found by the right patients", body: "People filter for exactly what you offer — English-speaking, near BTS, open weekends — and you show up." },
+  { title: "In the ‘best of’ shortlists", body: "Appear in curated category comparisons instead of being buried on page three of Maps." },
+];
+
+const FAQ = [
+  { q: "How much does it cost?", a: "It's free during our beta — we're onboarding our first clinics at no cost. When we introduce pricing, early listings are grandfathered in at a discounted rate." },
+  { q: "How long until I'm live?", a: "Most listings publish within 5–7 days of applying, once we've verified your clinic details." },
+  { q: "What do you need from me?", a: "To start, just your clinic name, city, category and a contact email. We build the profile from verified public data and confirm the details with you before publishing." },
+  { q: "Can I pay to rank higher?", a: "Organic order is based on rating and review volume — that's what keeps patient trust. Featured placement at the top of a category is an optional add-on, and it's always clearly labelled. We don't hide it." },
+  { q: "Can I update my listing later?", a: "Yes. Once you're verified, send us changes any time — new hours, services or photos — and we'll keep your profile current." },
+  { q: "What if I'm not in Bangkok or Phuket?", a: "We're expanding to Chiang Mai, Pattaya and new specialties. Apply now and we'll add you the moment your city goes live." },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ.map(({ q, a }) => ({
+    "@type": "Question",
+    name: q,
+    acceptedAnswer: { "@type": "Answer", text: a },
+  })),
+};
 
 export default function ListYourClinicPage() {
   const [name, setName]         = useState("");
@@ -94,6 +139,60 @@ export default function ListYourClinicPage() {
             looking for your services.
           </p>
 
+          {/* Audience & reach */}
+          <div style={{ marginBottom: "48px" }}>
+            <div style={{
+              display:             "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap:                 "16px",
+              padding:             "28px 0",
+              borderTop:           "1px solid var(--border-soft)",
+              borderBottom:        "1px solid var(--border-soft)",
+              marginBottom:        "28px",
+            }} className="lyc-stats">
+              {STATS.map(({ value, label }) => (
+                <div key={label}>
+                  <div style={{
+                    fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)",
+                    fontSize:   "clamp(24px,4vw,32px)",
+                    fontWeight: 400,
+                    color:      "var(--green)",
+                    lineHeight: 1,
+                    marginBottom: "6px",
+                  }}>{value}</div>
+                  <div style={{
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                    fontSize:   "12px",
+                    color:      "var(--muted)",
+                    lineHeight: 1.4,
+                  }}>{label}</div>
+                </div>
+              ))}
+            </div>
+            <p style={{
+              fontFamily:   "var(--font-dm-sans,'DM Sans',sans-serif)",
+              fontSize:     "15px",
+              lineHeight:   1.75,
+              color:        "var(--charcoal-soft)",
+              marginBottom: "16px",
+            }}>
+              These aren't window-shoppers. They're people ready to book, and they reach you already searching for your service:
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {AUDIENCE.map((a) => (
+                <div key={a} style={{ display: "grid", gridTemplateColumns: "18px 1fr", gap: "0 12px", alignItems: "start" }}>
+                  <span style={{ color: "var(--green)", fontWeight: 600, paddingTop: "1px" }}>›</span>
+                  <span style={{
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                    fontSize:   "15px",
+                    color:      "var(--charcoal)",
+                    lineHeight: 1.5,
+                  }}>{a}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Divider */}
           <div style={{ width: "40px", height: "2px", background: "var(--green)", marginBottom: "48px" }} />
 
@@ -144,6 +243,79 @@ export default function ListYourClinicPage() {
                       {" — "}{body}
                     </span>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* How it works */}
+          <div style={{ marginBottom: "56px" }}>
+            <h2 style={{
+              fontFamily:   "var(--font-cormorant,'Cormorant Garamond',serif)",
+              fontSize:     "26px",
+              fontWeight:   400,
+              color:        "var(--charcoal)",
+              marginBottom: "24px",
+            }}>
+              How it works
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              {STEPS.map(({ n, title, body }) => (
+                <div key={n} style={{ display: "grid", gridTemplateColumns: "40px 1fr", gap: "0 16px", alignItems: "start" }}>
+                  <div style={{
+                    width: "36px", height: "36px", borderRadius: "50%",
+                    background: "var(--green)", color: "var(--white)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px", fontWeight: 600,
+                  }}>{n}</div>
+                  <div style={{ paddingTop: "4px" }}>
+                    <div style={{
+                      fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px",
+                      fontWeight: 600, color: "var(--charcoal)", marginBottom: "4px",
+                    }}>{title}</div>
+                    <div style={{
+                      fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px",
+                      color: "var(--charcoal-soft)", lineHeight: 1.6,
+                    }}>{body}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Why list with us */}
+          <div style={{ marginBottom: "56px" }}>
+            <h2 style={{
+              fontFamily:   "var(--font-cormorant,'Cormorant Garamond',serif)",
+              fontSize:     "26px",
+              fontWeight:   400,
+              color:        "var(--charcoal)",
+              marginBottom: "8px",
+            }}>
+              You already have a Google listing
+            </h2>
+            <p style={{
+              fontFamily:   "var(--font-dm-sans,'DM Sans',sans-serif)",
+              fontSize:     "15px",
+              color:        "var(--muted)",
+              marginBottom: "24px",
+            }}>
+              Here's what a verified ThailandClinics profile adds on top of it.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }} className="lyc-reasons">
+              {REASONS.map(({ title, body }) => (
+                <div key={title} style={{
+                  border: "1px solid var(--border-soft)", borderRadius: "6px",
+                  background: "var(--white)", padding: "20px 22px",
+                }}>
+                  <div style={{
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14.5px",
+                    fontWeight: 600, color: "var(--charcoal)", marginBottom: "6px",
+                  }}>{title}</div>
+                  <div style={{
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px",
+                    color: "var(--charcoal-soft)", lineHeight: 1.6,
+                  }}>{body}</div>
                 </div>
               ))}
             </div>
@@ -300,8 +472,55 @@ export default function ListYourClinicPage() {
             </form>
           </div>
 
+          {/* FAQ */}
+          <div style={{ marginTop: "72px" }}>
+            <h2 style={{
+              fontFamily:   "var(--font-cormorant,'Cormorant Garamond',serif)",
+              fontSize:     "26px",
+              fontWeight:   400,
+              color:        "var(--charcoal)",
+              marginBottom: "8px",
+            }}>
+              Clinic owner questions
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", marginTop: "16px" }}>
+              {FAQ.map(({ q, a }) => (
+                <details key={q} style={{ borderBottom: "1px solid var(--border-soft)" }} className="faq-item">
+                  <summary style={{
+                    fontFamily:     "var(--font-dm-sans,'DM Sans',sans-serif)",
+                    fontSize:       "15px",
+                    fontWeight:     500,
+                    color:          "var(--charcoal)",
+                    padding:        "18px 0",
+                    cursor:         "pointer",
+                    listStyle:      "none",
+                    display:        "flex",
+                    justifyContent: "space-between",
+                    alignItems:     "center",
+                    gap:            "16px",
+                  }}>
+                    {q}
+                    <span style={{ flexShrink: 0, color: "var(--muted)", fontSize: "18px", lineHeight: 1, userSelect: "none" }} className="faq-chevron" />
+                  </summary>
+                  <p style={{
+                    fontFamily:    "var(--font-dm-sans,'DM Sans',sans-serif)",
+                    fontSize:      "14px",
+                    lineHeight:    1.7,
+                    color:         "var(--charcoal-soft)",
+                    paddingBottom: "18px",
+                    margin:        0,
+                  }}>
+                    {a}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+
         </div>
       </main>
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
     </>
   );
 }

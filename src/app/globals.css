@@ -772,3 +772,9 @@ details[open] > .profile-detail-summary::after {
 
 /* Browse page */
 .browse-tile:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(26,26,26,0.08); }
+
+/* ── List Your Clinic — responsive grids ─────────────────────────── */
+@media (max-width: 640px) {
+  .lyc-stats   { grid-template-columns: repeat(2, 1fr) !important; gap: 20px 16px !important; }
+  .lyc-reasons { grid-template-columns: 1fr !important; }
+}
