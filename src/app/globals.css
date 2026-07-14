@@ -778,3 +778,7 @@ details[open] > .profile-detail-summary::after {
   .lyc-stats   { grid-template-columns: repeat(2, 1fr) !important; gap: 20px 16px !important; }
   .lyc-reasons { grid-template-columns: 1fr !important; }
 }
+
+/* ── Guides — card hover ──────────────────────────────────────────── */
+.guide-clinic-row { transition: box-shadow 0.18s ease, transform 0.18s ease; }
+.guide-clinic-row:hover { box-shadow: 0 8px 24px rgba(26,26,26,0.07); transform: translateY(-2px); }

@@ -1,7 +1,7 @@
 import { eq, desc, and, ne, sql, isNotNull, isNull, count } from "drizzle-orm";
 import { db } from "./index";
 import { clinics, cities, categories, clinicReviews, brands } from "./schema";
-import { WR_BASELINE, WR_WEIGHT } from "../ranking";
+import { WR_BASELINE, WR_WEIGHT, weightedRating } from "../ranking";
 
 /* Volume-aware weighted rating as a SQL ORDER BY fragment — mirrors
    weightedRating() in ../ranking so every ranking surface uses one formula. */
@@ -542,6 +542,48 @@ export async function getListingEntries(citySlug: string, categorySlug: string):
   return [...brandEntries, ...standalone]
     .sort((a, b) => (b.googleRating ?? 0) - (a.googleRating ?? 0)
       || (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0));
+}
+
+/* ─── Guides (programmatic AIO layer) ────────────────────────────── */
+
+/** All city×category combos that have clinics — only generate a guide where we have data. */
+export async function getGuideCombos(): Promise<{ citySlug: string; categorySlug: string; count: number }[]> {
+  const rows = await db.select({
+    citySlug: cities.slug, categorySlug: categories.slug, n: sql<number>`count(*)`,
+  }).from(clinics)
+    .innerJoin(cities, eq(clinics.cityId, cities.id))
+    .innerJoin(categories, eq(clinics.categoryId, categories.id))
+    .groupBy(cities.slug, categories.slug);
+  return rows.map((r) => ({ citySlug: r.citySlug, categorySlug: r.categorySlug, count: Number(r.n) }));
+}
+
+export type GuideShortlistItem = {
+  name: string; href: string; district: string | null;
+  googleRating: number | null; googleReviewsCount: number | null;
+  isBrand: boolean; branchCount?: number | null; snippet: string | null;
+};
+
+/** Top clinics for a city+category (weighted rank), with a review-summary snippet — the guide shortlist. */
+export async function getGuideShortlist(citySlug: string, categorySlug: string, limit: number): Promise<GuideShortlistItem[]> {
+  const entries = await getListingEntries(citySlug, categorySlug);
+  entries.sort((a, b) =>
+    weightedRating(b.googleRating, b.googleReviewsCount) - weightedRating(a.googleRating, a.googleReviewsCount)
+    || (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0));
+  const out: GuideShortlistItem[] = [];
+  for (const e of entries.slice(0, limit)) {
+    let snippet: string | null = null;
+    if (!e.isBrand) {
+      const [row] = await db.select({ rp: clinics.reviewPositives }).from(clinics).where(eq(clinics.slug, e.slug)).limit(1);
+      try { const arr = JSON.parse(row?.rp ?? "[]") as (string | null)[]; snippet = arr.filter(Boolean)[0] ?? null; } catch { /* noop */ }
+    }
+    out.push({
+      name: e.nameEn ?? e.name,
+      href: e.isBrand ? `/${citySlug}/${categorySlug}/${e.brandSlug}/` : `/${citySlug}/${categorySlug}/${e.slug}/`,
+      district: e.district, googleRating: e.googleRating, googleReviewsCount: e.googleReviewsCount,
+      isBrand: e.isBrand, branchCount: (e as ListingEntry & { branchCount?: number }).branchCount ?? null, snippet,
+    });
+  }
+  return out;
 }
 
 export async function getBrandSlugs() {
