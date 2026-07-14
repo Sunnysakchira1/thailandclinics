@@ -72,6 +72,7 @@ export default async function GuidePage({ params }: Props) {
     { id: "redflags", label: "Red flags" },
     { id: "shortlist", label: "Top clinics" },
     { id: "faq", label: "FAQ" },
+    ...(cat.sources.length ? [{ id: "sources", label: "Sources" }] : []),
   ];
 
   const schema = [
@@ -121,6 +122,8 @@ export default async function GuidePage({ params }: Props) {
           <p style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px", color: "var(--charcoal-soft)", lineHeight: 1.75, marginBottom: "32px" }}>
             {city.tourismLine} This guide covers everything you need to choose a {cat.noun} in {city.name} with confidence — the criteria that matter, treatments and what they involve, what care really costs, where the best clinics are, the questions to ask and the red flags to avoid — plus a shortlist of {count} verified, top-rated clinics.
           </p>
+
+          <Cta href={listingUrl} label={`View verified ${cat.nounPlural} in ${city.name}`} sub={`${count} clinics, ranked and reviewed`} />
 
           {/* Table of contents */}
           <div style={{ border: "1px solid var(--border-soft)", borderRadius: "6px", background: "var(--white)", padding: "20px 24px", marginBottom: "48px" }}>
@@ -178,6 +181,8 @@ export default async function GuidePage({ params }: Props) {
             </div>
             <Para>{fill(cat.costsNote)}</Para>
           </Section>
+
+          <Cta href={listingUrl} label={`Compare ${cat.nounPlural} in ${city.name} by price & rating`} sub="Filter by English-speaking, BTS/MRT access and more" />
 
           <Section id="who" title="Which type of patient are you?">
             <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
@@ -275,6 +280,24 @@ export default async function GuidePage({ params }: Props) {
             </div>
           </Section>
 
+          {cat.sources.length > 0 && (
+            <Section id="sources" title="Sources & further reading">
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                {cat.sources.map((s) => (
+                  <div key={s.url}>
+                    <a href={s.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)" }}>
+                      {s.label} ↗
+                    </a>
+                    <span style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", color: "var(--charcoal-soft)" }}>{" — "}{s.note}</span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
+
+          {/* Closing CTA */}
+          <Cta href={listingUrl} label={`View all ${count} ${cat.nounPlural} in ${city.name}`} sub="Verified, ranked by review-weighted score, updated regularly" />
+
           {related.length > 0 && (
             <Section id="related" title="Related guides">
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -301,6 +324,22 @@ function Section({ id, title, children }: { id: string; title: string; children:
 }
 function Para({ children }: { children: React.ReactNode }) {
   return <p style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px", color: "var(--charcoal-soft)", lineHeight: 1.75, margin: 0 }}>{children}</p>;
+}
+function Cta({ href, label, sub }: { href: string; label: string; sub: string }) {
+  return (
+    <Link href={href} style={{ textDecoration: "none", display: "block", margin: "0 0 48px" }}>
+      <div className="guide-cta" style={{
+        background: "var(--green)", borderRadius: "6px", padding: "20px 24px",
+        display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap",
+      }}>
+        <div>
+          <div style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)", fontSize: "21px", fontWeight: 500, color: "var(--white)", lineHeight: 1.2 }}>{label}</div>
+          <div style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13px", color: "rgba(255,255,255,0.75)", marginTop: "3px" }}>{sub}</div>
+        </div>
+        <span style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 600, color: "var(--white)", whiteSpace: "nowrap" }}>Browse clinics →</span>
+      </div>
+    </Link>
+  );
 }
 
 const crumbLink: React.CSSProperties = { color: "var(--muted)", textDecoration: "none" };

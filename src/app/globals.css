@@ -785,3 +785,5 @@ details[open] > .profile-detail-summary::after {
 @media (max-width: 640px) {
   .guide-toc { grid-template-columns: 1fr !important; }
 }
+.guide-cta { transition: background 0.18s ease; }
+.guide-cta:hover { background: var(--green-light); }

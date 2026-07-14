@@ -45,6 +45,7 @@ export type GuideCategory = {
   questions: string[];                     // questions to ask before committing
   redFlags: string[];
   faq: { q: string; a: string }[];
+  sources: { label: string; url: string; note: string }[];  // authoritative external references
 };
 
 export function fillGuide(text: string, city: GuideCity): string {
@@ -125,6 +126,12 @@ export const GUIDE_CATEGORIES: Record<string, GuideCategory> = {
       { q: "What implant brands do Thai clinics use?", a: "Leading clinics use the same premium systems as Western practices — Straumann, Nobel Biocare and similar. Ask which brand a clinic uses; a quality clinic will always tell you." },
       { q: "Can I claim dental treatment in Thailand on my insurance?", a: "Some international health-insurance and dental plans reimburse overseas treatment — check your policy before travelling and ask the clinic for itemised receipts and documentation." },
       { q: "How do I find the best dental clinic in {city}?", a: "Compare verified clinics by rating, review volume, English-speaking staff and location. Our {city} dental directory ranks clinics by a review-weighted score and summarises real patient feedback so you can shortlist quickly." },
+    ],
+    sources: [
+      { label: "Thai Dental Council", url: "https://www.dentalcouncil.or.th/", note: "The regulator every dentist practising in Thailand must be registered with." },
+      { label: "Joint Commission International (JCI)", url: "https://www.jointcommissioninternational.org/", note: "The global gold standard for healthcare accreditation — worth checking for hospital-based clinics." },
+      { label: "Straumann", url: "https://www.straumann.com/", note: "A leading dental-implant system used by many top clinics; useful for verifying implant brands." },
+      { label: "Nobel Biocare", url: "https://www.nobelbiocare.com/", note: "Another premium implant system to look for when comparing implant quality." },
     ],
   },
 };
