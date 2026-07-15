@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { ListingEntry } from '@/lib/db/queries';
 import { weightedRating } from '@/lib/ranking';
 import ClinicPhoto from '@/components/clinic/ClinicPhoto';
+import Nav from '@/components/layout/Nav';
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 type SortOption = 'rating' | 'reviews' | 'alpha';
@@ -577,79 +578,8 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
 
   return (
     <>
-      {/* ── NAV ──────────────────────────────────────────────────── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        background: 'var(--linen)', borderBottom: '1px solid var(--border)',
-        height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }} className="listing-nav-pad" >
-        <Link href="/" style={{
-          display: 'flex', alignItems: 'center', gap: '10px',
-          textDecoration: 'none', flexShrink: 0,
-        }}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" strokeWidth="1.5">
-            <path d="M12 22c0 0-8-4-8-12a8 8 0 0 1 16 0c0 8-8 12-8 12z" />
-            <path d="M12 10v12" strokeDasharray="2 2" />
-          </svg>
-          <span style={{ fontFamily: 'var(--font-cormorant)', fontSize: '20px', fontWeight: 600, color: 'var(--charcoal)' }}>
-            thailand<span style={{ color: 'var(--green)' }}>clinics</span>
-          </span>
-        </Link>
-
-        {/* Inline search */}
-        <div className="nav-search-bar" style={{
-          flex: 1, maxWidth: '440px', margin: '0 40px',
-          display: 'flex', alignItems: 'center', height: '38px',
-          border: '1px solid var(--border)', borderRadius: '5px',
-          background: 'var(--white)', overflow: 'hidden',
-        }}>
-          <input
-            type="text"
-            placeholder="Physiotherapy, dental, wellness…"
-            defaultValue={catShort}
-            style={{
-              flex: 1, padding: '0 14px', height: '100%',
-              border: 'none', outline: 'none',
-              fontFamily: 'var(--font-sans)', fontSize: '13.5px',
-              color: 'var(--charcoal)', background: 'transparent',
-            }}
-          />
-          <div style={{ width: '1px', height: '20px', background: 'var(--border)', flexShrink: 0 }} />
-          <select style={{
-            padding: '0 28px 0 12px', height: '100%',
-            border: 'none', outline: 'none',
-            fontFamily: 'var(--font-sans)', fontSize: '13.5px',
-            color: 'var(--charcoal-soft)', background: 'transparent',
-            cursor: 'pointer', flexShrink: 0,
-          }} defaultValue={citySlug}>
-            <option value="bangkok">Bangkok</option>
-            <option value="chiang-mai">Chiang Mai</option>
-            <option value="phuket">Phuket</option>
-            <option value="pattaya">Pattaya</option>
-          </select>
-          <button style={{
-            height: '100%', padding: '0 16px',
-            background: 'var(--green)', color: 'var(--white)',
-            border: 'none', fontFamily: 'var(--font-sans)',
-            fontSize: '13px', fontWeight: 500, cursor: 'pointer', flexShrink: 0,
-          }}>Search</button>
-        </div>
-
-        <ul className="listing-nav-links" style={{
-          display: 'flex', alignItems: 'center', gap: '24px',
-          listStyle: 'none', flexShrink: 0,
-        }}>
-          <li><Link href="/" className="nav-link" style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)', textDecoration: 'none' }}>Browse</Link></li>
-          <li><Link href="/about/" className="nav-link" style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)', textDecoration: 'none' }}>About</Link></li>
-          <li>
-            <Link href="/list-your-clinic/" className="nav-cta" style={{
-              fontSize: '13px', fontWeight: 500, color: 'var(--green)',
-              border: '1px solid var(--green)', padding: '6px 14px',
-              borderRadius: '4px', textDecoration: 'none',
-            }}>List Your Clinic</Link>
-          </li>
-        </ul>
-      </nav>
+      {/* ── NAV (shared) ─────────────────────────────────────────── */}
+      <Nav />
 
       {/* ── TITLE BAR ────────────────────────────────────────────── */}
       <div style={{ background: 'var(--white)', borderBottom: '1px solid var(--border-soft)' }}
