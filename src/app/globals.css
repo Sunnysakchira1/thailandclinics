@@ -151,11 +151,13 @@ body {
   display: grid;
   grid-template-columns: 200px 1fr;
   background: var(--white);
-  border-bottom: 1px solid var(--border-soft);
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  overflow: hidden;
   text-decoration: none;
   position: relative;
-  transition: background 0.15s;
-  animation: fadeInRow 0.4s ease both;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  animation: fadeInRow 0.4s ease backwards;
 }
 
 .clinic-row-list:nth-child(1) { animation-delay: 0.05s; }
@@ -166,10 +168,22 @@ body {
 .clinic-row-list:nth-child(6) { animation-delay: 0.30s; }
 .clinic-row-list:nth-child(7) { animation-delay: 0.35s; }
 
-.clinic-row-list:hover { background: #fdfcfa; }
+.clinic-row-list:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(26,26,26,0.08);
+  border-color: var(--border);
+}
 .clinic-row-list:hover .clinic-row-list-name { color: var(--green); }
 .clinic-row-list:hover .clinic-row-arrow { transform: translateX(3px); }
 .clinic-row-arrow { transition: transform 0.15s; }
+
+/* Listings column — cards with breathing room */
+.listings-grid > main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 24px 40px;
+}
 
 /* ─── Listing layout ────────────────────────────────────────────── */
 .listings-grid {
@@ -198,6 +212,7 @@ body {
 /* Tablet: hide sidebar, show filter button */
 @media (min-width: 768px) and (max-width: 1099px) {
   .listings-grid { display: block; }
+  .listings-grid > main { padding: 18px 24px 36px; gap: 14px; }
   .listings-sidebar { display: none; position: static; height: auto; }
   .listings-sidebar.open {
     display: block;
@@ -239,6 +254,7 @@ body {
   .listing-nav-pad   { padding: 0 20px; }
   .listing-title-pad { padding: 14px 20px; }
   .listing-sort-pad  { padding: 10px 20px; }
+  .listings-grid > main   { padding: 16px 16px 32px; gap: 12px; }
   .clinic-row-list        { grid-template-columns: 120px 1fr; }
   .clinic-row-list-desc   { display: none; }
   .clinic-row-top         { flex-direction: column !important; gap: 4px !important; }

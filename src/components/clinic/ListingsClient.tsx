@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import type { ListingEntry } from '@/lib/db/queries';
 import { weightedRating } from '@/lib/ranking';
@@ -398,6 +398,8 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
   const [acceptsCardOnly, setAcceptsCardOnly] = useState(false);
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen]       = useState(false);
+  const PAGE_SIZE = 24;
+  const [visibleCount, setVisibleCount]     = useState(PAGE_SIZE);
 
   /* ── Derived clinic totals (for count line) ─────────────────── */
   const totalClinics = useMemo(() =>
@@ -507,6 +509,9 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     () => filteredClinics.filter(c => c.isBrand).length,
     [filteredClinics]
   );
+
+  // Reset paging whenever the filtered/sorted set changes.
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filteredClinics]);
 
   function toggleDistrict(d: string) {
     setSelectedDistricts(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
@@ -710,7 +715,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
               </p>
             </div>
           ) : (
-            filteredClinics.map((clinic, i) => {
+            filteredClinics.slice(0, visibleCount).map((clinic, i) => {
               const displayName = clinic.nameEn || clinic.name;
               const rank = i + 1;
               const bg = PHOTO_BG[i % PHOTO_BG.length];
@@ -888,6 +893,25 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                 </Link>
               );
             })
+          )}
+
+          {filteredClinics.length > visibleCount && (
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
+              padding: '32px 0 8px',
+            }}>
+              <button onClick={() => setVisibleCount(v => v + PAGE_SIZE)} style={{
+                fontFamily: 'var(--font-dm-sans)', fontSize: '13.5px', fontWeight: 500,
+                color: 'var(--green)', background: 'var(--white)',
+                border: '1px solid var(--green)', borderRadius: '100px',
+                padding: '11px 28px', cursor: 'pointer', transition: 'all 0.15s',
+              }}>
+                Load more clinics
+              </button>
+              <span style={{ fontSize: '12px', color: 'var(--muted)' }}>
+                Showing {visibleCount} of {filteredClinics.length}
+              </span>
+            </div>
           )}
         </main>
       </div>
