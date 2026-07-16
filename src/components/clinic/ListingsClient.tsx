@@ -175,6 +175,30 @@ function Checkbox({ checked }: { checked: boolean }) {
   );
 }
 
+/* ─── Quick-filter toggle pill ───────────────────────────────────── */
+function FilterPill({ label, count, active, onClick }: {
+  label: string; count: number; active: boolean; onClick: () => void;
+}) {
+  if (count === 0) return null;
+  return (
+    <button onClick={onClick} aria-pressed={active} style={{
+      display: 'inline-flex', alignItems: 'center', gap: '7px',
+      padding: '6px 13px', borderRadius: '100px',
+      border: `1px solid ${active ? 'var(--green)' : 'var(--border)'}`,
+      background: active ? 'var(--green)' : 'var(--white)',
+      color: active ? 'var(--white)' : 'var(--charcoal-soft)',
+      fontFamily: 'var(--font-dm-sans)', fontSize: '12.5px', fontWeight: 400,
+      cursor: 'pointer', transition: 'all 0.15s', whiteSpace: 'nowrap',
+    }}>
+      {label}
+      <span style={{
+        fontSize: '11px',
+        color: active ? 'rgba(255,255,255,0.8)' : 'var(--muted)',
+      }}>{count}</span>
+    </button>
+  );
+}
+
 /* ─── Sidebar content ────────────────────────────────────────────── */
 function SidebarContent({
   allClinics, catSlug, totalClinics,
@@ -192,10 +216,13 @@ function SidebarContent({
   neighbourhoodCounts, ratingCounts, serviceCounts,
   englishCount, btsCount, mrtCount, weekendsCount,
   parkingCount, wheelchairCount, openLateCount, acceptsCardCount,
+  activeCount, clearAll,
 }: {
   allClinics: ListingEntry[];
   totalClinics: number;
   catSlug: string;
+  activeCount: number;
+  clearAll: () => void;
   ratingMin: number | null;
   setRatingMin: (v: number | null) => void;
   selectedDistricts: string[];
@@ -241,6 +268,38 @@ function SidebarContent({
 
   return (
     <>
+      {/* Clear all — only when filters are active */}
+      {activeCount > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          marginBottom: '22px',
+        }}>
+          <span style={{ fontSize: '12.5px', color: 'var(--charcoal-soft)' }}>
+            <strong style={{ fontWeight: 600 }}>{activeCount}</strong> active
+          </span>
+          <button onClick={clearAll} style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+            fontFamily: 'var(--font-dm-sans)', fontSize: '12.5px', color: 'var(--green)',
+            borderBottom: '1px solid var(--green)',
+          }}>Clear all</button>
+        </div>
+      )}
+
+      {/* Quick filters (high-intent binary toggles) */}
+      <div style={filterGroup}>
+        <p style={filterTitle}>Quick filters</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <FilterPill label="English speaking" count={englishCount}    active={englishOnly}    onClick={() => setEnglishOnly(!englishOnly)} />
+          <FilterPill label="Near BTS"         count={btsCount}        active={nearBtsOnly}    onClick={() => setNearBtsOnly(!nearBtsOnly)} />
+          <FilterPill label="Near MRT"         count={mrtCount}        active={nearMrtOnly}    onClick={() => setNearMrtOnly(!nearMrtOnly)} />
+          <FilterPill label="Open weekends"    count={weekendsCount}   active={openWeekends}   onClick={() => setOpenWeekends(!openWeekends)} />
+          <FilterPill label="Open late"        count={openLateCount}   active={openLateOnly}   onClick={() => setOpenLateOnly(!openLateOnly)} />
+          <FilterPill label="Parking"          count={parkingCount}    active={parkingOnly}    onClick={() => setParkingOnly(!parkingOnly)} />
+          <FilterPill label="Wheelchair access" count={wheelchairCount} active={wheelchairOnly} onClick={() => setWheelchairOnly(!wheelchairOnly)} />
+          <FilterPill label="Accepts card"     count={acceptsCardCount} active={acceptsCardOnly} onClick={() => setAcceptsCardOnly(!acceptsCardOnly)} />
+        </div>
+      </div>
+
       {/* Rating */}
       <div style={filterGroup}>
         <p style={filterTitle}>Rating</p>
@@ -317,105 +376,6 @@ function SidebarContent({
         </div>
       )}
 
-      {/* Language */}
-      <div style={filterGroup}>
-        <p style={filterTitle}>Language</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div onClick={() => setEnglishOnly(!englishOnly)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={englishOnly} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>English speaking</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{englishCount}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Transit */}
-      <div style={filterGroup}>
-        <p style={filterTitle}>Transit access</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div onClick={() => setNearBtsOnly(!nearBtsOnly)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={nearBtsOnly} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Near BTS</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{btsCount}</span>
-          </div>
-          <div onClick={() => setNearMrtOnly(!nearMrtOnly)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={nearMrtOnly} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Near MRT</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{mrtCount}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Availability */}
-      <div style={filterGroup}>
-        <p style={filterTitle}>Availability</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div onClick={() => setOpenWeekends(!openWeekends)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={openWeekends} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Open weekends</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{weekendsCount}</span>
-          </div>
-          <div onClick={() => setOpenLateOnly(!openLateOnly)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={openLateOnly} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Open late</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{openLateCount}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Facilities */}
-      <div>
-        <p style={filterTitle}>Facilities</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div onClick={() => setParkingOnly(!parkingOnly)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={parkingOnly} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Has parking</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{parkingCount}</span>
-          </div>
-          <div onClick={() => setWheelchairOnly(!wheelchairOnly)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={wheelchairOnly} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Wheelchair accessible</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{wheelchairCount}</span>
-          </div>
-          <div onClick={() => setAcceptsCardOnly(!acceptsCardOnly)} style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Checkbox checked={acceptsCardOnly} />
-              <span style={{ fontSize: '13.5px', color: 'var(--charcoal-soft)' }}>Accepts card</span>
-            </div>
-            <span style={{ fontSize: '12px', color: 'var(--muted)' }}>{acceptsCardCount}</span>
-          </div>
-        </div>
-      </div>
     </>
   );
 }
@@ -556,9 +516,30 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     setSelectedServices(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
   }
 
+  const activeCount =
+    (ratingMin !== null ? 1 : 0) +
+    selectedServices.length +
+    selectedDistricts.length +
+    [englishOnly, nearBtsOnly, nearMrtOnly, openWeekends, openLateOnly, parkingOnly, wheelchairOnly, acceptsCardOnly].filter(Boolean).length;
+
+  function clearAll() {
+    setRatingMin(null);
+    setSelectedServices([]);
+    setSelectedDistricts([]);
+    setEnglishOnly(false);
+    setNearBtsOnly(false);
+    setNearMrtOnly(false);
+    setOpenWeekends(false);
+    setOpenLateOnly(false);
+    setParkingOnly(false);
+    setWheelchairOnly(false);
+    setAcceptsCardOnly(false);
+  }
+
   const catShort = catName.replace(' Clinics', '');
 
   const sidebarProps = {
+    activeCount, clearAll,
     allClinics, catSlug, totalClinics,
     ratingMin, setRatingMin,
     selectedDistricts, toggleDistrict,
@@ -657,6 +638,14 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
             <line x1="4" y1="6" x2="20" y2="6" /><line x1="4" y1="12" x2="16" y2="12" /><line x1="4" y1="18" x2="12" y2="18" />
           </svg>
           Filters
+          {activeCount > 0 && (
+            <span style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              minWidth: '17px', height: '17px', padding: '0 4px', marginLeft: '2px',
+              borderRadius: '100px', background: 'var(--green)', color: 'var(--white)',
+              fontSize: '10.5px', fontWeight: 600, lineHeight: 1,
+            }}>{activeCount}</span>
+          )}
         </button>
 
       </div>
