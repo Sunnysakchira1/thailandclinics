@@ -564,13 +564,22 @@ export type GuideShortlistItem = {
 };
 
 /** Top clinics for a city+category (weighted rank), with a review-summary snippet — the guide shortlist. */
-export async function getGuideShortlist(citySlug: string, categorySlug: string, limit: number): Promise<GuideShortlistItem[]> {
+export async function getGuideShortlist(citySlug: string, categorySlug: string, limit: number, curatedOrder?: string[]): Promise<GuideShortlistItem[]> {
   const entries = await getListingEntries(citySlug, categorySlug);
-  entries.sort((a, b) =>
-    weightedRating(b.googleRating, b.googleReviewsCount) - weightedRating(a.googleRating, a.googleReviewsCount)
-    || (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0));
+  const idOf = (e: ListingEntry) => (e.isBrand ? e.brandSlug : e.slug);
+  let ordered: ListingEntry[];
+  if (curatedOrder && curatedOrder.length) {
+    // Editorial curation: exactly these clinics, in this order (skip any not found).
+    const byId = new Map(entries.map((e) => [idOf(e), e]));
+    ordered = curatedOrder.map((id) => byId.get(id)).filter((e): e is ListingEntry => Boolean(e)).slice(0, limit);
+  } else {
+    entries.sort((a, b) =>
+      weightedRating(b.googleRating, b.googleReviewsCount) - weightedRating(a.googleRating, a.googleReviewsCount)
+      || (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0));
+    ordered = entries.slice(0, limit);
+  }
   const out: GuideShortlistItem[] = [];
-  for (const e of entries.slice(0, limit)) {
+  for (const e of ordered) {
     let snippet: string | null = null;
     if (!e.isBrand) {
       const [row] = await db.select({ rp: clinics.reviewPositives }).from(clinics).where(eq(clinics.slug, e.slug)).limit(1);

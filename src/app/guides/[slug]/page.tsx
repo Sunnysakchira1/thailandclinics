@@ -4,7 +4,7 @@ import Link from "next/link";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import { getGuideCombos, getGuideShortlist, getClinicCount, getCategoryDistricts } from "@/lib/db/queries";
-import { GUIDE_CITIES, GUIDE_CATEGORIES, guideSlug, parseGuideSlug, fillGuide } from "@/lib/guides";
+import { GUIDE_CITIES, GUIDE_CATEGORIES, GUIDE_CURATED_SHORTLIST, guideSlug, parseGuideSlug, fillGuide } from "@/lib/guides";
 
 export const dynamicParams = false;
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
@@ -42,8 +42,9 @@ export default async function GuidePage({ params }: Props) {
   if (!r) notFound();
   const { city, cat } = r;
 
+  const curatedShortlist = GUIDE_CURATED_SHORTLIST[`${r.citySlug}:${r.categorySlug}`];
   const [shortlist, count, combos, districts] = await Promise.all([
-    getGuideShortlist(r.citySlug, r.categorySlug, 8),
+    getGuideShortlist(r.citySlug, r.categorySlug, curatedShortlist ? curatedShortlist.length : 8, curatedShortlist),
     getClinicCount(r.citySlug, r.categorySlug),
     getGuideCombos(),
     getCategoryDistricts(r.citySlug, r.categorySlug, 8),
@@ -242,7 +243,9 @@ export default async function GuidePage({ params }: Props) {
           </Section>
 
           <Section id="shortlist" title={`Verified top ${cat.nounPlural} in ${city.name}`}>
-            <Para>Ranked by a review-weighted score across {count} verified clinics — each checked against its public record.</Para>
+            <Para>{curatedShortlist
+              ? `ThailandClinics' editorial pick of the top ${cat.nounPlural} in ${city.name} — verified clinics chosen for treatment focus, English-language service and review strength.`
+              : `Ranked by a review-weighted score across ${count} verified clinics — each checked against its public record.`}</Para>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "18px" }}>
               {shortlist.map((s, i) => (
                 <Link key={s.href} href={s.href} style={{ textDecoration: "none" }}>

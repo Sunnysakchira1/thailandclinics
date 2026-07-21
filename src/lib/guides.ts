@@ -456,6 +456,22 @@ export const GUIDE_CATEGORIES: Record<string, GuideCategory> = {
   },
 };
 
+/* ─── Editorial shortlist curation ───────────────────────────────────
+   Pin specific clinics at the top of a city+category guide's "Verified
+   top clinics" list, in this exact order, overriding the default
+   review-weighted ranking for that combo only. Values match the guide
+   href identifier — a brand slug for brand hubs, otherwise the clinic
+   slug. Keep in sync with the matching blog pillar's "5 Best" section. */
+export const GUIDE_CURATED_SHORTLIST: Record<string, string[]> = {
+  "bangkok:fertility-clinics": [
+    "genesis-fertility-center",   // brand hub — GFC (editorial #1)
+    "vfc-v-fertility-center",
+    "prime-fertility-center",
+    "smile-ivf-clinic",
+    "bangkok-central-clinic-ivf",
+  ],
+};
+
 /* ─── Slug helpers ───────────────────────────────────────────────── */
 
 export function guideSlug(citySlug: string, categorySlug: string): string {
