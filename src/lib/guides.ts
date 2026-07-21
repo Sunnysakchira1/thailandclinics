@@ -477,6 +477,20 @@ export const GUIDE_CURATED_SHORTLIST: Record<string, string[]> = {
     "banobagi-clinic-thailand",
     "v-square-clinic",            // brand hub
   ],
+  "bangkok:dental-clinics": [
+    "smile-signature",            // brand hub (editorial #1)
+    "thantakit-international-dental-center-in-bangkok",
+    "the-smile-bar-bangkok-teeth-whitening-bangkok",
+    "sukhumvit-skytrain-dental-clinic",
+    "studio-smile-dental-clinic",
+  ],
+  "bangkok:wellness-clinics": [
+    "wellmed-bangkok-clinic",     // brand hub (editorial #1)
+    "addlife-total-check-up-center",
+    "bangkok-anti-aging-center",
+    "hum-clinic",
+    "openhouse-clinic",
+  ],
 };
 
 /* ─── Slug helpers ───────────────────────────────────────────────── */
