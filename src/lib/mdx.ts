@@ -5,7 +5,7 @@ import matter from "gray-matter";
 const BLOG_DIR = path.join(process.cwd(), "content/blog");
 
 /* ─── Types ──────────────────────────────────────────────────────── */
-export type PostCategory = "physiotherapy" | "dental" | "cosmetic" | "wellness" | "expat-guide";
+export type PostCategory = "physiotherapy" | "dental" | "cosmetic" | "wellness" | "fertility" | "expat-guide";
 export type PostCity     = "bangkok" | "phuket" | "chiang-mai" | "pattaya" | "thailand";
 export type PostType     = "pillar" | "cluster" | "best-of" | "guide";
 

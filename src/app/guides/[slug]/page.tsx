@@ -5,6 +5,7 @@ import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import { getGuideCombos, getGuideShortlist, getClinicCount, getCategoryDistricts } from "@/lib/db/queries";
 import { GUIDE_CITIES, GUIDE_CATEGORIES, GUIDE_CURATED_SHORTLIST, guideSlug, parseGuideSlug, fillGuide } from "@/lib/guides";
+import { getAllPosts } from "@/lib/mdx";
 
 export const dynamicParams = false;
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
@@ -43,6 +44,9 @@ export default async function GuidePage({ params }: Props) {
   const { city, cat } = r;
 
   const curatedShortlist = GUIDE_CURATED_SHORTLIST[`${r.citySlug}:${r.categorySlug}`];
+  // Companion blog pillar for this city+category (if one exists), for cross-linking.
+  const catBase = r.categorySlug.replace(/-clinics$/, "");
+  const pillarPost = getAllPosts().find((p) => p.city === r.citySlug && p.category === catBase && p.type === "pillar") ?? null;
   const [shortlist, count, combos, districts] = await Promise.all([
     getGuideShortlist(r.citySlug, r.categorySlug, curatedShortlist ? curatedShortlist.length : 8, curatedShortlist),
     getClinicCount(r.citySlug, r.categorySlug),
@@ -265,9 +269,16 @@ export default async function GuidePage({ params }: Props) {
                 </Link>
               ))}
             </div>
-            <Link href={listingUrl} style={{ display: "inline-block", marginTop: "20px", fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
-              See all {count} {cat.nounPlural} in {city.name} →
-            </Link>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "12px 28px", alignItems: "center", marginTop: "20px" }}>
+              <Link href={listingUrl} style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
+                See all {count} {cat.nounPlural} in {city.name} →
+              </Link>
+              {pillarPost && (
+                <Link href={`/blog/${pillarPost.slug}/`} style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
+                  Read the full {cat.short.toLowerCase()} guide for {city.name} →
+                </Link>
+              )}
+            </div>
           </Section>
 
           <Section id="faq" title={`${cat.short} clinics in ${city.name} — frequently asked questions`}>

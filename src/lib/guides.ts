@@ -470,6 +470,13 @@ export const GUIDE_CURATED_SHORTLIST: Record<string, string[]> = {
     "smile-ivf-clinic",
     "bangkok-central-clinic-ivf",
   ],
+  "bangkok:cosmetic-clinics": [
+    "cosmo-clinic",               // brand hub — The Cosmo Clinic (editorial #1)
+    "aura-bangkok-clinic",        // brand hub
+    "the-line-k",
+    "banobagi-clinic-thailand",
+    "v-square-clinic",            // brand hub
+  ],
 };
 
 /* ─── Slug helpers ───────────────────────────────────────────────── */

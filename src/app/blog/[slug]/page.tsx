@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import { mdxComponents } from "@/components/blog/MdxComponents";
+import { GUIDE_CITIES, GUIDE_CATEGORIES, guideSlug } from "@/lib/guides";
 import {
   getAllPosts,
   getPostBySlug,
@@ -43,6 +44,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   dental:        "Dental",
   cosmetic:      "Cosmetic",
   wellness:      "Wellness",
+  fertility:     "Fertility",
   "expat-guide": "Expat Guide",
 };
 
@@ -51,6 +53,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   dental:        "#2a5c8a",
   cosmetic:      "var(--terracotta)",
   wellness:      "#5c7a3a",
+  fertility:     "#8a5c7a",
   "expat-guide": "#7a5c2a",
 };
 
@@ -86,6 +89,10 @@ export default async function BlogPostPage({ params }: Props) {
   const catColor   = CATEGORY_COLORS[post.category] ?? "var(--green)";
   const catPath    = CITY_CATEGORY_PATH[post.category];
   const cityLabel  = CITY_LABEL[post.city] ?? post.city;
+  // Companion interactive guide for this city+category (if one exists).
+  const guideHref  = catPath && GUIDE_CATEGORIES[catPath] && GUIDE_CITIES[post.city]
+    ? `/guides/${guideSlug(post.city, catPath)}/`
+    : null;
   const titleShort = post.title.length > 40 ? post.title.slice(0, 40) + "…" : post.title;
 
   /* ── Schemas ── */
@@ -259,6 +266,23 @@ export default async function BlogPostPage({ params }: Props) {
         <div style={{ padding: "48px" }} className="blog-content-pad">
           <div style={{ maxWidth: "700px", margin: "0 auto" }}>
             {Content}
+
+            {catPath && (
+              <div style={{
+                marginTop: "40px", padding: "22px 24px", background: "var(--green-pale)",
+                border: "1px solid var(--border-soft)", borderRadius: "8px",
+                display: "flex", flexWrap: "wrap", gap: "10px 24px", alignItems: "center",
+              }}>
+                {guideHref && (
+                  <Link href={guideHref} style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
+                    Use our interactive {catLabel.toLowerCase()} guide for {cityLabel} →
+                  </Link>
+                )}
+                <Link href={`/${post.city}/${catPath}/`} style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
+                  Browse all {catLabel.toLowerCase()} clinics in {cityLabel} →
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
