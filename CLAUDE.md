@@ -132,6 +132,13 @@ Sitemap: https://thailand-clinics.com/sitemap.xml
 - Informational query → answer in first paragraph, then context
 - Commercial query ("best dental Sukhumvit") → ranked list with differentiators
 
+### Tone & Voice (ALL content)
+- Every piece of content — blog pillars, cluster/best-of posts, guides, clinic
+  summaries, meta descriptions — MUST follow `content/TONE.md`.
+- Canonical example: `content/blog/physiotherapy-bangkok-guide.mdx`. When in doubt, match it.
+- One-line summary: a knowledgeable friend who did the research — warm, direct, specific,
+  honest; British English; answer-first; no corporate/AI filler or empty praise; never Locully.
+
 ### E-E-A-T (Healthcare = YMYL — Google holds this to higher trust standard)
 - "Last updated" date visible on clinic profiles and blog posts
 - Source attribution on any statistics
