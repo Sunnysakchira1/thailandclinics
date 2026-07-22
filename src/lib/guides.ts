@@ -491,6 +491,13 @@ export const GUIDE_CURATED_SHORTLIST: Record<string, string[]> = {
     "hum-clinic",
     "openhouse-clinic",
   ],
+  "phuket:physiotherapy-clinics": [
+    "my-physio-by-kanitta-clinic",   // editorial #1 (merit — most reviewed)
+    "physiofit-physiotherapy-clinic",
+    "physio-first-phuket-and-tcm",
+    "aom-physiotherapy-clinic-phuket",
+    "activecare-physiotherapy-clinic",
+  ],
 };
 
 /* ─── Slug helpers ───────────────────────────────────────────────── */
