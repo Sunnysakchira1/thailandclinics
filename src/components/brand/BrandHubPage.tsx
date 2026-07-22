@@ -3,6 +3,7 @@ import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
+import { withUtm } from "@/lib/utils/outbound";
 import type { BranchRow } from "@/lib/db/queries";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
@@ -188,7 +189,7 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
           {/* Website link */}
           {hub.website && (
             <a
-              href={hub.website}
+              href={withUtm(hub.website)}
               target="_blank"
               rel="noopener noreferrer"
               style={{

@@ -4,6 +4,7 @@ import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import TCVerifiedBadge from "@/components/clinic/TCVerifiedBadge";
+import { withUtm } from "@/lib/utils/outbound";
 import type { ClinicProfile, ClinicReviewRow, BranchRow } from "@/lib/db/queries";
 
 /* ─── Helpers ────────────────────────────────────────────────────── */
@@ -467,7 +468,7 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
                 )}
 
                 {websiteHost && (
-                  <a href={clinic.website!} target="_blank" rel="noopener noreferrer" style={{
+                  <a href={withUtm(clinic.website!)} target="_blank" rel="noopener noreferrer" style={{
                     display: "block",
                     fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                     fontSize: "13px", color: "var(--charcoal-soft)",
