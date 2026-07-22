@@ -9,6 +9,7 @@ const CATEGORIES = [
   { label: "Dental",        value: "dental" },
   { label: "Cosmetic",      value: "cosmetic" },
   { label: "Wellness",      value: "wellness" },
+  { label: "Fertility",     value: "fertility" },
   { label: "Expat Guide",   value: "expat-guide" },
 ];
 
@@ -17,6 +18,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   dental:        "#2a5c8a",
   cosmetic:      "var(--terracotta)",
   wellness:      "#5c7a3a",
+  fertility:     "#8a5c7a",
   "expat-guide": "#7a5c2a",
 };
 

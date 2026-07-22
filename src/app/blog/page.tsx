@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import BlogFilter from "@/components/blog/BlogFilter";
@@ -71,6 +72,15 @@ export default function BlogIndexPage() {
               Practical guides for expats and medical tourists navigating
               healthcare in Thailand.
             </p>
+
+            <Link href="/guides/" style={{
+              display: "inline-flex", alignItems: "center", gap: "8px", marginTop: "22px",
+              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500,
+              color: "var(--green)", background: "var(--green-pale)", border: "1px solid var(--green)",
+              borderRadius: "100px", padding: "9px 18px", textDecoration: "none", width: "fit-content",
+            }}>
+              Or use our interactive clinic-choosing guides →
+            </Link>
           </div>
         </div>
 
