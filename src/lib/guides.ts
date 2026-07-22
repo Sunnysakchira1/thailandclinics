@@ -498,6 +498,13 @@ export const GUIDE_CURATED_SHORTLIST: Record<string, string[]> = {
     "aom-physiotherapy-clinic-phuket",
     "activecare-physiotherapy-clinic",
   ],
+  "phuket:wellness-clinics": [
+    "plenary-longevity-wellness",    // editorial #1 (merit — top-rated, longevity)
+    "mhcp-medical-health-clinic",
+    "bajor-wellness",
+    "touch-of-ocean",
+    "bdms-wellness-clinic-laguna-phuket",
+  ],
 };
 
 /* ─── Slug helpers ───────────────────────────────────────────────── */

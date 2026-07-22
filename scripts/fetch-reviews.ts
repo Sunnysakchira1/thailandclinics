@@ -10,15 +10,20 @@
 
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import { isNotNull } from "drizzle-orm";
-import { clinics, clinicReviews } from "../src/lib/db/schema";
+import { isNotNull, eq, and } from "drizzle-orm";
+import { clinics, clinicReviews, cities, categories } from "../src/lib/db/schema";
+
+const argVal = (flag: string): string | undefined => {
+  const i = process.argv.indexOf(flag);
+  return i >= 0 ? process.argv[i + 1] : undefined;
+};
 
 /* ─── DB ─────────────────────────────────────────────────────────── */
 const client = createClient({
   url:       process.env.TURSO_URL!,
   authToken: process.env.TURSO_AUTH_TOKEN!,
 });
-const db = drizzle(client, { schema: { clinics, clinicReviews } });
+const db = drizzle(client, { schema: { clinics, clinicReviews, cities, categories } });
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -89,13 +94,23 @@ async function main() {
   }
   const apiKey = process.env.OUTSCRAPER_API_KEY;
 
-  /* 1. All clinics with a place_id */
-  const allClinics = await db
-    .select({ id: clinics.id, placeId: clinics.googlePlaceId })
-    .from(clinics)
-    .where(isNotNull(clinics.googlePlaceId));
+  /* 1. Clinics with a place_id — optionally scoped by --city / --category,
+        and always skipping clinics that already have reviews (cost-safe). */
+  const argCity = argVal("--city"), argCat = argVal("--category");
+  let cityId: number | undefined, catId: number | undefined;
+  if (argCity) { const [c] = await db.select().from(cities).where(eq(cities.slug, argCity)); cityId = c?.id; }
+  if (argCat)  { const [c] = await db.select().from(categories).where(eq(categories.slug, argCat)); catId = c?.id; }
+  const withReviews = new Set(
+    (await db.select({ id: clinicReviews.clinicId }).from(clinicReviews)).map((r) => r.id)
+  );
+  const conds = [isNotNull(clinics.googlePlaceId)];
+  if (cityId != null) conds.push(eq(clinics.cityId, cityId));
+  if (catId != null)  conds.push(eq(clinics.categoryId, catId));
+  const allClinics = (
+    await db.select({ id: clinics.id, placeId: clinics.googlePlaceId }).from(clinics).where(and(...conds))
+  ).filter((c) => !withReviews.has(c.id));
 
-  console.log(`Clinics to fetch: ${allClinics.length}`);
+  console.log(`Clinics to fetch${argCity ? ` [${argCity}/${argCat ?? "all"}]` : ""}: ${allClinics.length} (skipped ${withReviews.size} already-reviewed)`);
 
   /* 2. Existing review IDs for dedup */
   const existing = await db
