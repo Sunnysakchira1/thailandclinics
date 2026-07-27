@@ -422,8 +422,9 @@ body {
   .review-grid      { grid-template-columns: 1fr; }
   .review-col:first-child { border-right: none; border-bottom: 1px solid var(--border-soft); }
 
-  /* City & category landing pages — mobile */
-  .city-hero-pad    { padding: 28px 20px 24px; }
+  /* City & category landing pages — mobile
+     !important: every usage also sets inline padding, which would otherwise win */
+  .city-hero-pad    { padding: 28px 20px 24px !important; }
   .city-content-pad { padding: 28px 20px 48px !important; }
   .city-cat-grid    { grid-template-columns: repeat(2, 1fr) !important; gap: 12px !important; }
   .city-cat-tile    { min-height: 110px !important; }
@@ -431,7 +432,25 @@ body {
 
   /* Compact clinic rows — mobile */
   .compact-row      { padding: 12px 16px; }
+
+  /* Brand hub branch rows — mobile: smaller photo, actions drop below the name */
+  .branch-row-photo { width: 88px !important; }
+  .branch-row .nearby-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    padding: 12px 14px !important;
+  }
+  .branch-row-actions { gap: 2px !important; margin-left: -10px; }
+  .branch-row-actions a { min-height: 36px !important; }
+  .branch-row-view    { min-height: 36px !important; }
 }
+
+/* ─── Brand hub branch rows ─────────────────────────────────────── */
+/* The row overlay link sits over .nearby-row, so hover must come off the parent */
+.branch-row:hover .nearby-row      { background: #fdfcfa !important; }
+.branch-row:hover .branch-row-view { text-decoration: underline; }
+.branch-row-overlay:focus-visible  { outline: 2px solid var(--green); outline-offset: -2px; }
 
 /* ─── Compact row hover ─────────────────────────────────────────── */
 .compact-row:hover { background: #fdfcfa; }

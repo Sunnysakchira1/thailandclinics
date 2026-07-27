@@ -241,13 +241,25 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                 return (
                   <div
                     key={branch.branchSlug ?? i}
+                    className="branch-row"
                     style={{
+                      position: "relative",
                       display: "flex", alignItems: "stretch",
                       borderBottom: i < hub.branches.length - 1 ? "1px solid var(--border-soft)" : "none",
                     }}
                   >
+                    {/* Full-row tap target — covers photo + content, sits under the Map link */}
+                    {branch.branchSlug && (
+                      <Link
+                        href={branchHref}
+                        aria-label={`View ${displayName}`}
+                        className="branch-row-overlay"
+                        style={{ position: "absolute", inset: 0, zIndex: 1 }}
+                      />
+                    )}
+
                     {/* Photo thumbnail */}
-                    <div style={{
+                    <div className="branch-row-photo" style={{
                       position: "relative", flexShrink: 0,
                       width: "120px", aspectRatio: "4/3",
                       overflow: "hidden", background: "var(--linen-dark)",
@@ -255,7 +267,7 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                       <ClinicPhoto url={branch.photoUrl} name={displayName} />
                     </div>
 
-                    {/* Content row — plain div, no wrapping Link, so Maps <a> and View <Link> are siblings */}
+                    {/* Content row — sits above the overlay only where it needs its own links */}
                     <div
                       className="nearby-row"
                       style={{
@@ -263,6 +275,7 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                         justifyContent: "space-between", gap: "16px",
                         padding: "16px 20px",
                         background: "var(--white)",
+                        minWidth: 0,
                       }}
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -301,8 +314,15 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                         </div>
                       </div>
 
-                      {/* Right: sibling links — Maps <a> + View <Link> (only when branchSlug exists) */}
-                      <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
+                      {/* Right: Map <a> lifted above the row overlay; "View" is decorative —
+                          the whole row is the link, so it needs no tap target of its own. */}
+                      <div
+                        className="branch-row-actions"
+                        style={{
+                          display: "flex", alignItems: "center", gap: "4px",
+                          flexShrink: 0, position: "relative", zIndex: 2,
+                        }}
+                      >
                         <a
                           href={mapsUrl}
                           target="_blank"
@@ -310,7 +330,9 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                           style={{
                             fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                             fontSize: "12px", color: "var(--muted)", textDecoration: "none",
-                            display: "inline-flex", alignItems: "center", gap: "4px",
+                            display: "inline-flex", alignItems: "center", justifyContent: "center",
+                            gap: "4px",
+                            minHeight: "44px", padding: "0 10px",
                           }}
                         >
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -319,16 +341,19 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                           Map
                         </a>
                         {branch.branchSlug && (
-                          <Link
-                            href={branchHref}
+                          <span
+                            aria-hidden="true"
+                            className="branch-row-view"
                             style={{
                               fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                               fontSize: "13px", color: "var(--green)", fontWeight: 500,
-                              textDecoration: "none",
+                              display: "inline-flex", alignItems: "center",
+                              minHeight: "44px", paddingLeft: "6px",
+                              whiteSpace: "nowrap",
                             }}
                           >
                             View →
-                          </Link>
+                          </span>
                         )}
                       </div>
                     </div>
