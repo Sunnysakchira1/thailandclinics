@@ -546,8 +546,8 @@ CSS profile classes added to globals.css:
 - **`cid` column in DB is permanently corrupted** — Outscraper exported CIDs as floats,
   SQLite stored them with precision loss (e.g. 7626080000000000000 vs real
   7626083593050235220). Never use the cid column for URLs. Use google_place_id always.
-- **Sitemap-0.xml clinic profile URLs missing trailing slashes**
-  (e.g. `.../thonglor-physio` not `.../thonglor-physio/`) — inconsistent with canonical URLs
+- ~~Sitemap-0.xml clinic profile URLs missing trailing slashes~~ — fixed; resolved by
+  `trailingSlash: true` in both next.config and next-sitemap.config. Verified 2026-08-12.
 
 ---
 
@@ -593,7 +593,14 @@ CSS profile classes added to globals.css:
 - ~~`websiteSchema` name bug~~ — fixed 2026-03-21
 - ~~Maps URL using corrupted CID~~ — fixed 2026-03-21
 - **`cid` column in DB is permanently corrupted** — never use for URLs, use google_place_id
-- **Sitemap-0.xml clinic profile URLs missing trailing slashes** — will correct on next build
+- ~~Sitemap-0.xml clinic profile URLs missing trailing slashes~~ — fixed, verified 2026-08-12
+- ~~Sitemap priority: blog/guide pages scored 0.9 weekly instead of 0.7 monthly~~ — fixed
+  2026-08-12. `/blog/[slug]` is depth 2, so it fell through the `depth <= 2` city rule.
+  Blog/guides are now matched by path prefix BEFORE the depth checks.
+- ~~Sitemap: `/icon.png` and `/apple-icon.png` emitted as indexable URLs~~ — fixed
+  2026-08-12, added to `exclude` (only `/icon.svg` was listed).
+- ~~Sitemap: static pages (/about, /privacy, /terms, /how-we-rank, /list-your-clinic,
+  /browse) scored 0.9 weekly, level with city pages~~ — fixed 2026-08-12, now 0.5 yearly.
 
 ---
 
