@@ -491,6 +491,13 @@ export const GUIDE_CURATED_SHORTLIST: Record<string, string[]> = {
     "hum-clinic",
     "openhouse-clinic",
   ],
+  "bangkok:physiotherapy-clinics": [
+    "form-recovery-and-wellness-at-asoke",  // editorial #1 — expat/medical-tourist focus
+    "health-link-clinic",
+    "unique-care-station-param-9",
+    "fresh-physiotherapy-clinic-sukhumvit18",
+    "doctor-physio-clinic",
+  ],
   "phuket:physiotherapy-clinics": [
     "my-physio-by-kanitta-clinic",   // editorial #1 (merit — most reviewed)
     "physiofit-physiotherapy-clinic",
