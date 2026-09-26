@@ -4,6 +4,7 @@ import {
   getClinicProfile,
   getClinicReviews,
 } from "@/lib/db/queries";
+import { clinicTitle, brandHubTitle } from "@/lib/seo/titles";
 import ClinicProfileView, {
   buildClinicSchema,
   haversine,
@@ -20,6 +21,10 @@ export async function generateStaticParams() {
 }
 
 /* ─── Metadata ───────────────────────────────────────────────────── */
+function hasItems(json: string | null): boolean {
+  try { const v = json ? JSON.parse(json) : null; return !!v && Object.keys(v).length > 0; } catch { return false; }
+}
+
 type Props = { params: Promise<{ city: string; category: string; slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -29,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const hub = await getBrandHub(city, category, slug);
   if (hub) {
     const catShort = hub.categoryName.replace(" Clinics", "");
-    const title = `${hub.name} — ${catShort} in ${hub.cityName} | ThailandClinics`;
+    const title = brandHubTitle({ name: hub.name, city: hub.cityName, branchCount: hub.branchCount });
     const description = `Explore ${hub.branchCount ?? "all"} ${catShort.toLowerCase()} branches of ${hub.name} across ${hub.cityName}. Compare ratings, reviews, opening hours and contact details for each location.`;
     return {
       title, description,
@@ -41,7 +46,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!clinic) return {};
   const displayName = clinic.nameEn ?? clinic.name;
   const catShort    = clinic.categoryName.replace(" Clinics", "");
-  const title       = `${displayName} — ${catShort} in ${clinic.district ?? clinic.cityName}, ${clinic.cityName} | ThailandClinics`;
+  const { getDuplicateDisplayNames } = await import("@/lib/db/queries");
+  const dupes = await getDuplicateDisplayNames();
+  const title = clinicTitle({
+    slug:          clinic.slug,
+    name:          displayName,
+    city:          clinic.cityName,
+    district:      clinic.district,
+    hasServices:   hasItems(clinic.services),
+    hasHours:      hasItems(clinic.openingHours),
+    duplicateName: dupes.has(`${clinic.citySlug}:${displayName.toLowerCase()}`),
+  });
   const description = `${displayName} is a verified ${catShort.toLowerCase()} clinic in ${clinic.district ?? clinic.cityName}, ${clinic.cityName}. View reviews, opening hours and contact details.`;
   return {
     title, description,

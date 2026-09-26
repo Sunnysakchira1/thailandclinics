@@ -46,7 +46,10 @@ Note: brand/branch nesting (`/[brand]/[branch]/`) is the sanctioned exception to
 
 ### Meta Titles
 - 55-62 characters exactly — fill the space, never waste it
-- Clinic profile: "[Clinic Name] — [Category] in [District], [City] | ThailandClinics"
+- Clinic profile: "[Clinic Name] [City] — Reviews, Treatments & Hours | ThailandClinics"
+  (built by src/lib/seo/titles.ts; drops facets/suffix to fit 62; "Prices" only once price data exists.
+  Changed 2026-09-26 from "[Name] — [Category] in [District], [City]" — baseline in docs/seo/title-change-2026-09.md)
+- Brand hub: "[Brand] [City] — [N] Branches, Reviews & Hours | ThailandClinics"
 - Category page: "[Category] in [City] — Verified Clinics | ThailandClinics"
 - Blog post: "[Intent-matched headline] | ThailandClinics"
 - Homepage: "Thailand Clinics — Find Verified Dental, Physio & Cosmetic Clinics"

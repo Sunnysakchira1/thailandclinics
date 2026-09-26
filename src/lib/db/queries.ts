@@ -628,3 +628,21 @@ export async function getBranchParams() {
     .innerJoin(cities, eq(clinics.cityId, cities.id))
     .innerJoin(categories, eq(clinics.categoryId, categories.id));
 }
+
+/* ─── Title disambiguation ───────────────────────────────────────── */
+/** "city:lowercased display name" for every name shared by 2+ clinics in a city.
+ *  Memoised per build — every clinic page's generateMetadata calls it. */
+let duplicateNamesPromise: Promise<Set<string>> | null = null;
+export function getDuplicateDisplayNames(): Promise<Set<string>> {
+  duplicateNamesPromise ??= db
+    .select({
+      key: sql<string>`${cities.slug} || ':' || lower(coalesce(${clinics.nameEn}, ${clinics.name}))`,
+      n:   count(),
+    })
+    .from(clinics)
+    .innerJoin(cities, eq(clinics.cityId, cities.id))
+    .groupBy(sql`1`)
+    .having(sql`count(*) > 1`)
+    .then((rows) => new Set(rows.map((r) => r.key)));
+  return duplicateNamesPromise;
+}

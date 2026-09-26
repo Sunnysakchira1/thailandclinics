@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   getBranchProfile,
+  getDuplicateDisplayNames,
   getBranchParams,
   getClinicReviews,
   getBrandSiblings,
 } from "@/lib/db/queries";
+import { clinicTitle } from "@/lib/seo/titles";
 import ClinicProfileView, {
   buildClinicSchema,
   haversine,
@@ -25,6 +27,10 @@ export async function generateStaticParams() {
 }
 
 /* ─── Metadata ───────────────────────────────────────────────────── */
+function hasItems(json: string | null): boolean {
+  try { const v = json ? JSON.parse(json) : null; return !!v && Object.keys(v).length > 0; } catch { return false; }
+}
+
 type Props = {
   params: Promise<{ city: string; category: string; slug: string; branch: string }>;
 };
@@ -37,7 +43,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const displayName = profile.nameEn ?? profile.name;
   const catShort    = profile.categoryName.replace(" Clinics", "");
   const district    = profile.district ?? profile.cityName;
-  const title       = `${displayName} — ${catShort} in ${district}, ${profile.cityName} | ThailandClinics`;
+  const dupes       = await getDuplicateDisplayNames();
+  const title       = clinicTitle({
+    slug:          profile.slug,
+    name:          displayName,
+    city:          profile.cityName,
+    district:      profile.district,
+    hasServices:   hasItems(profile.services),
+    hasHours:      hasItems(profile.openingHours),
+    duplicateName: dupes.has(`${profile.citySlug}:${displayName.toLowerCase()}`),
+  });
   const description = `${displayName} is a verified ${catShort.toLowerCase()} clinic in ${district}, ${profile.cityName}. View reviews, opening hours and contact details for this branch.`;
 
   return {
