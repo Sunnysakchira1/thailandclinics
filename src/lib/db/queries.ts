@@ -1,6 +1,6 @@
 import { eq, desc, and, ne, sql, isNotNull, isNull, count } from "drizzle-orm";
 import { db } from "./index";
-import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations } from "./schema";
+import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations, treatmentPrices } from "./schema";
 import { WR_BASELINE, WR_WEIGHT, weightedRating } from "../ranking";
 
 /* Volume-aware weighted rating as a SQL ORDER BY fragment — mirrors
@@ -658,4 +658,45 @@ export async function getClinicStations(clinicId: number): Promise<NearbyStation
     .innerJoin(transitStations, eq(clinicStations.stationId, transitStations.id))
     .where(eq(clinicStations.clinicId, clinicId))
     .orderBy(clinicStations.distanceM);
+}
+
+/* ─── Prices ─────────────────────────────────────────────────────── */
+export type PriceRecord = {
+  treatment:   string;
+  product:     string | null;
+  priceThb:    number;
+  priceMaxThb: number | null;
+  unit:        string;
+  quantity:    number | null;
+  sourceUrl:   string;
+  checkedAt:   string;
+  note:        string | null;
+  /** Clinic or brand the price belongs to — one id per price-setting entity. */
+  entityKey:   string;
+};
+
+const priceCols = {
+  treatment: treatmentPrices.treatment, product: treatmentPrices.product,
+  priceThb: treatmentPrices.priceThb, priceMaxThb: treatmentPrices.priceMaxThb,
+  unit: treatmentPrices.unit, quantity: treatmentPrices.quantity,
+  sourceUrl: treatmentPrices.sourceUrl, checkedAt: treatmentPrices.checkedAt, note: treatmentPrices.note,
+  entityKey: sql<string>`CASE WHEN ${treatmentPrices.brandId} IS NOT NULL THEN 'b' || ${treatmentPrices.brandId} ELSE 'c' || ${treatmentPrices.clinicId} END`,
+};
+
+/** Prices for one clinic: its own, plus chain-wide prices from its brand. */
+export async function getClinicPrices(clinicId: number, brandId: number | null): Promise<PriceRecord[]> {
+  const where = brandId != null
+    ? sql`${treatmentPrices.clinicId} = ${clinicId} OR ${treatmentPrices.brandId} = ${brandId}`
+    : eq(treatmentPrices.clinicId, clinicId);
+  return db.select(priceCols).from(treatmentPrices).where(where)
+    .orderBy(treatmentPrices.treatment, treatmentPrices.priceThb);
+}
+
+/** All price records for a treatment in a city (clinic- and brand-level). */
+export async function getTreatmentPrices(treatment: string, citySlug: string): Promise<PriceRecord[]> {
+  return db.select(priceCols).from(treatmentPrices)
+    .leftJoin(clinics, eq(treatmentPrices.clinicId, clinics.id))
+    .leftJoin(brands, eq(treatmentPrices.brandId, brands.id))
+    .innerJoin(cities, sql`${cities.id} = COALESCE(${clinics.cityId}, ${brands.cityId})`)
+    .where(and(eq(treatmentPrices.treatment, treatment), eq(cities.slug, citySlug)));
 }

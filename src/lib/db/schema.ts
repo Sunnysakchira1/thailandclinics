@@ -149,6 +149,25 @@ export const clinicStations = sqliteTable("clinic_stations", {
   clinicStationUnique: uniqueIndex("clinic_stations_unq").on(t.clinicId, t.stationId),
 }));
 
+/* ─── treatment_prices ────────────────────────────────────────────── */
+// Prices clinics publish themselves. Source of truth: data/prices.csv,
+// loaded by scripts/import-prices.ts (replace-all). Chain-wide prices set
+// brand_id and apply to every branch; otherwise clinic_id is set.
+export const treatmentPrices = sqliteTable("treatment_prices", {
+  id:          integer("id").primaryKey({ autoIncrement: true }),
+  clinicId:    integer("clinic_id").references(() => clinics.id),
+  brandId:     integer("brand_id").references(() => brands.id),
+  treatment:   text("treatment").notNull(),   // "botox" | "dermal-filler" | "ulthera" | …
+  product:     text("product"),               // "Allergan", "Juvederm Voluma"…
+  priceThb:    integer("price_thb").notNull(),
+  priceMaxThb: integer("price_max_thb"),
+  unit:        text("unit").notNull(),        // "unit" | "vial" | "area" | "cc" | "ml" | "lines" | "session" | "syringe"
+  quantity:    real("quantity"),              // units/cc/lines the price covers
+  sourceUrl:   text("source_url").notNull(),
+  checkedAt:   text("checked_at").notNull(),  // YYYY-MM-DD
+  note:        text("note"),
+});
+
 /* ─── Types ───────────────────────────────────────────────────────── */
 export type City     = typeof cities.$inferSelect;
 export type Category = typeof categories.$inferSelect;

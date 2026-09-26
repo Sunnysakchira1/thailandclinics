@@ -16,7 +16,7 @@ public/sitemap*.xml
 public/robots.txt
 
 # Data files (may contain PII / raw exports)
-data/
+data/*
 
 # Office documents
 *.docx
@@ -31,3 +31,6 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+# Curated, hand-checked data files ARE tracked (raw exports stay ignored)
+!data/transit-stations.json
+!data/prices.csv

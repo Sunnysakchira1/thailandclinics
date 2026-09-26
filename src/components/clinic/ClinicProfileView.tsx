@@ -5,7 +5,7 @@ import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import TCVerifiedBadge from "@/components/clinic/TCVerifiedBadge";
 import { withUtm } from "@/lib/utils/outbound";
-import type { ClinicProfile, ClinicReviewRow, BranchRow, NearbyStation } from "@/lib/db/queries";
+import type { ClinicProfile, ClinicReviewRow, BranchRow, NearbyStation, PriceRecord } from "@/lib/db/queries";
 
 /* ─── Helpers ────────────────────────────────────────────────────── */
 export function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -290,6 +290,37 @@ const PRACTICAL_GROUPS: { title: string; items: Record<string, string> }[] = [
   } },
 ];
 
+/* ─── Published prices ───────────────────────────────────────────── */
+const TREATMENT_LABELS: Record<string, string> = {
+  "botox":         "Botox",
+  "dermal-filler": "Dermal filler",
+  "ulthera":       "Ulthera Prime",
+};
+// Bangkok-wide comparison for each treatment (only where a guide exists).
+const TREATMENT_GUIDES: Record<string, { href: string; label: string }> = {
+  "bangkok:botox":         { href: "/blog/best-botox-clinics-bangkok/",         label: "Compare Botox prices across Bangkok" },
+  "bangkok:dermal-filler": { href: "/blog/best-dermal-filler-clinics-bangkok/", label: "Compare dermal filler prices across Bangkok" },
+  "bangkok:ulthera":       { href: "/blog/best-ulthera-prime-clinics-bangkok/", label: "Compare Ulthera Prime prices across Bangkok" },
+};
+
+function formatThb(n: number): string {
+  return `฿${n.toLocaleString("en-US")}`;
+}
+
+function unitText(r: PriceRecord): string {
+  const q = r.quantity;
+  switch (r.unit) {
+    case "unit":    return "per unit";
+    case "vial":    return q ? `per ${q}-unit vial` : "per vial";
+    case "area":    return q ? `per area (${q} units)` : "per area";
+    case "cc":      return q && q !== 1 ? `per ${q} cc` : "per cc";
+    case "ml":      return q ? `per ${q} ml` : "per ml";
+    case "lines":   return q ? `for ${q} lines` : "per session";
+    case "syringe": return "per syringe";
+    default:        return "per session";
+  }
+}
+
 /** Rough walking time: straight line × 1.3 detour at 80 m/min. */
 function walkMinutes(distanceM: number): number {
   return Math.max(1, Math.ceil((distanceM * 1.3) / 80));
@@ -444,6 +475,8 @@ export type ClinicProfileViewProps = {
   reviews:     ClinicReviewRow[];
   /** Nearest rail stations (≤ 2 within 1 km), closest first. */
   stations?:   NearbyStation[];
+  /** Prices the clinic (or its chain) publishes — clinic- and brand-level. */
+  prices?:     PriceRecord[];
   /** Nearby clinics, pre-sorted by distance and already sliced. Links use clinic.citySlug/categorySlug. */
   nearby:      NearbyClinic[];
   /** Pre-built schema objects (LocalBusiness + BreadcrumbList). */
@@ -459,7 +492,7 @@ export type ClinicProfileViewProps = {
 };
 
 /* ─── View ───────────────────────────────────────────────────────── */
-export default function ClinicProfileView({ clinic, reviews, stations, nearby, schemas, brand, branchSlug, siblings, editorsNote }: ClinicProfileViewProps) {
+export default function ClinicProfileView({ clinic, reviews, stations, prices, nearby, schemas, brand, branchSlug, siblings, editorsNote }: ClinicProfileViewProps) {
   const allReviews = reviews;
   const displayName = clinic.nameEn ?? clinic.name;
   const mapsUrl     = clinic.googlePlaceId
@@ -1066,6 +1099,81 @@ export default function ClinicProfileView({ clinic, reviews, stations, nearby, s
                         );
                       })}
                     </div>
+                  </div>
+                </details>
+              );
+            })()}
+
+            {/* Published prices */}
+            {prices && prices.length > 0 && (() => {
+              const byTreatment = new Map<string, PriceRecord[]>();
+              for (const p of prices) byTreatment.set(p.treatment, [...(byTreatment.get(p.treatment) ?? []), p]);
+              const checked = prices.map((p) => p.checkedAt).sort().at(-1)!;
+              return (
+                <details className="profile-detail-block" open>
+                  <summary className="profile-detail-summary">Published Prices</summary>
+                  <div className="profile-detail-content">
+                    {[...byTreatment].map(([treatment, rows]) => {
+                      const guide = TREATMENT_GUIDES[`${clinic.citySlug}:${treatment}`];
+                      const sources = [...new Set(rows.map((r) => r.sourceUrl))];
+                      return (
+                        <div key={treatment} style={{ marginBottom: "20px" }}>
+                          <h3 style={{
+                            fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                            fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em",
+                            textTransform: "uppercase", color: "var(--muted)", margin: "0 0 8px",
+                          }}>{TREATMENT_LABELS[treatment] ?? treatment}</h3>
+                          <div style={{ border: "1px solid var(--border-soft)", borderRadius: "6px", overflow: "hidden" }}>
+                            {rows.map((r, i) => (
+                              <div key={i} style={{
+                                display: "flex", justifyContent: "space-between", gap: "16px",
+                                padding: "10px 16px", minHeight: "44px", alignItems: "center",
+                                background: i % 2 === 0 ? "var(--white)" : "var(--linen)",
+                                borderBottom: i < rows.length - 1 ? "1px solid var(--border-soft)" : "none",
+                                fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px",
+                              }}>
+                                <span style={{ color: "var(--charcoal-soft)" }}>
+                                  {[r.product, r.note?.toLowerCase().includes("starting") ? null : r.note].filter(Boolean).join(" · ") || TREATMENT_LABELS[treatment]}
+                                </span>
+                                <span style={{ color: "var(--charcoal)", fontWeight: 500, textAlign: "right", whiteSpace: "nowrap" }}>
+                                  {r.note?.toLowerCase().includes("starting") ? "from " : ""}
+                                  {formatThb(r.priceThb)}{r.priceMaxThb ? `–${formatThb(r.priceMaxThb)}` : ""}{" "}
+                                  <span style={{ color: "var(--muted)", fontWeight: 400, fontSize: "12.5px" }}>{unitText(r)}</span>
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          <p style={{
+                            fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                            fontSize: "12px", color: "var(--muted)", marginTop: "8px", lineHeight: 1.6,
+                          }}>
+                            Source:{" "}
+                            {sources.map((u, i) => (
+                              <span key={u}>
+                                {i > 0 && ", "}
+                                <a href={u} target="_blank" rel="noopener noreferrer nofollow" style={{ color: "var(--muted)" }}>
+                                  clinic price page
+                                </a>
+                              </span>
+                            ))}
+                            {guide && (
+                              <>
+                                {" · "}
+                                <Link href={guide.href} style={{ color: "var(--green)", textDecoration: "none", fontWeight: 500 }}>
+                                  {guide.label} →
+                                </Link>
+                              </>
+                            )}
+                          </p>
+                        </div>
+                      );
+                    })}
+                    <p style={{
+                      fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                      fontSize: "12px", color: "var(--muted)",
+                    }}>
+                      Prices the clinic publishes itself, checked {formatMonth(checked)}. Confirm the current price and product before you book.
+                    </p>
                   </div>
                 </details>
               );

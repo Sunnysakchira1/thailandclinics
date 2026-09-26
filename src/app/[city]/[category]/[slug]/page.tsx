@@ -4,6 +4,7 @@ import {
   getClinicProfile,
   getClinicReviews,
   getClinicStations,
+  getClinicPrices,
 } from "@/lib/db/queries";
 import { clinicTitle, brandHubTitle } from "@/lib/seo/titles";
 import ClinicProfileView, {
@@ -86,9 +87,10 @@ export default async function ClinicProfilePage({ params }: Props) {
   const schemas = buildClinicSchema(clinic, siteUrl);
 
   /* Fetch reviews + nearby in parallel */
-  const [reviews, stations, nearbyPool] = await Promise.all([
+  const [reviews, stations, prices, nearbyPool] = await Promise.all([
     getClinicReviews(clinic.id, 20),
     getClinicStations(clinic.id),
+    getClinicPrices(clinic.id, clinic.brandId),
     (async () => {
       const { db } = await import("@/lib/db/index");
       const { clinics: c, cities: ct, categories: cat } = await import("@/lib/db/schema");
@@ -116,6 +118,7 @@ export default async function ClinicProfilePage({ params }: Props) {
       clinic={clinic}
       reviews={reviews}
       stations={stations}
+      prices={prices}
       nearby={nearby}
       schemas={schemas}
     />
