@@ -253,6 +253,65 @@ function normaliseTime(t: string): string {
   return `${String(h).padStart(2, "0")}:${min}`;
 }
 
+/* ─── Practical details (from the Google listing `about` JSON) ─────── */
+// Only attributes the listing marks true are shown. Groups and labels are
+// patient-facing; anything not listed here (toilets, recycling…) is skipped.
+const PRACTICAL_GROUPS: { title: string; items: Record<string, string> }[] = [
+  { title: "Parking", items: {
+    "On-site parking": "On-site parking",
+    "Free parking lot": "Free car park",
+    "Free multi-storey car park": "Free multi-storey car park",
+    "Free of charge street parking": "Free street parking",
+    "Paid parking lot": "Paid car park",
+    "Paid multi-storey car park": "Paid multi-storey car park",
+    "Paid street parking": "Paid street parking",
+  } },
+  { title: "Accessibility", items: {
+    "Wheelchair-accessible entrance": "Wheelchair-accessible entrance",
+    "Wheelchair-accessible car park": "Wheelchair-accessible parking",
+    "Wheelchair-accessible toilet": "Wheelchair-accessible toilet",
+    "Wheelchair-accessible seating": "Wheelchair-accessible seating",
+    "Assistive hearing loop": "Hearing loop",
+  } },
+  { title: "Payment", items: {
+    "Credit cards": "Credit cards",
+    "Debit cards": "Debit cards",
+    "NFC mobile payments": "Mobile / contactless pay",
+    "Payment plans": "Payment plans",
+    "Cash only": "Cash only",
+  } },
+  { title: "Booking", items: {
+    "Appointment required": "Appointment required",
+    "Appointments recommended": "Appointments recommended",
+    "Emergency services": "Emergency services",
+    "Pediatric care": "Treats children",
+    "Nursing room": "Nursing room",
+    "LGBTQ+ friendly": "LGBTQ+ friendly",
+  } },
+];
+
+export function parsePracticalDetails(clinic: Pick<ClinicProfile, "about" | "nearBts" | "nearMrt">) {
+  const truthy = new Set<string>();
+  try {
+    const about = clinic.about ? JSON.parse(clinic.about) as Record<string, Record<string, unknown>> : {};
+    for (const group of Object.values(about)) {
+      if (group && typeof group === "object") {
+        for (const [k, v] of Object.entries(group)) if (v === true) truthy.add(k);
+      }
+    }
+  } catch { /* malformed about JSON → no details */ }
+  // Google often sets both; "required" is the stronger, useful fact.
+  if (truthy.has("Appointment required")) truthy.delete("Appointments recommended");
+
+  const groups = PRACTICAL_GROUPS
+    .map((g) => ({ title: g.title, items: Object.entries(g.items).filter(([k]) => truthy.has(k)).map(([, label]) => label) }))
+    .filter((g) => g.items.length > 0);
+
+  const transit = [clinic.nearBts && "Near BTS Skytrain", clinic.nearMrt && "Near MRT"].filter(Boolean) as string[];
+  if (transit.length) groups.unshift({ title: "Public transport", items: transit });
+  return groups;
+}
+
 /* ─── Schema ─────────────────────────────────────────────────────── */
 export function buildClinicSchema(
   clinic: ClinicProfile,
@@ -297,6 +356,16 @@ export function buildClinicSchema(
   }
   const hours = hoursToSchema(clinic.openingHours);
   if (hours.length) localBusiness.openingHoursSpecification = hours;
+
+  const practical = parsePracticalDetails(clinic);
+  const payment = practical.find((g) => g.title === "Payment");
+  if (payment) localBusiness.paymentAccepted = payment.items.join(", ");
+  const amenities = practical.filter((g) => g.title !== "Payment").flatMap((g) => g.items);
+  if (amenities.length) {
+    localBusiness.amenityFeature = amenities.map((name) => ({
+      "@type": "LocationFeatureSpecification", name, value: true,
+    }));
+  }
 
   const breadcrumbItems: Record<string, unknown>[] = [
     { "@type": "ListItem", position: 1, name: "Home",              item: `${siteUrl}/` },
@@ -400,6 +469,9 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
 
   /* Opening hours */
   const hours = parseHours(clinic.openingHours);
+
+  /* Practical details — parking, access, payment, booking */
+  const practical = parsePracticalDetails(clinic);
 
   /* Attribute chips */
   const chips = [
@@ -972,6 +1044,52 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
                 </details>
               );
             })()}
+
+            {/* Practical details */}
+            {practical.length > 0 && (
+              <details className="profile-detail-block" open>
+                <summary className="profile-detail-summary">Practical Details</summary>
+                <div className="profile-detail-content">
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+                    gap: "10px",
+                  }}>
+                    {practical.map((g) => (
+                      <div key={g.title} style={{
+                        background: "var(--white)",
+                        border: "1px solid var(--border-soft)",
+                        borderRadius: "6px",
+                        padding: "12px 14px",
+                      }}>
+                        <h3 style={{
+                          fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                          fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em",
+                          textTransform: "uppercase", color: "var(--muted)", margin: "0 0 8px",
+                        }}>{g.title}</h3>
+                        <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                          {g.items.map((item) => (
+                            <li key={item} style={{
+                              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                              fontSize: "13.5px", color: "var(--charcoal-soft)",
+                              lineHeight: 1.6, display: "flex", gap: "8px",
+                            }}>
+                              <span aria-hidden="true" style={{ color: "var(--green)" }}>✓</span>{item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                    fontSize: "12px", color: "var(--muted)", marginTop: "12px",
+                  }}>
+                    From the clinic&rsquo;s Google Maps listing. Check with the clinic before you visit.
+                  </p>
+                </div>
+              </details>
+            )}
 
             {/* Location */}
             <details className="profile-detail-block" open>
