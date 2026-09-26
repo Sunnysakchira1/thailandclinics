@@ -4,7 +4,7 @@ import Link from "next/link";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import { getGuideCombos, getGuideShortlist, getClinicCount, getCategoryDistricts } from "@/lib/db/queries";
-import { GUIDE_CITIES, GUIDE_CATEGORIES, GUIDE_CURATED_SHORTLIST, guideSlug, parseGuideSlug, fillGuide } from "@/lib/guides";
+import { GUIDE_CITIES, GUIDE_CATEGORIES, GUIDE_CURATED_SHORTLIST, guideSlug, parseGuideSlug, fillGuide, GUIDES_UPDATED_AT } from "@/lib/guides";
 import { getAllPosts } from "@/lib/mdx";
 
 export const dynamicParams = false;
@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const r = await resolve(slug);
   if (!r) return {};
-  const title = `How to Choose a ${r.cat.short} Clinic in ${r.city.name} (${new Date().getFullYear()}) | ThailandClinics`;
+  const title = `How to Choose a ${r.cat.short} Clinic in ${r.city.name} (${GUIDES_UPDATED_AT.slice(0, 4)}) | ThailandClinics`;
   const description = `The complete guide to choosing a ${r.cat.noun} in ${r.city.name}: criteria that matter, treatments, real costs, where to find them, red flags and verified top clinics.`.slice(0, 158);
   return { title, description, alternates: { canonical: `/guides/${slug}/` }, openGraph: { title, description } };
 }
@@ -56,7 +56,7 @@ export default async function GuidePage({ params }: Props) {
 
   const listingUrl = `/${r.citySlug}/${r.categorySlug}/`;
   const guideUrl = `${siteUrl}/guides/${slug}/`;
-  const updated = new Date().toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  const updated = new Date(GUIDES_UPDATED_AT).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
   const fill = (t: string) => fillGuide(t, city);
   const answer = fill(cat.answer);
 
@@ -83,9 +83,9 @@ export default async function GuidePage({ params }: Props) {
   const schema = [
     { "@context": "https://schema.org", "@type": "Article",
       headline: `How to Choose a ${cat.short} Clinic in ${city.name}`, description: answer,
-      datePublished: "2026-01-01", dateModified: new Date().toISOString().slice(0, 10),
+      datePublished: "2026-01-01", dateModified: GUIDES_UPDATED_AT,
       author: { "@type": "Organization", name: "ThailandClinics" },
-      publisher: { "@type": "Organization", name: "ThailandClinics", url: siteUrl },
+      publisher: { "@type": "Organization", name: "ThailandClinics", url: `${siteUrl}/` },
       mainEntityOfPage: guideUrl },
     { "@context": "https://schema.org", "@type": "FAQPage",
       mainEntity: cat.faq.map((f) => ({ "@type": "Question", name: fill(f.q), acceptedAnswer: { "@type": "Answer", text: fill(f.a) } })) },

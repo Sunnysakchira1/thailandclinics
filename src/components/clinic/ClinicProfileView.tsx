@@ -299,7 +299,7 @@ export function buildClinicSchema(
   if (hours.length) localBusiness.openingHoursSpecification = hours;
 
   const breadcrumbItems: Record<string, unknown>[] = [
-    { "@type": "ListItem", position: 1, name: "Home",              item: siteUrl },
+    { "@type": "ListItem", position: 1, name: "Home",              item: `${siteUrl}/` },
     { "@type": "ListItem", position: 2, name: clinic.cityName,     item: `${siteUrl}/${clinic.citySlug}/` },
     { "@type": "ListItem", position: 3, name: clinic.categoryName, item: `${siteUrl}/${clinic.citySlug}/${clinic.categorySlug}/` },
   ];

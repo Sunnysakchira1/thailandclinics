@@ -11,6 +11,14 @@
  * To add a city/category, add an entry below — route, sitemap and links pick it up.
  */
 
+/**
+ * Date the guide content (copy in this file or a curated shortlist) last
+ * materially changed. Drives the visible "Updated" line, Article dateModified
+ * and sitemap lastmod. BUMP THIS when you edit guide copy or a shortlist —
+ * never derive it from the build date, which would claim freshness we don't have.
+ */
+export const GUIDES_UPDATED_AT = "2026-09-08";
+
 export type GuideCity = {
   slug: string;
   name: string;

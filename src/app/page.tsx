@@ -26,12 +26,10 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type":    "WebSite",
   name:       "ThailandClinics",
-  url:        siteUrl,
-  potentialAction: {
-    "@type":      "SearchAction",
-    target:       { "@type": "EntryPoint", urlTemplate: `${siteUrl}/search?q={search_term_string}` },
-    "query-input": "required name=search_term_string",
-  },
+  url:        `${siteUrl}/`,
+  // No SearchAction: the site is a static export with no /search/ route, so a
+  // SearchAction would point Google at a 404. Google also retired the sitelinks
+  // search box in Nov 2024. Re-add only if a real search page ships.
 };
 
 /* ─── Static data ────────────────────────────────────────────────── */

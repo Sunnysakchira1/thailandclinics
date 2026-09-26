@@ -56,7 +56,7 @@ function buildSchemas(hub: BrandHub, siteUrl: string) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home",              item: siteUrl },
+      { "@type": "ListItem", position: 1, name: "Home",              item: `${siteUrl}/` },
       { "@type": "ListItem", position: 2, name: hub.cityName,        item: `${siteUrl}/${hub.citySlug}/` },
       { "@type": "ListItem", position: 3, name: hub.categoryName,    item: `${siteUrl}/${hub.citySlug}/${hub.categorySlug}/` },
       { "@type": "ListItem", position: 4, name: hub.name,            item: brandUrl },

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { isListingIndexable, NOINDEX_FOLLOW } from "@/lib/indexation";
 import Nav from "@/components/layout/Nav";
 import CompactClinicRow from "@/components/clinic/CompactClinicRow";
 import {
@@ -60,6 +61,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/${city}/` },
     openGraph:  { title, description },
+    ...(!(await isListingIndexable(city)) && { robots: NOINDEX_FOLLOW }),
   };
 }
 

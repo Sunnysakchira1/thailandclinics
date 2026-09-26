@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getListingEntries } from "@/lib/db/queries";
 import ListingsClient from "@/components/clinic/ListingsClient";
 import { GUIDE_CATEGORIES, guideSlug } from "@/lib/guides";
+import { isListingIndexable, NOINDEX_FOLLOW } from "@/lib/indexation";
 
 /* ─── Config ─────────────────────────────────────────────────────── */
 const CITIES = ["bangkok", "phuket", "chiang-mai", "pattaya"];
@@ -72,6 +73,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     alternates: { canonical: `/${city}/${category}/` },
     openGraph:  { title, description },
+    ...(!(await isListingIndexable(city, category)) && { robots: NOINDEX_FOLLOW }),
   };
 }
 

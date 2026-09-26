@@ -104,11 +104,11 @@ export default async function BlogPostPage({ params }: Props) {
     datePublished:     post.publishedAt,
     dateModified:      post.updatedAt,
     url:               postUrl,
-    author:    { "@type": "Organization", name: "ThailandClinics", url: siteUrl },
+    author:    { "@type": "Organization", name: "ThailandClinics", url: `${siteUrl}/` },
     publisher: {
       "@type": "Organization",
       name:    "ThailandClinics",
-      url:     siteUrl,
+      url:     `${siteUrl}/`,
       logo:    { "@type": "ImageObject", url: `${siteUrl}/icon.svg` },
     },
   };
