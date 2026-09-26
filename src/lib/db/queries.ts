@@ -1,6 +1,6 @@
 import { eq, desc, and, ne, sql, isNotNull, isNull, count } from "drizzle-orm";
 import { db } from "./index";
-import { clinics, cities, categories, clinicReviews, brands } from "./schema";
+import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations } from "./schema";
 import { WR_BASELINE, WR_WEIGHT, weightedRating } from "../ranking";
 
 /* Volume-aware weighted rating as a SQL ORDER BY fragment — mirrors
@@ -645,4 +645,17 @@ export function getDuplicateDisplayNames(): Promise<Set<string>> {
     .having(sql`count(*) > 1`)
     .then((rows) => new Set(rows.map((r) => r.key)));
   return duplicateNamesPromise;
+}
+
+/* ─── Transit ────────────────────────────────────────────────────── */
+export type NearbyStation = { system: string; name: string; distanceM: number };
+
+/** Nearest rail stations for a clinic (≤ 2, within 1 km), closest first. */
+export async function getClinicStations(clinicId: number): Promise<NearbyStation[]> {
+  return db
+    .select({ system: transitStations.system, name: transitStations.name, distanceM: clinicStations.distanceM })
+    .from(clinicStations)
+    .innerJoin(transitStations, eq(clinicStations.stationId, transitStations.id))
+    .where(eq(clinicStations.clinicId, clinicId))
+    .orderBy(clinicStations.distanceM);
 }

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   getClinicProfile,
   getClinicReviews,
+  getClinicStations,
 } from "@/lib/db/queries";
 import { clinicTitle, brandHubTitle } from "@/lib/seo/titles";
 import ClinicProfileView, {
@@ -85,8 +86,9 @@ export default async function ClinicProfilePage({ params }: Props) {
   const schemas = buildClinicSchema(clinic, siteUrl);
 
   /* Fetch reviews + nearby in parallel */
-  const [reviews, nearbyPool] = await Promise.all([
+  const [reviews, stations, nearbyPool] = await Promise.all([
     getClinicReviews(clinic.id, 20),
+    getClinicStations(clinic.id),
     (async () => {
       const { db } = await import("@/lib/db/index");
       const { clinics: c, cities: ct, categories: cat } = await import("@/lib/db/schema");
@@ -113,6 +115,7 @@ export default async function ClinicProfilePage({ params }: Props) {
     <ClinicProfileView
       clinic={clinic}
       reviews={reviews}
+      stations={stations}
       nearby={nearby}
       schemas={schemas}
     />

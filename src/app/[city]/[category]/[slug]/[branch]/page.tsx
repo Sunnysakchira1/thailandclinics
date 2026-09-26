@@ -5,6 +5,7 @@ import {
   getDuplicateDisplayNames,
   getBranchParams,
   getClinicReviews,
+  getClinicStations,
   getBrandSiblings,
 } from "@/lib/db/queries";
 import { clinicTitle } from "@/lib/seo/titles";
@@ -82,8 +83,9 @@ export default async function BranchProfilePage({ params }: Props) {
   const schemas = buildClinicSchema(profile, siteUrl, brand, branch);
 
   /* Fetch reviews, nearby pool, and brand siblings in parallel */
-  const [reviews, nearbyPool, siblings] = await Promise.all([
+  const [reviews, stations, nearbyPool, siblings] = await Promise.all([
     getClinicReviews(profile.id, 20),
+    getClinicStations(profile.id),
     (async () => {
       const { db } = await import("@/lib/db/index");
       const { clinics: c, cities: ct, categories: cat } = await import("@/lib/db/schema");
@@ -113,6 +115,7 @@ export default async function BranchProfilePage({ params }: Props) {
     <ClinicProfileView
       clinic={profile}
       reviews={reviews}
+      stations={stations}
       nearby={nearby}
       schemas={schemas}
       brand={brand}

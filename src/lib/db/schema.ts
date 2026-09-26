@@ -125,6 +125,30 @@ export const clinicReviews = sqliteTable("clinic_reviews", {
   createdAt:     text("created_at").notNull().default(sql`(datetime('now'))`),
 });
 
+/* ─── transit_stations ────────────────────────────────────────────── */
+// Bangkok rail stations (BTS, MRT incl. Yellow/Pink monorail, ARL, SRT Red).
+// Source: OpenStreetMap, snapshot in data/transit-stations.json.
+export const transitStations = sqliteTable("transit_stations", {
+  id:     integer("id").primaryKey({ autoIncrement: true }),
+  osmId:  integer("osm_id").notNull().unique(),
+  name:   text("name").notNull(),      // English, e.g. "Asok"
+  nameTh: text("name_th"),
+  system: text("system").notNull(),    // "BTS" | "MRT" | "ARL" | "SRT Red Line"
+  lat:    real("lat").notNull(),
+  lng:    real("lng").notNull(),
+});
+
+/* ─── clinic_stations ─────────────────────────────────────────────── */
+// Up to 2 nearest stations within 1 km, straight-line distance.
+// Rebuilt by scripts/enrich-transit.ts.
+export const clinicStations = sqliteTable("clinic_stations", {
+  clinicId:  integer("clinic_id").notNull().references(() => clinics.id),
+  stationId: integer("station_id").notNull().references(() => transitStations.id),
+  distanceM: integer("distance_m").notNull(),
+}, (t) => ({
+  clinicStationUnique: uniqueIndex("clinic_stations_unq").on(t.clinicId, t.stationId),
+}));
+
 /* ─── Types ───────────────────────────────────────────────────────── */
 export type City     = typeof cities.$inferSelect;
 export type Category = typeof categories.$inferSelect;

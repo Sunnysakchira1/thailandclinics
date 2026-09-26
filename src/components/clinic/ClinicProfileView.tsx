@@ -5,7 +5,7 @@ import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import TCVerifiedBadge from "@/components/clinic/TCVerifiedBadge";
 import { withUtm } from "@/lib/utils/outbound";
-import type { ClinicProfile, ClinicReviewRow, BranchRow } from "@/lib/db/queries";
+import type { ClinicProfile, ClinicReviewRow, BranchRow, NearbyStation } from "@/lib/db/queries";
 
 /* ─── Helpers ────────────────────────────────────────────────────── */
 export function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
@@ -290,7 +290,24 @@ const PRACTICAL_GROUPS: { title: string; items: Record<string, string> }[] = [
   } },
 ];
 
-export function parsePracticalDetails(clinic: Pick<ClinicProfile, "about" | "nearBts" | "nearMrt">) {
+/** Rough walking time: straight line × 1.3 detour at 80 m/min. */
+function walkMinutes(distanceM: number): number {
+  return Math.max(1, Math.ceil((distanceM * 1.3) / 80));
+}
+
+/** Nearest station, plus the next one only if it's on another system
+ *  (e.g. BTS Asok + MRT Sukhumvit) — a second stop on the same line adds nothing. */
+export function stationLabels(stations: NearbyStation[] | undefined): string[] {
+  if (!stations?.length) return [];
+  const [first, ...rest] = stations;
+  const second = rest.find((s) => s.system !== first.system && s.distanceM <= 800);
+  return [first, second].filter(Boolean).map((s) => `${s!.system} ${s!.name} · about ${walkMinutes(s!.distanceM)} min walk`);
+}
+
+export function parsePracticalDetails(
+  clinic: Pick<ClinicProfile, "about" | "nearBts" | "nearMrt">,
+  stations?: NearbyStation[],
+) {
   const truthy = new Set<string>();
   try {
     const about = clinic.about ? JSON.parse(clinic.about) as Record<string, Record<string, unknown>> : {};
@@ -307,7 +324,9 @@ export function parsePracticalDetails(clinic: Pick<ClinicProfile, "about" | "nea
     .map((g) => ({ title: g.title, items: Object.entries(g.items).filter(([k]) => truthy.has(k)).map(([, label]) => label) }))
     .filter((g) => g.items.length > 0);
 
-  const transit = [clinic.nearBts && "Near BTS Skytrain", clinic.nearMrt && "Near MRT"].filter(Boolean) as string[];
+  const transit = stations
+    ? stationLabels(stations)
+    : [clinic.nearBts && "Near BTS Skytrain", clinic.nearMrt && "Near MRT"].filter(Boolean) as string[];
   if (transit.length) groups.unshift({ title: "Public transport", items: transit });
   return groups;
 }
@@ -423,6 +442,8 @@ export type ClinicProfileViewProps = {
   clinic:      ClinicProfile;
   /** Recent reviews with text. */
   reviews:     ClinicReviewRow[];
+  /** Nearest rail stations (≤ 2 within 1 km), closest first. */
+  stations?:   NearbyStation[];
   /** Nearby clinics, pre-sorted by distance and already sliced. Links use clinic.citySlug/categorySlug. */
   nearby:      NearbyClinic[];
   /** Pre-built schema objects (LocalBusiness + BreadcrumbList). */
@@ -438,7 +459,7 @@ export type ClinicProfileViewProps = {
 };
 
 /* ─── View ───────────────────────────────────────────────────────── */
-export default function ClinicProfileView({ clinic, reviews, nearby, schemas, brand, branchSlug, siblings, editorsNote }: ClinicProfileViewProps) {
+export default function ClinicProfileView({ clinic, reviews, stations, nearby, schemas, brand, branchSlug, siblings, editorsNote }: ClinicProfileViewProps) {
   const allReviews = reviews;
   const displayName = clinic.nameEn ?? clinic.name;
   const mapsUrl     = clinic.googlePlaceId
@@ -471,13 +492,18 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
   const hours = parseHours(clinic.openingHours);
 
   /* Practical details — parking, access, payment, booking */
-  const practical = parsePracticalDetails(clinic);
+  const practical = parsePracticalDetails(clinic, stations);
 
   /* Attribute chips */
   const chips = [
     clinic.englishSpeaking && { label: "English speaking",  icon: "🗣" },
-    clinic.nearBts         && { label: "Near BTS Skytrain", icon: "🚆" },
-    clinic.nearMrt         && { label: "Near MRT",          icon: "🚇" },
+    // Nearest station if within ~10 min walk; else fall back to the flags.
+    ...(stations?.[0] && stations[0].distanceM <= 700
+      ? [{ label: `${stations[0].system} ${stations[0].name} · ${walkMinutes(stations[0].distanceM)} min walk`, icon: "🚆" }]
+      : [
+          clinic.nearBts && { label: "Near BTS Skytrain", icon: "🚆" },
+          clinic.nearMrt && { label: "Near MRT",          icon: "🚇" },
+        ]),
     clinic.openWeekends    && { label: "Open weekends",     icon: "📅" },
     clinic.verified        && { label: "Verified",          icon: "✓",  accent: true },
   ].filter(Boolean) as { label: string; icon: string; accent?: boolean }[];
@@ -1085,7 +1111,7 @@ export default function ClinicProfileView({ clinic, reviews, nearby, schemas, br
                     fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                     fontSize: "12px", color: "var(--muted)", marginTop: "12px",
                   }}>
-                    From the clinic&rsquo;s Google Maps listing. Check with the clinic before you visit.
+                    Parking, access and payment come from the clinic&rsquo;s Google Maps listing. Walking times are estimates from © OpenStreetMap contributors station data. Check with the clinic before you visit.
                   </p>
                 </div>
               </details>
