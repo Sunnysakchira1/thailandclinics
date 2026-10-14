@@ -7,7 +7,13 @@ Cities: Bangkok, Phuket, Chiang Mai, Pattaya.
 Categories: Physiotherapy, Dental, Cosmetic, Wellness.
 
 Core philosophy: We do the research to find the best.
-Not a lead gen site. Not a booking platform. Infrastructure.
+Not a booking platform. Infrastructure first, with one sanctioned patient lead path:
+/get-matched/ (added 2026-10-14). Patients request a free 2–3 clinic shortlist by email to
+hello@. Sunny answers these within 2–3 business days. Promises on the page, which Sunny
+has approved: free for patients, and patient details are never shared with clinics
+without permission. Rankings stay editorial. A clinic's position never depends on matching.
+In-article CTAs use the <CtaBlock> MDX component, linking to /get-matched/ (patients) or
+/list-your-clinic/ (clinics).
 
 ---
 
