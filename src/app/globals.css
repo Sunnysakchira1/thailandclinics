@@ -717,6 +717,10 @@ details[open] > .profile-detail-summary::after {
 
 /* MDX inline link hover */
 .mdx-link:hover { text-decoration: underline; }
+.mdx-cta-btn { transition: background 0.2s ease; }
+.mdx-cta-btn:hover { background: var(--green-light) !important; }
+.mdx-cta-btn:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+.mdx-list li::marker { color: var(--green); }
 
 /* MDX table row hover */
 .mdx-tbody tr:hover td { background: var(--linen-dark); }
@@ -956,4 +960,15 @@ details[open] > .profile-detail-summary::after {
 }
 @media (prefers-reduced-motion: reduce) {
   .nav-mobile, .nav-mobile-panel, .nav-burger-icon i, .nav-browse-dropdown, .nav-cta { transition: none; }
+}
+
+/* Get matched page */
+.gm-submit { transition: background 0.2s ease; }
+.gm-submit:hover { background-color: var(--green-light) !important; }
+.gm-submit:focus-visible, .gm-wrap input:focus-visible, .gm-wrap select:focus-visible, .gm-wrap textarea:focus-visible {
+  outline: 2px solid var(--green); outline-offset: 2px;
+}
+@media (max-width: 640px) {
+  .gm-wrap { padding: 40px 24px 72px !important; }
+  .gm-grid { grid-template-columns: 1fr !important; }
 }

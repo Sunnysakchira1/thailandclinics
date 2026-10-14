@@ -1,4 +1,5 @@
 import type { MDXComponents } from "mdx/types";
+import { Figure, InShort } from "./Figures";
 
 const BLOCKQUOTE_STYLE: React.CSSProperties = {
   borderLeft:   "3px solid var(--green)",
@@ -17,6 +18,57 @@ const TABLE_CELL: React.CSSProperties = {
   color:       "var(--charcoal-soft)",
   textAlign:   "left",
 };
+
+/** In-article call to action. Use sparingly: one or two per post. */
+function CtaBlock({ eyebrow, title, body, href, label }: {
+  eyebrow: string; title: string; body: string; href: string; label: string;
+}) {
+  return (
+    <aside style={{
+      background:   "var(--green-pale)",
+      border:       "1px solid var(--border-soft)",
+      borderRadius: "6px",
+      padding:      "28px 32px",
+      margin:       "36px 0",
+    }}>
+      <div style={{
+        fontFamily:    "var(--font-dm-sans,'DM Sans',sans-serif)",
+        fontSize:      "11px",
+        fontWeight:    500,
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+        color:         "var(--terracotta)",
+        marginBottom:  "8px",
+      }}>{eyebrow}</div>
+      <div style={{
+        fontFamily:   "var(--font-cormorant,'Cormorant Garamond',serif)",
+        fontSize:     "26px",
+        fontWeight:   400,
+        lineHeight:   1.2,
+        color:        "var(--charcoal)",
+        marginBottom: "10px",
+      }}>{title}</div>
+      <p style={{
+        fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+        fontSize:   "15px",
+        lineHeight: 1.7,
+        color:      "var(--charcoal-soft)",
+        margin:     "0 0 18px",
+      }}>{body}</p>
+      <a href={href} className="mdx-cta-btn" style={{
+        display:        "inline-block",
+        background:     "var(--green)",
+        color:          "var(--white)",
+        fontFamily:     "var(--font-dm-sans,'DM Sans',sans-serif)",
+        fontSize:       "14px",
+        fontWeight:     500,
+        padding:        "12px 22px",
+        borderRadius:   "4px",
+        textDecoration: "none",
+      }}>{label}</a>
+    </aside>
+  );
+}
 
 export const mdxComponents: MDXComponents = {
   h2: ({ children }) => (
@@ -61,25 +113,33 @@ export const mdxComponents: MDXComponents = {
     <strong style={{ fontWeight: 600, color: "var(--charcoal)" }}>{children}</strong>
   ),
   ul: ({ children }) => (
-    <ul style={{
+    <ul className="mdx-list" style={{
       fontFamily:  "var(--font-dm-sans,'DM Sans',sans-serif)",
       fontSize:    "15px",
       lineHeight:  1.8,
+      listStyleType: "disc",
       paddingLeft: "24px",
       margin:      "0 0 18px",
       color:       "var(--charcoal-soft)",
     }}>{children}</ul>
   ),
   ol: ({ children }) => (
-    <ol style={{
+    <ol className="mdx-list" style={{
       fontFamily:  "var(--font-dm-sans,'DM Sans',sans-serif)",
       fontSize:    "15px",
       lineHeight:  1.8,
+      listStyleType: "decimal",
       paddingLeft: "24px",
       margin:      "0 0 18px",
       color:       "var(--charcoal-soft)",
     }}>{children}</ol>
   ),
+  li: ({ children }) => (
+    <li style={{ marginBottom: "6px", paddingLeft: "4px" }}>{children}</li>
+  ),
+  CtaBlock,
+  Figure,
+  InShort,
   blockquote: ({ children }) => (
     <blockquote style={BLOCKQUOTE_STYLE}>{children}</blockquote>
   ),
