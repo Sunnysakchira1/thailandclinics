@@ -723,12 +723,18 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
               </p>
             </div>
           ) : (
-            filteredClinics.slice(0, visibleCount).map((clinic, i) => {
+            (() => {
+            // Under the default sort, paid rows are pinned and never take an
+            // editorial rank: rank counts basic rows only (first basic = 1).
+            // 'reviews' / 'alpha' have no pinning, so every row is numbered.
+            let organicRank = 0;
+            return filteredClinics.slice(0, visibleCount).map((clinic, i) => {
               const displayName = clinic.nameEn || clinic.name;
-              const rank = i + 1;
-              const bg = PHOTO_BG[i % PHOTO_BG.length];
               const isPremium = clinic.tier === 'premium';
               const isPro     = clinic.tier === 'pro';
+              const rank: number | null =
+                sort === 'rating' && (isPremium || isPro) ? null : ++organicRank;
+              const bg = PHOTO_BG[i % PHOTO_BG.length];
               // Brand entry: link to hub; standalone: link to clinic profile
               const href = clinic.isBrand
                 ? `/${citySlug}/${catSlug}/${clinic.brandSlug}/`
@@ -761,14 +767,16 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                     position: 'relative', flexShrink: 0, overflow: 'hidden',
                   }}>
                     <ClinicPhoto url={clinic.photoUrl} name={displayName} />
-                    <div style={{
-                      position: 'absolute', top: '16px', left: '16px',
-                      width: '28px', height: '28px',
-                      background: rankColor(rank),
-                      color: 'var(--white)', borderRadius: '50%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '11px', fontWeight: 600, zIndex: 1,
-                    }}>{rank}</div>
+                    {rank !== null && (
+                      <div style={{
+                        position: 'absolute', top: '16px', left: '16px',
+                        width: '28px', height: '28px',
+                        background: rankColor(rank),
+                        color: 'var(--white)', borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '11px', fontWeight: 600, zIndex: 1,
+                      }}>{rank}</div>
+                    )}
                   </div>
 
                   {/* Body */}
@@ -894,7 +902,8 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                   </div>
                 </Link>
               );
-            })
+            });
+            })()
           )}
 
           {filteredClinics.length > visibleCount && (
