@@ -236,7 +236,7 @@ export default function HowWeRankPage() {
             </ul>
           </div>
 
-          {/* Featured placements */}
+          {/* Paid placements */}
           <div style={{ marginBottom: "44px" }}>
             <h2 style={{
               fontFamily:   "var(--font-cormorant,'Cormorant Garamond',serif)",
@@ -245,7 +245,7 @@ export default function HowWeRankPage() {
               color:        "var(--charcoal)",
               marginBottom: "14px",
             }}>
-              Featured placements
+              Paid placements
             </h2>
             <p style={{
               fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
@@ -254,10 +254,11 @@ export default function HowWeRankPage() {
               color:      "var(--charcoal-soft)",
               margin:     0,
             }}>
-              Some clinics appear as featured listings at the top of a category page.
-              Featured placements are always clearly labelled with a "Featured" badge and
-              are visually distinct from organic results. They do not affect how other
-              clinics rank below them.
+              Paid plans add a clearly labelled placement — &ldquo;Featured&rdquo; for Pro,
+              &ldquo;◆ Premium&rdquo; for Premium — above the organic list. The organic order
+              and our editorial guide rankings are based on ratings, reviews and our own
+              research, and can&rsquo;t be bought. &ldquo;★ Top rated&rdquo; is our editors&rsquo;
+              pick, set by hand, and never sold.
             </p>
           </div>
 

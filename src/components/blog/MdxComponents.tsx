@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import { Figure, InShort } from "./Figures";
+import PremiumBox from "./PremiumBox";
 
 const BLOCKQUOTE_STYLE: React.CSSProperties = {
   borderLeft:   "3px solid var(--green)",
@@ -138,6 +139,7 @@ export const mdxComponents: MDXComponents = {
     <li style={{ marginBottom: "6px", paddingLeft: "4px" }}>{children}</li>
   ),
   CtaBlock,
+  PremiumBox,
   Figure,
   InShort,
   blockquote: ({ children }) => (

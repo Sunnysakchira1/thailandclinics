@@ -6,26 +6,43 @@ import Nav from "@/components/layout/Nav";
 const CITIES = ["Bangkok", "Chiang Mai", "Phuket", "Pattaya", "Koh Samui", "Other"];
 const CATEGORIES = ["Physiotherapy", "Dental", "Cosmetic / Aesthetic", "Wellness", "Other"];
 
-const INCLUDES = [
+const PLANS: { name: string; price: string; note?: string; premium?: boolean; features: string[] }[] = [
   {
-    icon: "✓",
-    title: "Verified badge",
-    body:  "Your listing is manually reviewed and marked verified — a visible trust signal that sets you apart.",
+    name: "Basic",
+    price: "Free",
+    features: [
+      "Full profile with hours, services, languages and transit access",
+      "Verified badge",
+      "AI summary of your recent patient reviews",
+      "Listed on your city and category pages",
+      "Patients contact you directly",
+      "No commission",
+    ],
   },
   {
-    icon: "✓",
-    title: "Enhanced profile",
-    body:  "Full profile with opening hours, services, languages spoken, BTS/MRT access, and a direct Maps link.",
+    name: "Pro",
+    price: "฿4,900/month",
+    features: [
+      "Featured placement on your category page",
+      "Published prices and photos",
+      "Sponsored mention in related guides",
+      "A dedicated account manager",
+      "Monthly profile updates",
+    ],
   },
   {
-    icon: "✓",
-    title: "AI review summary",
-    body:  "We summarise your most recent patient reviews into clear positives and negatives — helping patients make faster decisions.",
-  },
-  {
-    icon: "✓",
-    title: "Priority visibility",
-    body:  "Featured clinics appear at the top of their category page, clearly marked, ahead of organic rankings.",
+    name: "Premium",
+    price: "฿9,900/month",
+    note: "Most popular",
+    premium: true,
+    features: [
+      "The top Featured slot in your category",
+      "◆ Premium badge everywhere you appear",
+      "Featured on our homepage and city page",
+      "Up to 3 doctors with their credentials",
+      "3 sponsored articles a year",
+      "3 backlinks with your preferred anchor",
+    ],
   },
 ];
 
@@ -56,10 +73,10 @@ const REASONS = [
 ];
 
 const FAQ = [
-  { q: "How much does it cost?", a: "It's free during our beta — we're onboarding our first clinics at no cost. When we introduce pricing, early listings are grandfathered in at a discounted rate." },
+  { q: "How much does it cost?", a: "Basic is free. Pro is ฿4,900 a month and Premium is ฿9,900 a month. There's no commission on any plan, and patients contact you directly." },
   { q: "How long until I'm live?", a: "Most listings publish within 5–7 days of applying, once we've verified your clinic details." },
   { q: "What do you need from me?", a: "To start, just your clinic name, city, category and a contact email. We build the profile from verified public data and confirm the details with you before publishing." },
-  { q: "Can I pay to rank higher?", a: "Organic order is based on rating and review volume — that's what keeps patient trust. Featured placement at the top of a category is an optional add-on, and it's always clearly labelled. We don't hide it." },
+  { q: "Can I pay to rank higher?", a: "No. Paid plans add a clearly labelled placement — 'Featured' for Pro, '◆ Premium' for Premium — above the organic list. The organic order and our editorial guide rankings are based on ratings, reviews and our own research, and can't be bought. '★ Top rated' is our editors' pick, set by hand, and never sold." },
   { q: "Can I update my listing later?", a: "Yes. Once you're verified, send us changes any time — new hours, services or photos — and we'll keep your profile current." },
   { q: "What if I'm not in Bangkok or Phuket?", a: "We're expanding to Chiang Mai, Pattaya and new specialties. Apply now and we'll add you the moment your city goes live." },
 ];
@@ -196,53 +213,65 @@ export default function ListYourClinicPage() {
           {/* Divider */}
           <div style={{ width: "40px", height: "2px", background: "var(--green)", marginBottom: "48px" }} />
 
-          {/* What's included */}
+          {/* Plans */}
           <div style={{ marginBottom: "56px" }}>
             <h2 style={{
               fontFamily:   "var(--font-cormorant,'Cormorant Garamond',serif)",
               fontSize:     "26px",
               fontWeight:   400,
               color:        "var(--charcoal)",
+              marginBottom: "8px",
+            }}>
+              Choose your plan
+            </h2>
+            <p style={{
+              fontFamily:   "var(--font-dm-sans,'DM Sans',sans-serif)",
+              fontSize:     "15px",
+              color:        "var(--muted)",
               marginBottom: "24px",
             }}>
-              What's included
-            </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {INCLUDES.map(({ icon, title, body }) => (
-                <div
-                  key={title}
-                  style={{
-                    display:      "grid",
-                    gridTemplateColumns: "24px 1fr",
-                    gap:          "0 16px",
-                    alignItems:   "start",
-                  }}
-                >
-                  <span style={{
-                    color:      "var(--open)",
-                    fontSize:   "16px",
-                    fontWeight: 600,
-                    paddingTop: "2px",
-                  }}>
-                    {icon}
-                  </span>
-                  <div>
+              Every plan is commission-free. Paid placements are always labelled, and our rankings stay editorial.
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", alignItems: "stretch" }} className="lyc-reasons">
+              {PLANS.map(({ name, price, note, premium, features }) => (
+                <div key={name} style={{
+                  border:       premium ? "1px solid var(--gold)" : "1px solid var(--border-soft)",
+                  boxShadow:    premium ? "inset 0 0 0 1px var(--gold)" : undefined,
+                  borderRadius: "6px",
+                  background:   premium ? "#fffdf7" : "var(--white)",
+                  padding:      "20px 20px 22px",
+                  display:      "flex",
+                  flexDirection: "column",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", minHeight: "20px", marginBottom: "6px" }}>
                     <span style={{
-                      fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                      fontSize:   "15px",
-                      fontWeight: 500,
-                      color:      "var(--charcoal)",
-                    }}>
-                      {title}
-                    </span>
-                    <span style={{
-                      fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-                      fontSize:   "15px",
-                      color:      "var(--charcoal-soft)",
-                    }}>
-                      {" — "}{body}
-                    </span>
+                      fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)", fontSize: "22px",
+                      fontWeight: 500, color: "var(--charcoal)",
+                    }}>{name}</span>
+                    {note && (
+                      <span style={{
+                        fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "10px", fontWeight: 600,
+                        letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap",
+                        background: "var(--gold-pale)", border: "1px solid var(--gold)", color: "var(--gold-ink)",
+                        padding: "3px 6px", borderRadius: "4px",
+                      }}>{note}</span>
+                    )}
                   </div>
+                  <div style={{
+                    fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px",
+                    fontWeight: 600, color: premium ? "var(--gold-ink)" : "var(--green)", marginBottom: "14px",
+                  }}>{price}</div>
+                  <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+                    {features.map((f) => (
+                      <li key={f} style={{ display: "grid", gridTemplateColumns: "16px 1fr", gap: "0 8px", alignItems: "start" }}>
+                        <span style={{ color: "var(--open)", fontSize: "13px", fontWeight: 600, paddingTop: "1px" }}>✓</span>
+                        <span style={{
+                          fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13.5px",
+                          color: "var(--charcoal-soft)", lineHeight: 1.5,
+                        }}>{f}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               ))}
             </div>
@@ -339,7 +368,7 @@ export default function ListYourClinicPage() {
               fontWeight: 400,
               color:      "var(--green)",
             }}>
-              Free during beta
+              Start free on Basic
             </span>
             <span style={{
               fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
@@ -347,9 +376,8 @@ export default function ListYourClinicPage() {
               color:      "var(--charcoal-soft)",
               lineHeight: 1.6,
             }}>
-              We're currently onboarding our first clinics at no cost.
-              Pricing will be introduced later — early listings will be
-              grandfathered in at a discounted rate.
+              Every clinic starts on Basic, and Basic stays free. Upgrade to Pro
+              or Premium whenever you want more visibility.
             </span>
           </div>
 
