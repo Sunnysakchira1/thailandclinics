@@ -71,6 +71,7 @@ export const clinics = sqliteTable("clinics", {
   verified:             integer("verified",              { mode: "boolean" }).default(false),
   featured:        integer("featured",         { mode: "boolean" }).default(false),
   featuredPosition: integer("featured_position"),
+  tier: text("tier").notNull().default("basic"),
 
   // Content
   about:        text("about"),    // JSON with amenities/accessibility
@@ -106,6 +107,7 @@ export const brands = sqliteTable("brands", {
   totalReviews: integer("total_reviews").notNull().default(0),
   featured:         integer("featured", { mode: "boolean" }).default(false),
   featuredPosition: integer("featured_position"),  // pin order in listing (nullable)
+  tier: text("tier").notNull().default("basic"),
   editorsNote:      text("editors_note"),   // Editor's Pick editorial copy (nullable)
   createdAt:   text("created_at").notNull().default(sql`(datetime('now'))`),
   updatedAt:   text("updated_at").notNull().default(sql`(datetime('now'))`),
@@ -173,3 +175,17 @@ export type City     = typeof cities.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Clinic   = typeof clinics.$inferSelect;
 export type ClinicReview = typeof clinicReviews.$inferSelect;
+
+/* ─── clinic_doctors ──────────────────────────────────────────────── */
+// Shown only on Premium profiles (max 3). Created by scripts/migrate-tiers.ts.
+export const clinicDoctors = sqliteTable("clinic_doctors", {
+  id:          integer("id").primaryKey({ autoIncrement: true }),
+  clinicId:    integer("clinic_id").notNull().references(() => clinics.id),
+  name:        text("name").notNull(),
+  role:        text("role"),
+  credentials: text("credentials"),
+  licence:     text("licence"),
+  photoUrl:    text("photo_url"),
+  sortOrder:   integer("sort_order").notNull().default(0),
+});
+export type ClinicDoctor = typeof clinicDoctors.$inferSelect;
