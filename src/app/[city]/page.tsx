@@ -78,6 +78,10 @@ export default async function CityPage({ params }: Props) {
     getTopClinicsByCity(city, 6),
   ]);
 
+  // Premium rows are pinned by the query; they sit in their own block and never take a rank.
+  const premiumClinics = topClinics.filter((c) => c.tier === "premium");
+  const organicClinics = topClinics.filter((c) => c.tier !== "premium");
+
   const countMap: Record<string, number> = {};
   for (const r of catCounts) countMap[r.categorySlug] = r.count;
   const totalClinics = Object.values(countMap).reduce((a, b) => a + b, 0);
@@ -180,32 +184,49 @@ export default async function CityPage({ params }: Props) {
             </div>
           </section>
 
-          {/* ── Most reviewed clinics ───────────────────────────── */}
-          {topClinics.length > 0 && (
-            <section style={{ marginBottom: "56px" }}>
+          {/* ── Premium clinics (paid placement, kept apart from the organic list) ── */}
+          {premiumClinics.length > 0 && (
+            <section style={{ marginBottom: "32px" }}>
               <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "20px" }}>
                 <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
-                  Most Reviewed in {cityName}
+                  Premium clinics in {cityName}
                 </p>
               </div>
               <div style={{ background: "var(--white)", border: "1px solid var(--border-soft)", borderRadius: "6px", overflow: "hidden" }}>
-                {(() => {
-                  let organicRank = 0;
-                  return topClinics.map((clinic) => {
-                    const pinned = clinic.tier === "premium";
-                    return (
-                      <CompactClinicRow
-                        key={clinic.key}
-                        clinic={clinic}
-                        rank={pinned ? undefined : ++organicRank}
-                        citySlug={city}
-                        catSlug={clinic.categorySlug}
-                        tier={clinic.tier}
-                        topRated={clinic.topRated}
-                      />
-                    );
-                  });
-                })()}
+                {premiumClinics.map((clinic) => (
+                  <CompactClinicRow
+                    key={clinic.key}
+                    clinic={clinic}
+                    citySlug={city}
+                    catSlug={clinic.categorySlug}
+                    tier={clinic.tier}
+                    topRated={clinic.topRated}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ── Highly rated clinics (organic, by weighted rating) ─ */}
+          {organicClinics.length > 0 && (
+            <section style={{ marginBottom: "56px" }}>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "20px" }}>
+                <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--muted)" }}>
+                  Highly rated in {cityName}
+                </p>
+              </div>
+              <div style={{ background: "var(--white)", border: "1px solid var(--border-soft)", borderRadius: "6px", overflow: "hidden" }}>
+                {organicClinics.map((clinic, i) => (
+                  <CompactClinicRow
+                    key={clinic.key}
+                    clinic={clinic}
+                    rank={i + 1}
+                    citySlug={city}
+                    catSlug={clinic.categorySlug}
+                    tier={clinic.tier}
+                    topRated={clinic.topRated}
+                  />
+                ))}
               </div>
             </section>
           )}
