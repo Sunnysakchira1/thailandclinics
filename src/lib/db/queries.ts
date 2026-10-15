@@ -1,6 +1,6 @@
 import { eq, desc, and, ne, sql, isNotNull, isNull, count, notInArray } from "drizzle-orm";
 import { db } from "./index";
-import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations, treatmentPrices } from "./schema";
+import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations, treatmentPrices, clinicDoctors, type ClinicDoctor } from "./schema";
 import { WR_BASELINE, WR_WEIGHT, weightedRating } from "../ranking";
 import { effectiveTier, isTopRated, normaliseTier, type Tier } from "../tiers";
 
@@ -972,4 +972,13 @@ export async function getSearchRows(): Promise<SearchRow[]> {
     name: nameEn ?? r.name,
     stations: stations.get(r.id) ?? [],
   }));
+}
+
+/* ─── Doctors (Premium only) ─────────────────────────────────────── */
+/** Up to 3 doctors for a clinic, in editorial order. Callers query this only for Premium. */
+export async function getClinicDoctors(clinicId: number): Promise<ClinicDoctor[]> {
+  return db.select().from(clinicDoctors)
+    .where(eq(clinicDoctors.clinicId, clinicId))
+    .orderBy(clinicDoctors.sortOrder, clinicDoctors.id)
+    .limit(3);
 }

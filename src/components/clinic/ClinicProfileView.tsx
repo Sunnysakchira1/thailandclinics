@@ -5,6 +5,8 @@ import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import TCVerifiedBadge from "@/components/clinic/TCVerifiedBadge";
 import PlanBadges from "@/components/ui/PlanBadges";
+import DoctorsSection from "@/components/clinic/DoctorsSection";
+import type { ClinicDoctor } from "@/lib/db/schema";
 import { withUtm } from "@/lib/utils/outbound";
 import type { ClinicProfile, ClinicReviewRow, BranchRow, NearbyStation, PriceRecord } from "@/lib/db/queries";
 
@@ -490,10 +492,12 @@ export type ClinicProfileViewProps = {
   siblings?:   BranchRow[];
   /** Editorial "Editor's Pick" copy — set on branch pages when the brand is featured. */
   editorsNote?: string | null;
+  /** Doctors (max 3) — fetched by the caller only when the effective tier is Premium. */
+  doctors?:    ClinicDoctor[];
 };
 
 /* ─── View ───────────────────────────────────────────────────────── */
-export default function ClinicProfileView({ clinic, reviews, stations, prices, nearby, schemas, brand, branchSlug, siblings, editorsNote }: ClinicProfileViewProps) {
+export default function ClinicProfileView({ clinic, reviews, stations, prices, nearby, schemas, brand, branchSlug, siblings, editorsNote, doctors = [] }: ClinicProfileViewProps) {
   const allReviews = reviews;
   const displayName = clinic.nameEn ?? clinic.name;
   const mapsUrl     = clinic.googlePlaceId
@@ -955,6 +959,9 @@ export default function ClinicProfileView({ clinic, reviews, stations, prices, n
             </div>
           </div>
         )}
+
+        {/* Our doctors — Premium only (caller passes [] otherwise) */}
+        <DoctorsSection doctors={doctors} />
 
         {/* ══════════════════════════════════════════════════════════
             PATIENT VOICES — English-only, ≥4 stars, limit 3

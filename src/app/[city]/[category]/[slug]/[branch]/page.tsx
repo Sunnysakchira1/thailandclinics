@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
+  getClinicDoctors,
   getBranchProfile,
   getDuplicateDisplayNames,
   getBranchParams,
@@ -84,7 +85,7 @@ export default async function BranchProfilePage({ params }: Props) {
   const schemas = buildClinicSchema(profile, siteUrl, brand, branch);
 
   /* Fetch reviews, nearby pool, and brand siblings in parallel */
-  const [reviews, stations, prices, nearbyPool, siblings] = await Promise.all([
+  const [reviews, stations, prices, nearbyPool, siblings, doctors] = await Promise.all([
     getClinicReviews(profile.id, 20),
     getClinicStations(profile.id),
     getClinicPrices(profile.id, profile.brandId),
@@ -105,6 +106,8 @@ export default async function BranchProfilePage({ params }: Props) {
     profile.brandId != null
       ? getBrandSiblings(profile.brandId, branch)
       : Promise.resolve([]),
+    /* Doctors — Premium (brand-resolved) only; Basic/Pro never query */
+    profile.tier === "premium" ? getClinicDoctors(profile.id) : Promise.resolve([]),
   ]);
 
   /* Nearby — sort by haversine distance, take 3 (same approach as standalone) */
@@ -121,6 +124,7 @@ export default async function BranchProfilePage({ params }: Props) {
       prices={prices}
       nearby={nearby}
       schemas={schemas}
+      doctors={doctors}
       brand={brand}
       branchSlug={branch}
       siblings={siblings}

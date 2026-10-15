@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
+  getClinicDoctors,
   getClinicProfile,
   getClinicReviews,
   getClinicStations,
@@ -87,7 +88,7 @@ export default async function ClinicProfilePage({ params }: Props) {
   const schemas = buildClinicSchema(clinic, siteUrl);
 
   /* Fetch reviews + nearby in parallel */
-  const [reviews, stations, prices, nearbyPool] = await Promise.all([
+  const [reviews, stations, prices, nearbyPool, doctors] = await Promise.all([
     getClinicReviews(clinic.id, 20),
     getClinicStations(clinic.id),
     getClinicPrices(clinic.id, clinic.brandId),
@@ -105,6 +106,8 @@ export default async function ClinicProfilePage({ params }: Props) {
       .innerJoin(cat, eqF(c.categoryId, cat.id))
       .where(andF(eqF(ct.slug, city), eqF(cat.slug, category), neF(c.id, clinic.id), isNullF(c.brandId)));
     })(),
+    /* Doctors — Premium (brand-resolved) only; Basic/Pro never query */
+    clinic.tier === "premium" ? getClinicDoctors(clinic.id) : Promise.resolve([]),
   ]);
 
   /* Nearby — sort by distance, take 3 */
@@ -121,6 +124,7 @@ export default async function ClinicProfilePage({ params }: Props) {
       prices={prices}
       nearby={nearby}
       schemas={schemas}
+      doctors={doctors}
     />
   );
 }
