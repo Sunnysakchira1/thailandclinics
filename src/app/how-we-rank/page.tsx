@@ -4,12 +4,12 @@ import Nav from "@/components/layout/Nav";
 export const metadata: Metadata = {
   title: "How We Rank Clinics — Transparent Methodology | ThailandClinics",
   description:
-    "ThailandClinics ranks clinics by Google rating, review volume, recency, verified status, and data completeness. No paid rankings. Full methodology explained.",
+    "How ThailandClinics ranks clinics: Google rating, review volume, recency, verified status and data completeness. Our full methodology, explained plainly.",
   alternates: { canonical: "/how-we-rank/" },
   openGraph: {
     title: "How We Rank Clinics — Transparent Methodology | ThailandClinics",
     description:
-      "ThailandClinics ranks clinics by Google rating, review volume, recency, verified status, and data completeness. No paid rankings. Full methodology explained.",
+      "How ThailandClinics ranks clinics: Google rating, review volume, recency, verified status and data completeness. Our full methodology, explained plainly.",
   },
 };
 
@@ -229,14 +229,13 @@ export default function HowWeRankPage() {
               flexDirection: "column",
               gap:        "6px",
             }}>
-              <li>Clinics cannot pay to rank higher in search results</li>
               <li>We do not accept payment for inclusion in the directory</li>
               <li>We do not remove negative reviews or alter rating data</li>
               <li>We do not fabricate or inflate review summaries</li>
             </ul>
           </div>
 
-          {/* Paid placements */}
+          {/* Premium and Featured clinics */}
           <div style={{ marginBottom: "44px" }}>
             <h2 style={{
               fontFamily:   "var(--font-cormorant,'Cormorant Garamond',serif)",
@@ -245,7 +244,7 @@ export default function HowWeRankPage() {
               color:        "var(--charcoal)",
               marginBottom: "14px",
             }}>
-              Paid placements
+              Premium and Featured clinics
             </h2>
             <p style={{
               fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
@@ -254,11 +253,10 @@ export default function HowWeRankPage() {
               color:      "var(--charcoal-soft)",
               margin:     0,
             }}>
-              Paid plans add a clearly labelled placement — &ldquo;Featured&rdquo; for Pro,
-              &ldquo;◆ Premium&rdquo; for Premium — above the organic list. The organic order
-              and our editorial guide rankings are based on ratings, reviews and our own
-              research, and can&rsquo;t be bought. &ldquo;★ Top rated&rdquo; is our editors&rsquo;
-              pick, set by hand, and never sold.
+              Clinics marked &ldquo;◆ Premium&rdquo; or &ldquo;Featured&rdquo; appear at the top
+              of their category. Below them, every clinic is ordered by rating, review volume and
+              recency. &ldquo;★ Top rated&rdquo; marks our editors&rsquo; picks, chosen by hand,
+              with no more than five in any category.
             </p>
           </div>
 

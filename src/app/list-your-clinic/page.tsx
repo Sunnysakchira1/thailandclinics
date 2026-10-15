@@ -76,7 +76,7 @@ const FAQ = [
   { q: "How much does it cost?", a: "Basic is free. Pro is ฿4,900 a month and Premium is ฿9,900 a month. There's no commission on any plan, and patients contact you directly." },
   { q: "How long until I'm live?", a: "Most listings publish within 5–7 days of applying, once we've verified your clinic details." },
   { q: "What do you need from me?", a: "To start, just your clinic name, city, category and a contact email. We build the profile from verified public data and confirm the details with you before publishing." },
-  { q: "Can I pay to rank higher?", a: "No. Paid plans add a clearly labelled placement — 'Featured' for Pro, '◆ Premium' for Premium — above the organic list. The organic order and our editorial guide rankings are based on ratings, reviews and our own research, and can't be bought. '★ Top rated' is our editors' pick, set by hand, and never sold." },
+  { q: "How do I get my clinic to the top of my category?", a: "Premium puts your clinic at the top of your category with the ◆ Premium badge, and on our homepage and city page. Pro gives you a Featured spot on your category page. '★ Top rated' is separate: it's our editors' pick, and no more than five clinics in a category get it." },
   { q: "Can I update my listing later?", a: "Yes. Once you're verified, send us changes any time — new hours, services or photos — and we'll keep your profile current." },
   { q: "What if I'm not in Bangkok or Phuket?", a: "We're expanding to Chiang Mai, Pattaya and new specialties. Apply now and we'll add you the moment your city goes live." },
 ];
@@ -230,7 +230,7 @@ export default function ListYourClinicPage() {
               color:        "var(--muted)",
               marginBottom: "24px",
             }}>
-              Every plan is commission-free. Paid placements are always labelled, and our rankings stay editorial.
+              Every plan is commission-free, and patients always contact you directly.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", alignItems: "stretch" }} className="lyc-reasons">
               {PLANS.map(({ name, price, note, premium, features }) => (

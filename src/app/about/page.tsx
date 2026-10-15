@@ -4,12 +4,12 @@ import Nav from "@/components/layout/Nav";
 export const metadata: Metadata = {
   title: "About ThailandClinics — Independent Clinic Directory for Expats",
   description:
-    "ThailandClinics is an independent directory built for expats and medical tourists. No ads, no paid rankings. We verify clinics and surface real patient reviews.",
+    "ThailandClinics is an independent directory built for expats and medical tourists. We verify clinics and surface real patient reviews, good and bad.",
   alternates: { canonical: "/about/" },
   openGraph: {
     title: "About ThailandClinics — Independent Clinic Directory for Expats",
     description:
-      "ThailandClinics is an independent directory built for expats and medical tourists. No ads, no paid rankings. We verify clinics and surface real patient reviews.",
+      "ThailandClinics is an independent directory built for expats and medical tourists. We verify clinics and surface real patient reviews, good and bad.",
   },
 };
 

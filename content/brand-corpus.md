@@ -39,21 +39,21 @@ per-site; pick the description that fits the field length and paste it exactly.
 > The Independent Clinic Directory
 
 **Bio / micro — X, Instagram, TikTok (≤150 char)**
-> Independent directory of verified clinics for expats & medical tourists in Thailand. Physio, dental, cosmetic, wellness & IVF. No paid rankings.
+> Independent directory of verified clinics for expats & medical tourists in Thailand. Physio, dental, cosmetic, wellness & IVF.
 
 **Short (≤250 char)**
-> ThailandClinics is the independent directory of verified physiotherapy, dental, cosmetic, wellness and fertility clinics for expats and medical tourists across Bangkok, Phuket and Thailand. Real Google reviews. English-speaking clinics flagged. No paid rankings.
+> ThailandClinics is the independent directory of verified physiotherapy, dental, cosmetic, wellness and fertility clinics for expats and medical tourists across Bangkok, Phuket and Thailand. Real Google reviews. English-speaking clinics flagged.
 
 **Medium (~50 words — Facebook, LinkedIn, Google Business short)**
-> ThailandClinics is an independent directory helping expats and medical tourists find verified clinics across Thailand — physiotherapy, dental, cosmetic, wellness and fertility. We source data from Google Maps and public records, verify listings manually, and summarise real patient reviews. English-speaking clinics are flagged and no clinic can pay to rank higher.
+> ThailandClinics is an independent directory helping expats and medical tourists find verified clinics across Thailand — physiotherapy, dental, cosmetic, wellness and fertility. We source data from Google Maps and public records, verify listings manually, and summarise real patient reviews. English-speaking clinics are flagged.
 
 **Long (~100 words — directory listings, About fields)**
-> ThailandClinics is the independent clinic directory for expats and medical tourists in Thailand. We help you find verified physiotherapy, dental, cosmetic, wellness and IVF/fertility clinics across Bangkok, Phuket and beyond — with real Google ratings, AI-summarised patient reviews, and English-speaking clinics clearly flagged. Every listing is checked against public records and the clinic's own details, and no clinic can pay to rank higher in our results. We're not a booking platform, lead-gen site, or insurance product, and we're not affiliated with any hospital group. We do the research so you don't have to. hello@thailand-clinics.com
+> ThailandClinics is the independent clinic directory for expats and medical tourists in Thailand. We help you find verified physiotherapy, dental, cosmetic, wellness and IVF/fertility clinics across Bangkok, Phuket and beyond — with real Google ratings, AI-summarised patient reviews, and English-speaking clinics clearly flagged. Every listing is checked against public records and the clinic's own details, and every profile shows its real Google rating. We're not a booking platform, lead-gen site, or insurance product, and we're not affiliated with any hospital group. We do the research so you don't have to. hello@thailand-clinics.com
 
 **Extended (~180 words — press/PR boilerplate, big description fields)**
 > ThailandClinics (thailand-clinics.com) is an independent clinic directory built for the expats and medical tourists who navigate healthcare in Thailand every year. It covers five categories — physiotherapy, dental, cosmetic/aesthetic, wellness, and IVF/fertility — across Bangkok and Phuket, with Chiang Mai and Pattaya being added in 2026.
 >
-> Rather than reprinting marketing copy, ThailandClinics sources clinic data from Google Maps and public records, verifies listings manually, and enriches each profile with AI-generated summaries of real patient reviews — the good and the bad. Clinics that speak English are clearly flagged, verified status is shown on every profile, and no clinic can pay to rank higher in search results; featured placements are always labelled.
+> Rather than reprinting marketing copy, ThailandClinics sources clinic data from Google Maps and public records, verifies listings manually, and enriches each profile with AI-generated summaries of real patient reviews — the good and the bad. Clinics that speak English are clearly flagged, verified status is shown on every profile, and Premium and Featured clinics are clearly badged.
 >
 > The platform is deliberately not a booking engine, lead-generation site, or insurance product, and it is not affiliated with any hospital group. Its promise is simple: "We do the research so you don't have to." Contact: hello@thailand-clinics.com.
 
@@ -93,7 +93,7 @@ platform, and the linen/green wordmark as the banner where a banner is supported
 
 ## 5. Positioning (say this / never that)
 
-**Say:** independent · verified · research-led · expat- and tourist-trusted · no paid rankings ·
+**Say:** independent · verified · research-led · expat- and tourist-trusted · 
 "infrastructure, not lead-gen" · we do the research so you don't have to.
 
 **Never say / never imply:**
