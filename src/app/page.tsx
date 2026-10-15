@@ -133,6 +133,8 @@ export default async function HomePage() {
     getHomepageFeatured("bangkok", 4),
     Promise.all(CITY_TILES.map((c) => getCityClinicCount(c.slug))),
   ]);
+  // Honest heading: only call the section "Premium" when every card is a paid Premium placement.
+  const allPremium = featured.length > 0 && featured.every((c) => c.tier === "premium");
   const cityCount = (slug: string) => cityCounts[CITY_TILES.findIndex((c) => c.slug === slug)] ?? 0;
 
   const blogPosts = getBlogPosts(3);
@@ -333,7 +335,7 @@ export default async function HomePage() {
                 color:      "var(--charcoal)",
                 lineHeight: 1.15,
               }}>
-                Featured clinics in <em style={{ fontStyle: "italic", color: "var(--green)" }}>Bangkok</em>
+                {allPremium ? "Premium clinics in " : "Clinics to know in "}<em style={{ fontStyle: "italic", color: "var(--green)" }}>Bangkok</em>
               </h2>
               <Link href="/bangkok/" style={sectionLinkStyle} className="section-link">
                 View all Bangkok clinics →

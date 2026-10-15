@@ -23,7 +23,7 @@ export type BrandHub = {
   editorsNote: string | null;
   /** Brand plan. */
   tier: Tier;
-  /** Earned from the brand aggregates (avgRating / totalReviews). */
+  /** Manual editorial flag (brands.top_rated), set by our editors — never earned from aggregates or sold. */
   topRated: boolean;
   cityName: string;
   citySlug: string;
