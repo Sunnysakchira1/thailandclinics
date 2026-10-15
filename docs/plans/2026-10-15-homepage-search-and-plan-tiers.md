@@ -14,7 +14,7 @@
 
 - The site is a static export (`next.config.ts` → `output: "export"`). No server code at runtime. Every data change shows only after `npm run build`.
 - Badge copy is exactly `◆ Premium`, `Featured` and `★ Top rated`. Never "Premium partner".
-- Top rated means `googleRating >= 4.8 && googleReviewsCount >= 50`, on any tier. It is never derived from tier.
+- Top rated is a manual editorial flag (`clinics.top_rated` / `brands.top_rated`, default 0): our editors' pick, never sold. Branches inherit the brand flag. It is never derived from tier or from ratings. (Changed 2026-10-15; no flags are set yet.)
 - `Featured` (Pro) renders on the category listing only.
 - Gold (`--gold #c9a84c`, `--gold-pale #fbf4e2`, `--gold-ink #7a5d17`) is used only for Premium.
 - Design rules in CLAUDE.md apply: Cormorant Garamond + DM Sans only, never #30669D, linen background, 0.2s ease card hovers, no new animations, sentence-case headings.
@@ -26,7 +26,7 @@
 ## Review focus
 
 1. **A branch of a Premium brand** (e.g. a Cosmo branch profile) must show the Premium badge and doctors even though the branch row's own `tier` is `basic`. *Test: `effectiveTier` with brand premium + clinic basic → premium (Task 1).*
-2. **A Premium clinic with rating < 4.8 or < 50 reviews** must show `◆ Premium` but not `★ Top rated`. *Test: `isTopRated(4.7, 900)` and `isTopRated(5, 12)` → false (Task 1).*
+2. **A Premium clinic without the editorial flag** must show `◆ Premium` but not `★ Top rated`. *Test: `isTopRated(0)`, `isTopRated(0, "premium")` and `isTopRated(4.9, 369)` → false (tiers.test.ts).*
 3. **Search with a typo or a different spelling** must still find the clinic: "ultera", "Asoke" vs "Asok", "Thong Lo" vs "Thonglor". *Tests in Task 3.*
 4. **A search word that only appears in the middle of a word** must not match ("form" must not return "Maximum Performance"). *Test in Task 3.*
 5. **Under the listing's "reviews" or "name" sort**, paid entries lose their pinned position but keep their badges. *Checked in the Task 2 browser step.*
@@ -284,7 +284,7 @@ git commit -m "feat(tiers): plan tier data, top-rated rule and PlanBadges"
 - [ ] **Step 6: Build and browser check.**
   - Run `npm run build`. Expected: success, with the same page count as before.
   - Serve with `npx serve out -l 3001`, or `python3 -m http.server 3001 -d out`.
-  - Check `/bangkok/physiotherapy-clinics/`: Form Asoke is #1 and Form Thonglor #2, both with a gold frame + ◆ Premium + ★ Top rated. The organic list follows. Switch sort to "Most reviewed": Form is no longer pinned and keeps its badges.
+  - Check `/bangkok/physiotherapy-clinics/`: Form Asoke is #1 and Form Thonglor #2, both with a gold frame + ◆ Premium (no ★ Top rated until an editor flags them). The organic list follows. Switch sort to "Most reviewed": Form is no longer pinned and keeps its badges.
   - Check `/bangkok/cosmetic-clinics/`: the Cosmo brand card is first with ◆ Premium.
   - Check `/bangkok/physiotherapy-clinics/form-recovery-and-wellness-at-asoke/`: badges show above the H1.
   - Check a Cosmo branch page: ◆ Premium shows.
@@ -643,7 +643,7 @@ export const CITY_PHOTOS: Record<string, { src: string; alt: string; author: str
 - [ ] **Step 6: Build and browser check.**
   - Run `npm run build` and serve `out/`.
   - On `/`, verify:
-    - "form" → Form Asoke first (◆ Premium ★ Top rated), no "Maximum Performance"
+    - "form" → Form Asoke first (◆ Premium), no "Maximum Performance"
     - "asoke" → Asok clinics
     - "ultera" → Ulthera treatment
     - "dental asok" → only dental clinics near Asok
@@ -707,16 +707,16 @@ export default function PremiumBox({ topRated = false, children }: { topRated?: 
 }
 ```
 
-- [ ] **Step 2:** Register it in `mdxComponents`. In each matched guide, wrap the Form / Cosmo / Genesis entry (its `###` heading plus that entry's paragraphs, up to the next `###`) in `<PremiumBox topRated>…</PremiumBox>`. Use `topRated` only when that clinic's DB rating is ≥ 4.8 with ≥ 50 reviews; check with a quick query. Leave a blank line after the opening tag and before the closing tag so the MDX inside still parses as markdown. Don't change any ranking order or wording.
+- [ ] **Step 2:** Register it in `mdxComponents`. In each matched guide, wrap the Form / Cosmo / Genesis entry (its `###` heading plus that entry's paragraphs, up to the next `###`) in `<PremiumBox topRated>…</PremiumBox>`. Use `topRated` only when that clinic's (or its brand's) `top_rated` flag is set in the DB; check with a quick query. Leave a blank line after the opening tag and before the closing tag so the MDX inside still parses as markdown. Don't change any ranking order or wording.
 
 - [ ] **Step 3: /list-your-clinic/.**
   - Rewrite `INCLUDES` as the three plans:
     - Basic, free: full profile, verified badge, AI review summary, listed on city + category pages, patients contact you directly, no commission
     - Pro, ฿4,900/month: Featured placement on your category page, published prices and photos, sponsored mention in related guides, dedicated account manager, monthly profile updates
-    - Premium, ฿9,900/month: top Featured slot in your category, ◆ Premium badge everywhere you appear, ★ Top rated tag for clinics rated 4.8★+ with 50+ reviews, featured on our homepage and city page, up to 3 doctors with credentials, 3 sponsored articles per year, 3 backlinks with your preferred anchor
+    - Premium, ฿9,900/month: top Featured slot in your category, ◆ Premium badge everywhere you appear, ★ Top rated tag only if our editors pick you (never sold), featured on our homepage and city page, up to 3 doctors with credentials, 3 sponsored articles per year, 3 backlinks with your preferred anchor
   - Render the plans as three cards (Premium card in a gold frame, labelled "Most popular"), following the page's existing card styles.
   - FAQ "How much does it cost?" → "Basic is free. Pro is ฿4,900 a month and Premium is ฿9,900 a month. There's no commission on any plan, and patients contact you directly."
-  - FAQ "Can I pay to rank higher?" → "Paid plans add a clearly labelled placement — 'Featured' for Pro, '◆ Premium' for Premium — above the organic list. The organic order and our editorial guide rankings are based on ratings, reviews and our own research, and can't be bought. 'Top rated' is earned: it only appears for clinics rated 4.8★ or higher with 50+ reviews."
+  - FAQ "Can I pay to rank higher?" → "Paid plans add a clearly labelled placement — 'Featured' for Pro, '◆ Premium' for Premium — above the organic list. The organic order and our editorial guide rankings are based on ratings, reviews and our own research, and can't be bought. 'Top rated' is our editors' pick — never sold."
   - Tone follows `content/TONE.md`: British English, warm and direct.
 
 - [ ] **Step 4: /how-we-rank/.** Update the paid-placement paragraph (:248–258) to say the same as the "Can I pay to rank higher?" answer.

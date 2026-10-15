@@ -72,6 +72,7 @@ export const clinics = sqliteTable("clinics", {
   featured:        integer("featured",         { mode: "boolean" }).default(false),
   featuredPosition: integer("featured_position"),
   tier: text("tier").notNull().default("basic"),
+  topRated: integer("top_rated", { mode: "boolean" }).notNull().default(false),
 
   // Content
   about:        text("about"),    // JSON with amenities/accessibility
@@ -108,6 +109,7 @@ export const brands = sqliteTable("brands", {
   featured:         integer("featured", { mode: "boolean" }).default(false),
   featuredPosition: integer("featured_position"),  // pin order in listing (nullable)
   tier: text("tier").notNull().default("basic"),
+  topRated: integer("top_rated", { mode: "boolean" }).notNull().default(false),
   editorsNote:      text("editors_note"),   // Editor's Pick editorial copy (nullable)
   createdAt:   text("created_at").notNull().default(sql`(datetime('now'))`),
   updatedAt:   text("updated_at").notNull().default(sql`(datetime('now'))`),

@@ -729,7 +729,7 @@ export default function ClinicProfileView({ clinic, reviews, stations, prices, n
                   )}
                 </div>
 
-                {/* Plan badges — Premium (brand-resolved) + earned Top rated. Pro shows nothing here. */}
+                {/* Plan badges — Premium (brand-resolved) + editorial Top rated flag. Pro shows nothing here. */}
                 {(clinic.tier === "premium" || clinic.topRated) && (
                   <div style={{ marginBottom: "10px" }}>
                     <PlanBadges tier={clinic.tier} topRated={clinic.topRated} />

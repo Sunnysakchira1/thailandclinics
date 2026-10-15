@@ -21,7 +21,7 @@ export async function GET() {
       : `/${r.citySlug}/${r.categorySlug}/${r.slug}/`;
     return {
       id: r.id, n: r.name, u: url, c: r.citySlug, k: r.categorySlug, d: r.district,
-      r: r.rating, v: r.reviews, t: effectiveTier(r.tier, r.brandTier), tr: isTopRated(r.rating, r.reviews),
+      r: r.rating, v: r.reviews, t: effectiveTier(r.tier, r.brandTier), tr: isTopRated(r.topRated, r.brandTopRated),
       p: r.photoUrl, w: [...new Set(w.split(" "))].join(" "),
     };
   });

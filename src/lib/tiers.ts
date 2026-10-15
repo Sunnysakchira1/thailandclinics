@@ -1,8 +1,5 @@
 export type Tier = "basic" | "pro" | "premium";
 
-export const TOP_RATED_MIN_RATING = 4.8;
-export const TOP_RATED_MIN_REVIEWS = 50;
-
 export function normaliseTier(v: unknown): Tier {
   return v === "pro" || v === "premium" ? v : "basic";
 }
@@ -14,9 +11,17 @@ export function effectiveTier(clinicTier: unknown, brandTier?: unknown): Tier {
   return tierRank(b) > tierRank(a) ? b : a;
 }
 
-/** Earned, never sold: independent of tier. */
-export function isTopRated(rating: number | null | undefined, reviews: number | null | undefined): boolean {
-  return (rating ?? 0) >= TOP_RATED_MIN_RATING && (reviews ?? 0) >= TOP_RATED_MIN_REVIEWS;
+/** Strict flag check: only 1 / true (as stored by SQLite or Drizzle boolean mode) count. */
+function isFlagSet(v: unknown): boolean {
+  return v === true || v === 1;
+}
+
+/**
+ * Top rated is a manual editorial flag — our editors' pick, never sold.
+ * Independent of tier and of ratings. Branches inherit their brand's flag.
+ */
+export function isTopRated(clinicFlag: unknown, brandFlag?: unknown): boolean {
+  return isFlagSet(clinicFlag) || isFlagSet(brandFlag);
 }
 
 export function tierRank(t: Tier): number {

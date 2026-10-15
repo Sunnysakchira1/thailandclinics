@@ -14,7 +14,7 @@ The partner proposal deck (sent to CLASS CLINIC and Ovio on 2026-10-15) sells th
 | Topic | Decision |
 |---|---|
 | Paid badge wording | **"Premium"**. Not "Premium partner". |
-| Top rated | Earned, never sold. Shown when Google rating ≥ 4.8 **and** reviews ≥ 50, on any plan. |
+| Top rated | Our editors' pick — never sold. A manual editorial flag (`top_rated` on clinics and brands, default off), set by hand per clinic or brand, on any plan. Branches inherit their brand's flag. (Changed 2026-10-15: was rating ≥ 4.8 and reviews ≥ 50.) |
 | Pro label | Green **"Featured"**, category page only |
 | Premium clinics at launch | Form Recovery Asoke + Thonglor (clinics). The Cosmo Clinic and Genesis Fertility Center (brands). |
 | Doctors | Premium only, up to 3 per clinic |
@@ -51,7 +51,7 @@ One helper in `src/lib/tiers.ts`:
 
 - `type Tier = 'basic'|'pro'|'premium'`
 - `effectiveTier(clinic, brand?)`: the brand tier wins for branches.
-- `isTopRated(rating, reviews)`: returns `rating >= 4.8 && reviews >= 50`.
+- `isTopRated(clinicFlag, brandFlag?)`: true when either flag is 1/true. Never derived from tier or ratings.
 - `tierRank(t)`: premium 2, pro 1, basic 0.
 
 ## 2. Badges
@@ -70,9 +70,9 @@ One helper in `src/lib/tiers.ts`:
 | Category landing "Top Rated {cat}" | Unchanged: organic only. A paid clinic must not sit under a heading that says "Top Rated" unless it earns it. |
 | Clinic profile | Badges above the H1. The "Our doctors" section (Premium only, max 3) goes after the editorial block. The physio-specific Editor's Pick fallback copy (ClinicProfileView.tsx:806) no longer fires for clinics that have no `editorsNote`. |
 | Brand hub + branch | Use the brand tier. Badges on the hub header and each branch. |
-| Guides (MDX) | New `<PremiumBox slug="...">` MDX component. It wraps an entry, adds the Premium badge (plus Top rated if earned), and puts a disclosure line under it: "Premium: this clinic pays for a labelled placement. Our rankings are editorial and not for sale." with a link to /how-we-rank/. It's added by hand to the guides that mention Form, Cosmo and Genesis. |
+| Guides (MDX) | New `<PremiumBox slug="...">` MDX component. It wraps an entry, adds the Premium badge (plus Top rated if the editors have flagged it), and puts a disclosure line under it: "Premium: this clinic pays for a labelled placement. Our rankings are editorial and not for sale." with a link to /how-we-rank/. It's added by hand to the guides that mention Form, Cosmo and Genesis. |
 | /list-your-clinic/ | `INCLUDES` is rewritten as the three plans with prices. FAQ "How much does it cost?" and "Can I pay to rank higher?" are rewritten to match the deck. The FAQPage schema follows automatically. |
-| /how-we-rank/ | The paragraph on paid placement is updated: Premium, Featured, and Top rated as an earned tag. |
+| /how-we-rank/ | The paragraph on paid placement is updated: Premium, Featured, and Top rated as our editors' pick — never sold. |
 
 ## 4. Search
 

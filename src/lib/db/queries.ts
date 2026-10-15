@@ -114,6 +114,8 @@ export async function getClinicsBySlug(
       brandId:              clinics.brandId,
       clinicTier:           clinics.tier,
       brandTier:            brands.tier,
+      clinicTopRated:       clinics.topRated,
+      brandTopRated:        brands.topRated,
     })
     .from(clinics)
     .innerJoin(cities,     eq(clinics.cityId,     cities.id))
@@ -121,10 +123,10 @@ export async function getClinicsBySlug(
     .leftJoin(brands,      eq(clinics.brandId,    brands.id))
     .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug)))
     .orderBy(weightedRatingOrder, desc(clinics.googleReviewsCount));
-  return rows.map(({ clinicTier, brandTier, ...c }) => ({
+  return rows.map(({ clinicTier, brandTier, clinicTopRated, brandTopRated, ...c }) => ({
     ...c,
     tier:     effectiveTier(clinicTier, brandTier),
-    topRated: isTopRated(c.googleRating, c.googleReviewsCount),
+    topRated: isTopRated(clinicTopRated, brandTopRated),
   }));
 }
 
@@ -169,6 +171,8 @@ export async function getClinicProfile(
       brandId:            clinics.brandId,
       clinicTier:         clinics.tier,
       brandTier:          brands.tier,
+      clinicTopRated:     clinics.topRated,
+      brandTopRated:      brands.topRated,
       cityName:     cities.name,
       citySlug:     cities.slug,
       categoryName: categories.name,
@@ -182,11 +186,11 @@ export async function getClinicProfile(
     .limit(1);
 
   if (!rows[0]) return null;
-  const { clinicTier, brandTier, ...c } = rows[0];
+  const { clinicTier, brandTier, clinicTopRated, brandTopRated, ...c } = rows[0];
   return {
     ...c,
     tier:     effectiveTier(clinicTier, brandTier),
-    topRated: isTopRated(c.googleRating, c.googleReviewsCount),
+    topRated: isTopRated(clinicTopRated, brandTopRated),
   };
 }
 
@@ -316,7 +320,7 @@ export async function getHomepageFeatured(citySlug: string, limit: number): Prom
       id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, slug: clinics.slug,
       categorySlug: categories.slug, district: clinics.district,
       rating: clinics.googleRating, reviews: clinics.googleReviewsCount, photoUrl: clinics.photoUrl,
-      position: clinics.featuredPosition,
+      position: clinics.featuredPosition, topRated: clinics.topRated,
     })
       .from(clinics)
       .innerJoin(cities,     eq(clinics.cityId,     cities.id))
@@ -324,7 +328,7 @@ export async function getHomepageFeatured(citySlug: string, limit: number): Prom
       .where(and(eq(cities.slug, citySlug), sql`${clinics.tier} = 'premium'`, isNull(clinics.brandId))),
     db.select({
       id: brands.id, name: brands.name, slug: brands.slug, categorySlug: categories.slug,
-      rating: brands.avgRating, reviews: brands.totalReviews, position: brands.featuredPosition,
+      rating: brands.avgRating, reviews: brands.totalReviews, position: brands.featuredPosition, topRated: brands.topRated,
       photoUrl: sql<string | null>`(SELECT c.photo_url FROM clinics c WHERE c.brand_id = ${brands.id} AND c.photo_url IS NOT NULL ORDER BY COALESCE(c.featured_position, 9999), c.google_reviews_count DESC LIMIT 1)`,
     })
       .from(brands)
@@ -339,7 +343,7 @@ export async function getHomepageFeatured(citySlug: string, limit: number): Prom
       card: {
         key: `c${c.id}`, name: c.nameEn ?? c.name, url: `/${citySlug}/${c.categorySlug}/${c.slug}/`,
         categorySlug: c.categorySlug, district: c.district, rating: c.rating, reviews: c.reviews,
-        photoUrl: c.photoUrl, tier: "premium" as Tier, topRated: isTopRated(c.rating, c.reviews),
+        photoUrl: c.photoUrl, tier: "premium" as Tier, topRated: isTopRated(c.topRated),
       },
     })),
     ...premBrands.map((b) => ({
@@ -347,7 +351,7 @@ export async function getHomepageFeatured(citySlug: string, limit: number): Prom
       card: {
         key: `b${b.id}`, name: b.name, url: `/${citySlug}/${b.categorySlug}/${b.slug}/`,
         categorySlug: b.categorySlug, district: null, rating: b.rating, reviews: b.reviews,
-        photoUrl: b.photoUrl, tier: "premium" as Tier, topRated: isTopRated(b.rating, b.reviews),
+        photoUrl: b.photoUrl, tier: "premium" as Tier, topRated: isTopRated(null, b.topRated),
       },
     })),
   ].sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999)).map((p) => p.card);
@@ -360,6 +364,7 @@ export async function getHomepageFeatured(citySlug: string, limit: number): Prom
     id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, slug: clinics.slug,
     categorySlug: categories.slug, district: clinics.district,
     rating: clinics.googleRating, reviews: clinics.googleReviewsCount, photoUrl: clinics.photoUrl, tier: clinics.tier,
+    topRated: clinics.topRated,
   })
     .from(clinics)
     .innerJoin(cities,     eq(clinics.cityId,     cities.id))
@@ -372,7 +377,7 @@ export async function getHomepageFeatured(citySlug: string, limit: number): Prom
   return [...cards, ...organic.map((c) => ({
     key: `c${c.id}`, name: c.nameEn ?? c.name, url: `/${citySlug}/${c.categorySlug}/${c.slug}/`,
     categorySlug: c.categorySlug, district: c.district, rating: c.rating, reviews: c.reviews,
-    photoUrl: c.photoUrl, tier: effectiveTier(c.tier), topRated: isTopRated(c.rating, c.reviews),
+    photoUrl: c.photoUrl, tier: effectiveTier(c.tier), topRated: isTopRated(c.topRated),
   }))];
 }
 
@@ -435,7 +440,7 @@ export async function getTopClinicsByCity(
       id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, slug: clinics.slug,
       district: clinics.district, googleRating: clinics.googleRating,
       googleReviewsCount: clinics.googleReviewsCount, featuredPosition: clinics.featuredPosition,
-      tier: clinics.tier, categorySlug: categories.slug,
+      tier: clinics.tier, categorySlug: categories.slug, topRated: clinics.topRated,
     })
       .from(clinics)
       .innerJoin(cities,     eq(clinics.cityId,     cities.id))
@@ -445,6 +450,7 @@ export async function getTopClinicsByCity(
       id: brands.id, name: brands.name, slug: brands.slug,
       googleRating: brands.avgRating, googleReviewsCount: brands.totalReviews,
       featuredPosition: brands.featuredPosition, tier: brands.tier, categorySlug: categories.slug,
+      brandTopRated: brands.topRated,
     })
       .from(brands)
       .innerJoin(cities,     eq(brands.cityId,     cities.id))
@@ -456,6 +462,7 @@ export async function getTopClinicsByCity(
       district: clinics.district, googleRating: clinics.googleRating,
       googleReviewsCount: clinics.googleReviewsCount, featuredPosition: clinics.featuredPosition,
       tier: clinics.tier, brandTier: brands.tier, categorySlug: categories.slug,
+      topRated: clinics.topRated, brandTopRated: brands.topRated,
     })
       .from(clinics)
       .innerJoin(brands,     eq(clinics.brandId,    brands.id))
@@ -468,10 +475,11 @@ export async function getTopClinicsByCity(
     key: string; id: number; name: string; nameEn: string | null; slug: string;
     district: string | null; googleRating: number | null; googleReviewsCount: number | null;
     featuredPosition: number | null; tier: Tier; categorySlug: string;
+    topRated?: unknown; brandTopRated?: unknown;
   }): CityTopRow => ({
     ...(r as unknown as ClinicListItem),
     key: r.key, categorySlug: r.categorySlug, tier: r.tier,
-    topRated: isTopRated(r.googleRating, r.googleReviewsCount),
+    topRated: isTopRated(r.topRated, r.brandTopRated),
   });
 
   const pinned = [
@@ -507,6 +515,7 @@ export async function getTopClinicsByCity(
       featuredPosition:   clinics.featuredPosition,
       photoUrl:           clinics.photoUrl,
       tier:               clinics.tier,
+      topRated:           clinics.topRated,
       categorySlug:       categories.slug,
     })
     .from(clinics)
@@ -523,7 +532,7 @@ export async function getTopClinicsByCity(
       ...(c as unknown as ClinicListItem),
       key: `c${c.id}`, categorySlug: c.categorySlug,
       tier: effectiveTier(c.tier),
-      topRated: isTopRated(c.googleRating, c.googleReviewsCount),
+      topRated: isTopRated(c.topRated),
     })),
   ];
 }
@@ -635,7 +644,7 @@ export async function getBrandHub(citySlug: string, categorySlug: string, brandS
     id: brands.id, name: brands.name, slug: brands.slug, about: brands.about, website: brands.website,
     logoUrl: brands.logoUrl, branchCount: brands.branchCount, avgRating: brands.avgRating,
     totalReviews: brands.totalReviews, featured: brands.featured, editorsNote: brands.editorsNote,
-    brandTier: brands.tier,
+    brandTier: brands.tier, brandTopRated: brands.topRated,
     cityName: cities.name, citySlug: cities.slug,
     categoryName: categories.name, categorySlug: categories.slug,
   }).from(brands)
@@ -644,24 +653,24 @@ export async function getBrandHub(citySlug: string, categorySlug: string, brandS
     .where(and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug), eq(brands.slug, brandSlug)))
     .limit(1);
   if (!b) return null;
-  const { brandTier, ...hub } = b;
+  const { brandTier, brandTopRated, ...hub } = b;
   const branchRows = await db.select({
     branchSlug: clinics.branchSlug, name: clinics.name, nameEn: clinics.nameEn, district: clinics.district,
     googleRating: clinics.googleRating, googleReviewsCount: clinics.googleReviewsCount,
     lat: clinics.lat, lng: clinics.lng, openingHours: clinics.openingHours, photoUrl: clinics.photoUrl,
-    googlePlaceId: clinics.googlePlaceId, clinicTier: clinics.tier,
+    googlePlaceId: clinics.googlePlaceId, clinicTier: clinics.tier, clinicTopRated: clinics.topRated,
   }).from(clinics).where(eq(clinics.brandId, b.id))
     .orderBy(desc(clinics.googleReviewsCount));
-  // Branches inherit the brand plan; Top rated is earned per location.
-  const branches: BranchRow[] = branchRows.map(({ clinicTier, ...r }) => ({
+  // Branches inherit the brand plan and the brand's Top rated flag.
+  const branches: BranchRow[] = branchRows.map(({ clinicTier, clinicTopRated, ...r }) => ({
     ...r,
     tier:     effectiveTier(clinicTier, brandTier),
-    topRated: isTopRated(r.googleRating, r.googleReviewsCount),
+    topRated: isTopRated(clinicTopRated, brandTopRated),
   }));
   return {
     ...hub,
     tier:     effectiveTier(brandTier),
-    topRated: isTopRated(hub.avgRating, hub.totalReviews),
+    topRated: isTopRated(null, brandTopRated),
     branches,
   };
 }
@@ -686,6 +695,7 @@ export async function getBranchProfile(
     brandId: clinics.brandId, brandName: brands.name, brandSlug: brands.slug,
     brandBranchCount: brands.branchCount, brandEditorsNote: brands.editorsNote,
     clinicTier: clinics.tier, brandTier: brands.tier,
+    clinicTopRated: clinics.topRated, brandTopRated: brands.topRated,
   }).from(clinics)
     .innerJoin(cities, eq(clinics.cityId, cities.id))
     .innerJoin(categories, eq(clinics.categoryId, categories.id))
@@ -693,11 +703,11 @@ export async function getBranchProfile(
     .where(and(eq(brands.slug, brandSlug), eq(clinics.branchSlug, branchSlug)))
     .limit(1);
   if (!row) return null;
-  const { clinicTier, brandTier, ...p } = row;
+  const { clinicTier, brandTier, clinicTopRated, brandTopRated, ...p } = row;
   return {
     ...p,
     tier:     effectiveTier(clinicTier, brandTier),
-    topRated: isTopRated(p.googleRating, p.googleReviewsCount),
+    topRated: isTopRated(clinicTopRated, brandTopRated),
   };
 }
 
@@ -707,13 +717,14 @@ export async function getBrandSiblings(brandId: number, excludeBranchSlug: strin
     googleRating: clinics.googleRating, googleReviewsCount: clinics.googleReviewsCount,
     lat: clinics.lat, lng: clinics.lng, openingHours: clinics.openingHours, photoUrl: clinics.photoUrl,
     googlePlaceId: clinics.googlePlaceId, clinicTier: clinics.tier, brandTier: brands.tier,
+    clinicTopRated: clinics.topRated, brandTopRated: brands.topRated,
   }).from(clinics)
     .innerJoin(brands, eq(clinics.brandId, brands.id))
     .where(and(eq(clinics.brandId, brandId), ne(clinics.branchSlug, excludeBranchSlug)));
-  return rows.map(({ clinicTier, brandTier, ...r }) => ({
+  return rows.map(({ clinicTier, brandTier, clinicTopRated, brandTopRated, ...r }) => ({
     ...r,
     tier:     effectiveTier(clinicTier, brandTier),
-    topRated: isTopRated(r.googleRating, r.googleReviewsCount),
+    topRated: isTopRated(clinicTopRated, brandTopRated),
   }));
 }
 
@@ -729,7 +740,7 @@ export async function getListingEntries(citySlug: string, categorySlug: string):
     id: brands.id, name: brands.name, slug: brands.slug, district: sql<string | null>`NULL`,
     googleRating: brands.avgRating, googleReviewsCount: brands.totalReviews,
     photoUrl: brands.logoUrl, branchCount: brands.branchCount, featured: brands.featured,
-    featuredPosition: brands.featuredPosition, brandTier: brands.tier,
+    featuredPosition: brands.featuredPosition, brandTier: brands.tier, brandTopRated: brands.topRated,
   }).from(brands)
     .innerJoin(cities, eq(brands.cityId, cities.id))
     .innerJoin(categories, eq(brands.categoryId, categories.id))
@@ -742,7 +753,7 @@ export async function getListingEntries(citySlug: string, categorySlug: string):
     appointmentRequired: false, acceptsCard: false, acceptsNfc: false, openLate: false,
     brandId: null, isBrand: true, brandSlug: b.slug, branchCount: b.branchCount,
     tier: effectiveTier(b.brandTier),
-    topRated: isTopRated(b.googleRating, b.googleReviewsCount),
+    topRated: isTopRated(null, b.brandTopRated),
   })) as ListingEntry[];
   return [...brandEntries, ...standalone]
     .sort((a, b) => (b.googleRating ?? 0) - (a.googleRating ?? 0)
@@ -913,6 +924,7 @@ export type SearchRow = {
   rating: number | null; reviews: number | null; photoUrl: string | null;
   services: string | null; tier: string | null;
   brandSlug: string | null; brandName: string | null; brandTier: string | null;
+  topRated: boolean; brandTopRated: boolean | null;
   branchSlug: string | null; stations: string[];
 };
 
@@ -936,6 +948,8 @@ export async function getSearchRows(): Promise<SearchRow[]> {
       brandSlug:    brands.slug,
       brandName:    brands.name,
       brandTier:    brands.tier,
+      topRated:     clinics.topRated,
+      brandTopRated: brands.topRated,
       branchSlug:   clinics.branchSlug,
     })
       .from(clinics)
