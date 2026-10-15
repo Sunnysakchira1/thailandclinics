@@ -111,8 +111,11 @@ const HOTSPOT_COPY: Record<string, string> = {
 /* ─── FAQ ────────────────────────────────────────────────────────── */
 type Qa = { q: string; a: string };
 
+/** A city-level price is only quoted when at least 2 clinics publish it. */
+const MIN_CLINICS_FOR_PRICE = 2;
+
 function pick(ranges: PriceRange[], treatment: string, unit: string, quantity: number): PriceRange | undefined {
-  return ranges.find((r) => r.treatment === treatment && r.unit === unit && r.quantity === quantity);
+  return ranges.find((r) => r.treatment === treatment && r.unit === unit && r.quantity === quantity && r.clinics >= MIN_CLINICS_FOR_PRICE);
 }
 
 /** Cost answer built only from published prices in treatment_prices. Never invents numbers. */
