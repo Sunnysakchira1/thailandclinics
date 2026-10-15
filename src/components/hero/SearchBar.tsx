@@ -126,7 +126,15 @@ export default function SearchBar() {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
-    go(active >= 0 ? active : 0)
+    // An option the user arrowed onto (incl. a Popular item) always wins.
+    if (active >= 0 && options[active]) { go(active); return }
+    // Empty query, index loading/failed, or zero matches → the city page.
+    if (!trimmed || !index || options.length === 0) {
+      setOpen(false)
+      router.push(`/${city || 'bangkok'}/`)
+      return
+    }
+    go(0)
   }
 
   const liveCities = index?.cities.filter(c => c.count > 0) ?? []
@@ -251,7 +259,7 @@ export default function SearchBar() {
           }}
         >
           {trimmed && !index ? (
-            <div style={emptyStyle}>{failed ? 'Search is unavailable right now. Please try again.' : 'Loading…'}</div>
+            <div style={emptyStyle}>{failed ? 'Search is unavailable right now — browse by city below.' : 'Loading…'}</div>
           ) : options.length === 0 ? (
             <div style={emptyStyle}>
               No matches for &ldquo;{trimmed}&rdquo;. Try a treatment (e.g. &ldquo;implants&rdquo;) or an area (e.g. &ldquo;Thonglor&rdquo;).
