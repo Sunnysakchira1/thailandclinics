@@ -1,4 +1,4 @@
-import { eq, desc, and, ne, sql, isNotNull, isNull, count } from "drizzle-orm";
+import { eq, desc, and, ne, sql, isNotNull, isNull, count, notInArray } from "drizzle-orm";
 import { db } from "./index";
 import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations, treatmentPrices } from "./schema";
 import { WR_BASELINE, WR_WEIGHT, weightedRating } from "../ranking";
@@ -301,6 +301,79 @@ export async function getHomepageClinics(
       weightedRatingOrder
     )
     .limit(limit);
+}
+
+export type HomepageFeaturedCard = {
+  key: string; name: string; url: string; categorySlug: string; district: string | null;
+  rating: number | null; reviews: number | null; photoUrl: string | null; tier: Tier; topRated: boolean;
+};
+
+/** Homepage featured cards: Premium clinics + Premium brands in the city (by featured_position),
+ *  then the best organic standalone clinics in any category, up to `limit`. */
+export async function getHomepageFeatured(citySlug: string, limit: number): Promise<HomepageFeaturedCard[]> {
+  const [premClinics, premBrands] = await Promise.all([
+    db.select({
+      id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, slug: clinics.slug,
+      categorySlug: categories.slug, district: clinics.district,
+      rating: clinics.googleRating, reviews: clinics.googleReviewsCount, photoUrl: clinics.photoUrl,
+      position: clinics.featuredPosition,
+    })
+      .from(clinics)
+      .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+      .innerJoin(categories, eq(clinics.categoryId, categories.id))
+      .where(and(eq(cities.slug, citySlug), sql`${clinics.tier} = 'premium'`, isNull(clinics.brandId))),
+    db.select({
+      id: brands.id, name: brands.name, slug: brands.slug, categorySlug: categories.slug,
+      rating: brands.avgRating, reviews: brands.totalReviews, position: brands.featuredPosition,
+      photoUrl: sql<string | null>`(SELECT c.photo_url FROM clinics c WHERE c.brand_id = ${brands.id} AND c.photo_url IS NOT NULL ORDER BY COALESCE(c.featured_position, 9999), c.google_reviews_count DESC LIMIT 1)`,
+    })
+      .from(brands)
+      .innerJoin(cities,     eq(brands.cityId,     cities.id))
+      .innerJoin(categories, eq(brands.categoryId, categories.id))
+      .where(and(eq(cities.slug, citySlug), sql`${brands.tier} = 'premium'`)),
+  ]);
+
+  const paid = [
+    ...premClinics.map((c) => ({
+      position: c.position,
+      card: {
+        key: `c${c.id}`, name: c.nameEn ?? c.name, url: `/${citySlug}/${c.categorySlug}/${c.slug}/`,
+        categorySlug: c.categorySlug, district: c.district, rating: c.rating, reviews: c.reviews,
+        photoUrl: c.photoUrl, tier: "premium" as Tier, topRated: isTopRated(c.rating, c.reviews),
+      },
+    })),
+    ...premBrands.map((b) => ({
+      position: b.position,
+      card: {
+        key: `b${b.id}`, name: b.name, url: `/${citySlug}/${b.categorySlug}/${b.slug}/`,
+        categorySlug: b.categorySlug, district: null, rating: b.rating, reviews: b.reviews,
+        photoUrl: b.photoUrl, tier: "premium" as Tier, topRated: isTopRated(b.rating, b.reviews),
+      },
+    })),
+  ].sort((a, b) => (a.position ?? 9999) - (b.position ?? 9999)).map((p) => p.card);
+
+  const cards = paid.slice(0, limit);
+  if (cards.length >= limit) return cards;
+
+  const listed = premClinics.map((c) => c.id);
+  const organic = await db.select({
+    id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, slug: clinics.slug,
+    categorySlug: categories.slug, district: clinics.district,
+    rating: clinics.googleRating, reviews: clinics.googleReviewsCount, photoUrl: clinics.photoUrl, tier: clinics.tier,
+  })
+    .from(clinics)
+    .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+    .innerJoin(categories, eq(clinics.categoryId, categories.id))
+    .where(and(eq(cities.slug, citySlug), isNull(clinics.brandId),
+      listed.length ? notInArray(clinics.id, listed) : undefined))
+    .orderBy(weightedRatingOrder, desc(clinics.googleReviewsCount))
+    .limit(limit - cards.length);
+
+  return [...cards, ...organic.map((c) => ({
+    key: `c${c.id}`, name: c.nameEn ?? c.name, url: `/${citySlug}/${c.categorySlug}/${c.slug}/`,
+    categorySlug: c.categorySlug, district: c.district, rating: c.rating, reviews: c.reviews,
+    photoUrl: c.photoUrl, tier: effectiveTier(c.tier), topRated: isTopRated(c.rating, c.reviews),
+  }))];
 }
 
 export type ClinicReviewRow = {

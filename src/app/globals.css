@@ -293,12 +293,14 @@ body {
 /* Featured clinics */
 .featured-section { padding: 72px 48px; }
 .section-header   { display: flex; align-items: flex-end; justify-content: space-between; }
-.featured-grid    { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.featured-grid    { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 640px)  { .featured-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .featured-grid { grid-template-columns: repeat(4, 1fr); } }
 
 /* Cities */
 .city-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-top: 32px;
 }
@@ -384,8 +386,7 @@ body {
   .footer-pad      { padding: 48px 24px 28px; }
 
   .specialty-grid  { grid-template-columns: repeat(2, 1fr); }
-  .featured-grid   { grid-template-columns: repeat(2, 1fr); }
-  .city-grid       { grid-template-columns: repeat(3, 1fr); }
+  .city-grid       { grid-template-columns: repeat(4, 1fr); }
   .footer-grid     { grid-template-columns: 1fr 1fr; gap: 32px; }
 
   .listing-layout  { flex-direction: column; }
@@ -409,7 +410,6 @@ body {
   .footer-pad       { padding: 40px 20px 28px; }
 
   .specialty-grid   { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  .featured-grid    { grid-template-columns: 1fr; }
   .city-grid        { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .section-header   { flex-direction: column; align-items: flex-start; gap: 10px; }
   .trust-inner      { display: grid; grid-template-columns: 1fr 1fr; gap: 24px 20px; justify-items: start; }
@@ -974,4 +974,14 @@ details[open] > .profile-detail-summary::after {
 @media (max-width: 640px) {
   .gm-wrap { padding: 40px 24px 72px !important; }
   .gm-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ─── Homepage search (type-ahead) ───────────────────────────────── */
+.search-opt { display: flex; align-items: center; gap: 12px; padding: 9px 20px; cursor: pointer; }
+.search-opt:hover, .search-opt[aria-selected="true"] { background: var(--green-pale); }
+.search-opt-title { font-size: 14px; color: var(--charcoal); display: flex; align-items: center; gap: 8px; min-width: 0; }
+.search-opt-title > .search-opt-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.search-opt-title strong { color: var(--green); font-weight: 600; }
+@media (max-width: 639px) {
+  .search-city, .search-city-divider { display: none; }
 }

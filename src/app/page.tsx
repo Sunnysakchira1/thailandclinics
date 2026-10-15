@@ -4,7 +4,10 @@ import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import SearchBar from "@/components/hero/SearchBar";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
-import { getClinicCount, getCityClinicCount, getTotalClinicCount, getHomepageClinics } from "@/lib/db/queries";
+import PlanBadges from "@/components/ui/PlanBadges";
+import { getClinicCount, getCityClinicCount, getTotalClinicCount, getHomepageFeatured } from "@/lib/db/queries";
+import { CITY_PHOTOS } from "@/lib/cityPhotos";
+import { CATEGORY_LABELS } from "@/lib/search/vocab";
 import { getBlogPosts } from "@/lib/blog";
 
 /* ─── SEO ────────────────────────────────────────────────────────── */
@@ -40,10 +43,10 @@ const CARD_GRADIENTS = [
 ];
 
 const CITY_TILES = [
-  { name: "Bangkok",    slug: "bangkok",    bg: "linear-gradient(160deg, #2a5c40 0%, #1a3d2b 100%)", count: "477+ clinics" },
-  { name: "Chiang Mai", slug: "chiang-mai", bg: "linear-gradient(160deg, #5c432a 0%, #3d2d1a 100%)", count: "Coming soon" },
-  { name: "Phuket",     slug: "phuket",     bg: "linear-gradient(160deg, #2a4a5c 0%, #1a3040 100%)", count: "46 clinics" },
-  { name: "Pattaya",    slug: "pattaya",    bg: "linear-gradient(160deg, #5c2a3e 0%, #3d1a28 100%)", count: "Coming soon" },
+  { name: "Bangkok",    slug: "bangkok",    bg: "linear-gradient(160deg, #2a5c40 0%, #1a3d2b 100%)" },
+  { name: "Chiang Mai", slug: "chiang-mai", bg: "linear-gradient(160deg, #5c432a 0%, #3d2d1a 100%)" },
+  { name: "Phuket",     slug: "phuket",     bg: "linear-gradient(160deg, #2a4a5c 0%, #1a3040 100%)" },
+  { name: "Pattaya",    slug: "pattaya",    bg: "linear-gradient(160deg, #5c2a3e 0%, #3d1a28 100%)" },
 ];
 
 const PRICE_ROWS = [
@@ -120,16 +123,17 @@ const faqSchema = {
 
 /* ─── Page ───────────────────────────────────────────────────────── */
 export default async function HomePage() {
-  const [physioCount, cosmeticCount, fertilityCount, dentalCount, wellnessCount, bangkokCount, totalCount, topClinics] = await Promise.all([
+  const [physioCount, cosmeticCount, fertilityCount, dentalCount, wellnessCount, totalCount, featured, cityCounts] = await Promise.all([
     getClinicCount("bangkok", "physiotherapy-clinics"),
     getClinicCount("bangkok", "cosmetic-clinics"),
     getClinicCount("bangkok", "fertility-clinics"),
     getClinicCount("bangkok", "dental-clinics"),
     getClinicCount("bangkok", "wellness-clinics"),
-    getCityClinicCount("bangkok"),
     getTotalClinicCount(),
-    getHomepageClinics("bangkok", "physiotherapy-clinics", 3),
+    getHomepageFeatured("bangkok", 4),
+    Promise.all(CITY_TILES.map((c) => getCityClinicCount(c.slug))),
   ]);
+  const cityCount = (slug: string) => cityCounts[CITY_TILES.findIndex((c) => c.slug === slug)] ?? 0;
 
   const blogPosts = getBlogPosts(3);
 
@@ -329,60 +333,46 @@ export default async function HomePage() {
                 color:      "var(--charcoal)",
                 lineHeight: 1.15,
               }}>
-                Highly rated in <em style={{ fontStyle: "italic", color: "var(--green)" }}>Bangkok</em>
+                Featured clinics in <em style={{ fontStyle: "italic", color: "var(--green)" }}>Bangkok</em>
               </h2>
-              <Link href="/bangkok/physiotherapy-clinics/" style={sectionLinkStyle} className="section-link">
+              <Link href="/bangkok/" style={sectionLinkStyle} className="section-link">
                 View all Bangkok clinics →
               </Link>
             </div>
 
-            {/* 3-column grid */}
+            {/* 4 → 2 → 1 column grid */}
             <div className="featured-grid">
-              {topClinics.map((clinic, i) => {
-                const displayName = clinic.nameEn ?? clinic.name;
+              {featured.map((card, i) => {
+                const displayName = card.name;
                 return (
                   <Link
-                    key={clinic.id}
-                    href={`/bangkok/physiotherapy-clinics/${clinic.slug}/`}
+                    key={card.key}
+                    href={card.url}
                     style={{ textDecoration: "none", display: "block" }}
                   >
                     <article className="featured-card" style={{
                       background:   "var(--white)",
-                      border:       "1px solid var(--border-soft)",
+                      border:       card.tier === "premium" ? "2px solid var(--gold)" : "1px solid var(--border-soft)",
                       borderRadius: "6px",
                       overflow:     "hidden",
                       cursor:       "pointer",
+                      height:       "100%",
                     }}>
                       {/* Photo */}
                       <div style={{
                         width:          "100%",
                         aspectRatio:    "4/3",
-                        background:     CARD_GRADIENTS[i],
+                        background:     CARD_GRADIENTS[i % CARD_GRADIENTS.length],
                         display:        "flex",
                         alignItems:     "center",
                         justifyContent: "center",
                         position:       "relative",
                         overflow:       "hidden",
                       }}>
-                        <ClinicPhoto url={clinic.photoUrl} name={displayName} />
-                        {i === 0 && (
-                          <div style={{
-                            position:      "absolute",
-                            top:           "12px",
-                            left:          "12px",
-                            background:    "var(--green)",
-                            color:         "var(--white)",
-                            fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
-                            fontSize:      "10.5px",
-                            fontWeight:    500,
-                            letterSpacing: "0.08em",
-                            textTransform: "uppercase",
-                            padding:       "4px 10px",
-                            borderRadius:  "3px",
-                          }}>
-                            Top Rated
-                          </div>
-                        )}
+                        <ClinicPhoto url={card.photoUrl} name={displayName} />
+                        <div style={{ position: "absolute", top: "12px", left: "12px" }}>
+                          <PlanBadges tier={card.tier} topRated={card.topRated} />
+                        </div>
                       </div>
 
                       {/* Card body */}
@@ -396,7 +386,7 @@ export default async function HomePage() {
                           color:         "var(--terracotta)",
                           marginBottom:  "8px",
                         }}>
-                          Physiotherapy
+                          {CATEGORY_LABELS[card.categorySlug] ?? "Clinic"}
                         </p>
 
                         <h3 style={{
@@ -419,19 +409,19 @@ export default async function HomePage() {
                           color:      "var(--muted)",
                           flexWrap:   "wrap",
                         }}>
-                          {clinic.googleRating !== null && (
+                          {card.rating !== null && (
                             <span style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--charcoal)", fontWeight: 500 }}>
                               <svg width="13" height="13" viewBox="0 0 24 24" fill="#e8a020">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                               </svg>
-                              {clinic.googleRating.toFixed(1)}
+                              {card.rating.toFixed(1)}
                             </span>
                           )}
-                          {clinic.googleRating !== null && <MetaDot />}
-                          {clinic.googleReviewsCount !== null && (
-                            <span>{clinic.googleReviewsCount.toLocaleString()} reviews</span>
+                          {card.rating !== null && card.reviews !== null && <MetaDot />}
+                          {card.reviews !== null && (
+                            <span>{card.reviews.toLocaleString()} reviews</span>
                           )}
-                          {clinic.district && <><MetaDot /><span>{clinic.district}</span></>}
+                          {card.district && <><MetaDot /><span>{card.district}</span></>}
                         </div>
 
                         {/* Card footer */}
@@ -482,7 +472,7 @@ export default async function HomePage() {
               {CITY_TILES.map((city) => (
                 <Link
                   key={city.slug}
-                  href={`/${city.slug}`}
+                  href={`/${city.slug}/`}
                   style={{ textDecoration: "none", display: "block" }}
                   className="city-tile"
                 >
@@ -496,13 +486,43 @@ export default async function HomePage() {
                     <div
                       className="city-tile-bg"
                       style={{ position: "absolute", inset: 0, background: city.bg }}
-                    />
+                    >
+                      {CITY_PHOTOS[city.slug] && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={CITY_PHOTOS[city.slug].src}
+                          alt={CITY_PHOTOS[city.slug].alt}
+                          loading="lazy"
+                          decoding="async"
+                          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        />
+                      )}
+                    </div>
                     {/* Overlay */}
                     <div style={{
                       position:   "absolute",
                       inset:      0,
                       background: "linear-gradient(to top, rgba(10,30,20,0.72) 0%, rgba(10,30,20,0.1) 60%)",
                     }} />
+                    {cityCount(city.slug) === 0 && (
+                      <span style={{
+                        position:      "absolute",
+                        top:           "14px",
+                        left:          "14px",
+                        background:    "rgba(255,255,255,0.92)",
+                        color:         "var(--charcoal)",
+                        fontFamily:    "var(--font-dm-sans, 'DM Sans', sans-serif)",
+                        fontSize:      "11px",
+                        fontWeight:    500,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        lineHeight:    1,
+                        padding:       "5px 9px",
+                        borderRadius:  "4px",
+                      }}>
+                        Coming soon
+                      </span>
+                    )}
                     {/* Content */}
                     <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 16px" }}>
                       <div style={{
@@ -520,13 +540,31 @@ export default async function HomePage() {
                         fontSize:   "12px",
                         color:      "rgba(255,255,255,0.65)",
                       }}>
-                        {city.slug === "bangkok" ? `${bangkokCount}+ clinics` : city.count}
+                        {cityCount(city.slug) > 0 ? `${cityCount(city.slug).toLocaleString()} clinics` : "Coming soon"}
                       </div>
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
+            <p style={{
+              fontFamily: "var(--font-dm-sans, 'DM Sans', sans-serif)",
+              fontSize:   "11px",
+              color:      "var(--muted)",
+              marginTop:  "12px",
+              lineHeight: 1.6,
+            }}>
+              City photos via Wikimedia Commons:{" "}
+              {CITY_TILES.filter((c) => CITY_PHOTOS[c.slug]).map((c, i) => {
+                const photo = CITY_PHOTOS[c.slug];
+                return (
+                  <span key={c.slug}>
+                    {i > 0 && " · "}
+                    {c.name} — <a href={photo.source} target="_blank" rel="noopener" style={{ color: "inherit", textDecoration: "underline" }}>{photo.author}</a>, {photo.licence}
+                  </span>
+                );
+              })}
+            </p>
           </div>
         </section>
 
