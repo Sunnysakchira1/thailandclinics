@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { ClinicListItem } from "@/lib/db/queries";
+import PlanBadges from "@/components/ui/PlanBadges";
+import type { Tier } from "@/lib/tiers";
 
 const STAR_PATH = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
 
@@ -20,9 +22,12 @@ function Stars({ rating }: { rating: number }) {
 
 interface Props {
   clinic: ClinicListItem & { citySlug?: string; categorySlug?: string };
-  rank: number;
+  /** Omit for pinned (paid) rows so they don't take an editorial rank. */
+  rank?: number;
   citySlug?: string;
   catSlug?: string;
+  tier?: Tier;
+  topRated?: boolean;
 }
 
 function rankColor(r: number) {
@@ -32,7 +37,8 @@ function rankColor(r: number) {
   return "var(--charcoal-soft)";
 }
 
-export default function CompactClinicRow({ clinic, rank, citySlug, catSlug }: Props) {
+export default function CompactClinicRow({ clinic, rank, citySlug, catSlug, tier = "basic", topRated = false }: Props) {
+  const premium = tier === "premium";
   const displayName = clinic.nameEn || clinic.name;
   const city  = citySlug  || (clinic as any).citySlug;
   const cat   = catSlug   || (clinic as any).categorySlug;
@@ -46,17 +52,27 @@ export default function CompactClinicRow({ clinic, rank, citySlug, catSlug }: Pr
       textDecoration: "none",
       background: "var(--white)",
       transition: "background 0.15s",
+      ...(premium ? { border: "1px solid var(--gold)", borderRadius: "6px" } : {}),
     }} className="compact-row">
-      {/* Rank */}
-      <div style={{
-        width: "28px", height: "28px", borderRadius: "50%",
-        background: rankColor(rank), color: "var(--white)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: "11px", fontWeight: 600, flexShrink: 0,
-      }}>{rank}</div>
+      {/* Rank (pinned paid rows get a spacer, not a number) */}
+      {rank != null ? (
+        <div style={{
+          width: "28px", height: "28px", borderRadius: "50%",
+          background: rankColor(rank), color: "var(--white)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "11px", fontWeight: 600, flexShrink: 0,
+        }}>{rank}</div>
+      ) : (
+        <div aria-hidden="true" style={{ width: "28px", flexShrink: 0 }} />
+      )}
 
       {/* Name + meta */}
       <div style={{ flex: 1, minWidth: 0 }}>
+        {(premium || topRated) && (
+          <div style={{ marginBottom: "4px" }}>
+            <PlanBadges size="sm" tier={tier} topRated={topRated} />
+          </div>
+        )}
         <p style={{
           fontFamily: "var(--font-cormorant)", fontSize: "18px",
           fontWeight: 500, color: "var(--charcoal)", lineHeight: 1.2,

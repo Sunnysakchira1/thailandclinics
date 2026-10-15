@@ -189,15 +189,23 @@ export default async function CityPage({ params }: Props) {
                 </p>
               </div>
               <div style={{ background: "var(--white)", border: "1px solid var(--border-soft)", borderRadius: "6px", overflow: "hidden" }}>
-                {topClinics.map((clinic, i) => (
-                  <CompactClinicRow
-                    key={clinic.id}
-                    clinic={clinic}
-                    rank={i + 1}
-                    citySlug={city}
-                    catSlug={(clinic as any).categorySlug}
-                  />
-                ))}
+                {(() => {
+                  let organicRank = 0;
+                  return topClinics.map((clinic) => {
+                    const pinned = clinic.tier === "premium";
+                    return (
+                      <CompactClinicRow
+                        key={clinic.key}
+                        clinic={clinic}
+                        rank={pinned ? undefined : ++organicRank}
+                        citySlug={city}
+                        catSlug={clinic.categorySlug}
+                        tier={clinic.tier}
+                        topRated={clinic.topRated}
+                      />
+                    );
+                  });
+                })()}
               </div>
             </section>
           )}

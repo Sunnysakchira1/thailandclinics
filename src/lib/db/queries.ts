@@ -2,7 +2,7 @@ import { eq, desc, and, ne, sql, isNotNull, isNull, count, notInArray } from "dr
 import { db } from "./index";
 import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations, treatmentPrices } from "./schema";
 import { WR_BASELINE, WR_WEIGHT, weightedRating } from "../ranking";
-import { effectiveTier, isTopRated, type Tier } from "../tiers";
+import { effectiveTier, isTopRated, normaliseTier, type Tier } from "../tiers";
 
 /* Volume-aware weighted rating as a SQL ORDER BY fragment — mirrors
    weightedRating() in ../ranking so every ranking surface uses one formula. */
@@ -417,11 +417,79 @@ export async function getCategoryCountsForCity(
 }
 
 /** Top N clinics in a city across all categories, ordered by review count */
+export type CityTopRow = ClinicListItem & TierInfo & { key: string; categorySlug: string };
+
+/**
+ * City page rows: Premium entries pinned first (standalone Premium clinics,
+ * Premium brands as one hub row, and any Premium branch of a non-Premium
+ * brand), ordered by featured_position then weighted rating. Then up to
+ * `limit` organic standalone clinics by weighted rating. Premium rows are
+ * added on top of the organic limit, never in place of it.
+ */
 export async function getTopClinicsByCity(
   citySlug: string,
   limit: number
-): Promise<ClinicListItem[]> {
-  return db
+): Promise<CityTopRow[]> {
+  const [premClinics, premBrands, premBranches] = await Promise.all([
+    db.select({
+      id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, slug: clinics.slug,
+      district: clinics.district, googleRating: clinics.googleRating,
+      googleReviewsCount: clinics.googleReviewsCount, featuredPosition: clinics.featuredPosition,
+      tier: clinics.tier, categorySlug: categories.slug,
+    })
+      .from(clinics)
+      .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+      .innerJoin(categories, eq(clinics.categoryId, categories.id))
+      .where(and(eq(cities.slug, citySlug), isNull(clinics.brandId), sql`${clinics.tier} = 'premium'`)),
+    db.select({
+      id: brands.id, name: brands.name, slug: brands.slug,
+      googleRating: brands.avgRating, googleReviewsCount: brands.totalReviews,
+      featuredPosition: brands.featuredPosition, tier: brands.tier, categorySlug: categories.slug,
+    })
+      .from(brands)
+      .innerJoin(cities,     eq(brands.cityId,     cities.id))
+      .innerJoin(categories, eq(brands.categoryId, categories.id))
+      .where(and(eq(cities.slug, citySlug), sql`${brands.tier} = 'premium'`)),
+    db.select({
+      id: clinics.id, name: clinics.name, nameEn: clinics.nameEn,
+      branchSlug: clinics.branchSlug, brandSlug: brands.slug,
+      district: clinics.district, googleRating: clinics.googleRating,
+      googleReviewsCount: clinics.googleReviewsCount, featuredPosition: clinics.featuredPosition,
+      tier: clinics.tier, brandTier: brands.tier, categorySlug: categories.slug,
+    })
+      .from(clinics)
+      .innerJoin(brands,     eq(clinics.brandId,    brands.id))
+      .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+      .innerJoin(categories, eq(clinics.categoryId, categories.id))
+      .where(and(eq(cities.slug, citySlug), sql`${clinics.tier} = 'premium'`)),
+  ]);
+
+  const asRow = (r: {
+    key: string; id: number; name: string; nameEn: string | null; slug: string;
+    district: string | null; googleRating: number | null; googleReviewsCount: number | null;
+    featuredPosition: number | null; tier: Tier; categorySlug: string;
+  }): CityTopRow => ({
+    ...(r as unknown as ClinicListItem),
+    key: r.key, categorySlug: r.categorySlug, tier: r.tier,
+    topRated: isTopRated(r.googleRating, r.googleReviewsCount),
+  });
+
+  const pinned = [
+    ...premClinics.map((c) => asRow({ ...c, key: `c${c.id}`, tier: effectiveTier(c.tier) })),
+    ...premBrands.map((b) => asRow({
+      ...b, key: `b${b.id}`, nameEn: null, district: null, tier: effectiveTier(null, b.tier),
+    })),
+    // A Premium branch whose brand is already Premium is covered by the brand row.
+    ...premBranches
+      .filter((c) => c.branchSlug && normaliseTier(c.brandTier) !== "premium")
+      .map((c) => asRow({ ...c, key: `c${c.id}`, slug: `${c.brandSlug}/${c.branchSlug}`, tier: "premium" })),
+  ].filter((r) => r.tier === "premium")
+    .sort((a, b) =>
+      ((a.featuredPosition ?? 9999) - (b.featuredPosition ?? 9999)) ||
+      (weightedRating(b.googleRating, b.googleReviewsCount) - weightedRating(a.googleRating, a.googleReviewsCount)));
+
+  const pinnedIds = premClinics.map((c) => c.id);
+  const organic = await db
     .select({
       id:                 clinics.id,
       name:               clinics.name,
@@ -438,14 +506,26 @@ export async function getTopClinicsByCity(
       featured:           clinics.featured,
       featuredPosition:   clinics.featuredPosition,
       photoUrl:           clinics.photoUrl,
+      tier:               clinics.tier,
       categorySlug:       categories.slug,
-    } as any)
+    })
     .from(clinics)
     .innerJoin(cities,      eq(clinics.cityId,     cities.id))
     .innerJoin(categories,  eq(clinics.categoryId, categories.id))
-    .where(and(eq(cities.slug, citySlug), isNull(clinics.brandId)))
+    .where(and(eq(cities.slug, citySlug), isNull(clinics.brandId),
+      pinnedIds.length ? notInArray(clinics.id, pinnedIds) : undefined))
     .orderBy(weightedRatingOrder)
-    .limit(limit) as unknown as ClinicListItem[];
+    .limit(limit);
+
+  return [
+    ...pinned,
+    ...organic.map((c) => ({
+      ...(c as unknown as ClinicListItem),
+      key: `c${c.id}`, categorySlug: c.categorySlug,
+      tier: effectiveTier(c.tier),
+      topRated: isTopRated(c.googleRating, c.googleReviewsCount),
+    })),
+  ];
 }
 
 /* ─── Category landing page ──────────────────────────────────────── */
