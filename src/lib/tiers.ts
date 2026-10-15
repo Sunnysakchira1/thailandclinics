@@ -27,3 +27,30 @@ export function isTopRated(clinicFlag: unknown, brandFlag?: unknown): boolean {
 export function tierRank(t: Tier): number {
   return t === "premium" ? 2 : t === "pro" ? 1 : 0;
 }
+
+/** Owner rule: at most this many Top-rated entries per city+category listing. */
+export const TOP_RATED_CAP = 5;
+
+/**
+ * Build-time guard for the Top-rated cap. `listing` is "city/category";
+ * `key` identifies the listing entry (brand slug for branches, so a brand counts once).
+ * Throws, naming every listing over the cap and its entries, so the build fails loudly.
+ */
+export function assertTopRatedCap(
+  entries: { listing: string; key: string; topRated: boolean }[],
+  max = TOP_RATED_CAP,
+): void {
+  const byListing = new Map<string, Set<string>>();
+  for (const e of entries) {
+    if (!e.topRated) continue;
+    const keys = byListing.get(e.listing) ?? new Set<string>();
+    keys.add(e.key);
+    byListing.set(e.listing, keys);
+  }
+  const over = [...byListing].filter(([, keys]) => keys.size > max);
+  if (over.length === 0) return;
+  const detail = over
+    .map(([listing, keys]) => `${listing} has ${keys.size} Top-rated entries (max ${max}): ${[...keys].join(", ")}`)
+    .join("; ");
+  throw new Error(`Top-rated cap exceeded — ${detail}. Unflag entries in clinics.top_rated / brands.top_rated.`);
+}

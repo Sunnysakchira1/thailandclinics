@@ -1,7 +1,7 @@
 import { getSearchRows, getCityClinicCount } from "@/lib/db/queries";
 import { normalise } from "@/lib/search/normalise";
 import { CATEGORY_LABELS } from "@/lib/search/vocab";
-import { effectiveTier, isTopRated } from "@/lib/tiers";
+import { effectiveTier, isTopRated, assertTopRatedCap } from "@/lib/tiers";
 import type { SearchIndex } from "@/lib/search/engine";
 
 export const dynamic = "force-static";
@@ -10,6 +10,13 @@ const CITY_NAMES: Record<string, string> = { bangkok: "Bangkok", phuket: "Phuket
 
 export async function GET() {
   const rows = await getSearchRows();
+  // Build-time guard: max 5 Top-rated entries per city+category listing (a brand counts once).
+  // Runs on every build because this route is force-static over the full clinic set.
+  assertTopRatedCap(rows.map(r => ({
+    listing: `${r.citySlug}/${r.categorySlug}`,
+    key: r.brandSlug ? `brand:${r.brandSlug}` : `clinic:${r.slug}`,
+    topRated: isTopRated(r.topRated, r.brandTopRated),
+  })));
   const clinics = rows.map(r => {
     const services: string[] = (() => { try { return JSON.parse(r.services ?? "[]"); } catch { return []; } })();
     const w = normalise([
