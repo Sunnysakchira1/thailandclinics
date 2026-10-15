@@ -1007,3 +1007,96 @@ export async function getPremiumBoxInfo(slug: string): Promise<{ topRated: boole
   }
   return null;
 }
+
+/* ─── City page: specialty blocks, hotspots, price ranges ────────── */
+export type CityEntry = {
+  key: string; name: string; url: string; categorySlug: string;
+  rating: number | null; reviews: number | null; photoUrl: string | null;
+  district: string | null; branchCount: number | null;
+  tier: Tier; topRated: boolean; featuredPosition: number | null;
+};
+
+/**
+ * Every listing entry in a city, across categories: standalone clinics, plus each
+ * brand collapsed into one entry with branch aggregates (summed reviews,
+ * review-weighted rating, branch count) and a photo taken from one of its branches.
+ */
+export async function getCityEntries(citySlug: string): Promise<CityEntry[]> {
+  const [standalone, brandRows] = await Promise.all([
+    db.select({
+      id: clinics.id, name: clinics.name, nameEn: clinics.nameEn, slug: clinics.slug,
+      categorySlug: categories.slug, district: clinics.district,
+      rating: clinics.googleRating, reviews: clinics.googleReviewsCount, photoUrl: clinics.photoUrl,
+      tier: clinics.tier, topRated: clinics.topRated, featuredPosition: clinics.featuredPosition,
+    })
+      .from(clinics)
+      .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+      .innerJoin(categories, eq(clinics.categoryId, categories.id))
+      .where(and(eq(cities.slug, citySlug), isNull(clinics.brandId))),
+    db.select({
+      id: brands.id, name: brands.name, slug: brands.slug, categorySlug: categories.slug,
+      tier: brands.tier, topRated: brands.topRated, featuredPosition: brands.featuredPosition,
+      branches: sql<number>`(SELECT count(*) FROM clinics c WHERE c.brand_id = ${brands.id})`,
+      reviews:  sql<number | null>`(SELECT sum(COALESCE(c.google_reviews_count, 0)) FROM clinics c WHERE c.brand_id = ${brands.id})`,
+      ratingSum: sql<number | null>`(SELECT sum(COALESCE(c.google_rating, 0) * COALESCE(c.google_reviews_count, 0)) FROM clinics c WHERE c.brand_id = ${brands.id})`,
+      photoUrl: sql<string | null>`(SELECT c.photo_url FROM clinics c WHERE c.brand_id = ${brands.id} AND c.photo_url IS NOT NULL ORDER BY COALESCE(c.featured_position, 9999), c.google_reviews_count DESC LIMIT 1)`,
+    })
+      .from(brands)
+      .innerJoin(cities,     eq(brands.cityId,     cities.id))
+      .innerJoin(categories, eq(brands.categoryId, categories.id))
+      .where(eq(cities.slug, citySlug)),
+  ]);
+
+  return [
+    ...standalone.map((c): CityEntry => ({
+      key: `c${c.id}`, name: c.nameEn ?? c.name, url: `/${citySlug}/${c.categorySlug}/${c.slug}/`,
+      categorySlug: c.categorySlug, rating: c.rating, reviews: c.reviews, photoUrl: c.photoUrl,
+      district: c.district, branchCount: null,
+      tier: effectiveTier(c.tier), topRated: isTopRated(c.topRated), featuredPosition: c.featuredPosition,
+    })),
+    ...brandRows.map((b): CityEntry => {
+      const reviews = Number(b.reviews ?? 0);
+      const rating = reviews > 0 ? Math.round((Number(b.ratingSum ?? 0) / reviews) * 10) / 10 : null;
+      return {
+        key: `b${b.id}`, name: b.name, url: `/${citySlug}/${b.categorySlug}/${b.slug}/`,
+        categorySlug: b.categorySlug, rating, reviews, photoUrl: b.photoUrl,
+        district: null, branchCount: Number(b.branches),
+        tier: effectiveTier(null, b.tier), topRated: isTopRated(null, b.topRated), featuredPosition: b.featuredPosition,
+      };
+    }),
+  ];
+}
+
+/** Raw district → clinic count for a city (normalise before display). */
+export async function getCityDistrictCounts(citySlug: string): Promise<{ district: string; count: number }[]> {
+  const rows = await db.select({ district: clinics.district, n: sql<number>`count(*)` })
+    .from(clinics)
+    .innerJoin(cities, eq(clinics.cityId, cities.id))
+    .where(and(eq(cities.slug, citySlug), isNotNull(clinics.district)))
+    .groupBy(clinics.district);
+  return rows.map((r) => ({ district: r.district as string, count: Number(r.n) }));
+}
+
+export type PriceRange = {
+  treatment: string; unit: string; quantity: number | null;
+  min: number; max: number; clinics: number;
+};
+
+/** Published price ranges in a city, grouped by treatment + unit + quantity. `clinics` counts price-setting entities. */
+export async function getCityPriceRanges(citySlug: string): Promise<PriceRange[]> {
+  const rows = await db.select({
+    treatment: treatmentPrices.treatment, unit: treatmentPrices.unit, quantity: treatmentPrices.quantity,
+    min: sql<number>`min(${treatmentPrices.priceThb})`,
+    max: sql<number>`max(COALESCE(${treatmentPrices.priceMaxThb}, ${treatmentPrices.priceThb}))`,
+    n: sql<number>`count(DISTINCT COALESCE('b' || ${treatmentPrices.brandId}, 'c' || ${treatmentPrices.clinicId}))`,
+  }).from(treatmentPrices)
+    .leftJoin(clinics, eq(treatmentPrices.clinicId, clinics.id))
+    .leftJoin(brands, eq(treatmentPrices.brandId, brands.id))
+    .innerJoin(cities, sql`${cities.id} = COALESCE(${clinics.cityId}, ${brands.cityId})`)
+    .where(eq(cities.slug, citySlug))
+    .groupBy(treatmentPrices.treatment, treatmentPrices.unit, treatmentPrices.quantity);
+  return rows.map((r) => ({
+    treatment: r.treatment, unit: r.unit, quantity: r.quantity,
+    min: Number(r.min), max: Number(r.max), clinics: Number(r.n),
+  }));
+}
