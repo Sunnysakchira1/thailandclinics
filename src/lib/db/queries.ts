@@ -982,3 +982,28 @@ export async function getClinicDoctors(clinicId: number): Promise<ClinicDoctor[]
     .orderBy(clinicDoctors.sortOrder, clinicDoctors.id)
     .limit(3);
 }
+
+/* ─── Guide PremiumBox ───────────────────────────────────────────── */
+/**
+ * Top-rated flag for a guide's PremiumBox, read at build time so the badge
+ * always matches the database. `slug` is a clinic slug, else a brand slug.
+ * Returns null when neither exists (the caller fails the build).
+ */
+export async function getPremiumBoxInfo(slug: string): Promise<{ topRated: boolean } | null> {
+  const clinicRows = await db
+    .select({ topRated: clinics.topRated, brandTopRated: brands.topRated })
+    .from(clinics)
+    .leftJoin(brands, eq(clinics.brandId, brands.id))
+    .where(eq(clinics.slug, slug));
+  if (clinicRows.length > 0) {
+    return { topRated: clinicRows.some((r) => isTopRated(r.topRated, r.brandTopRated)) };
+  }
+  const brandRows = await db
+    .select({ topRated: brands.topRated })
+    .from(brands)
+    .where(eq(brands.slug, slug));
+  if (brandRows.length > 0) {
+    return { topRated: brandRows.some((r) => isTopRated(r.topRated)) };
+  }
+  return null;
+}
