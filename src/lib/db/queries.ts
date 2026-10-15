@@ -752,3 +752,57 @@ export async function getTreatmentPrices(treatment: string, citySlug: string): P
     .innerJoin(cities, sql`${cities.id} = COALESCE(${clinics.cityId}, ${brands.cityId})`)
     .where(and(eq(treatmentPrices.treatment, treatment), eq(cities.slug, citySlug)));
 }
+
+/* ─── Search index ───────────────────────────────────────────────── */
+export type SearchRow = {
+  id: number; name: string; nameTh: string | null; slug: string;
+  citySlug: string; categorySlug: string; district: string | null;
+  rating: number | null; reviews: number | null; photoUrl: string | null;
+  services: string | null; tier: string | null;
+  brandSlug: string | null; brandName: string | null; brandTier: string | null;
+  branchSlug: string | null; stations: string[];
+};
+
+/** Every clinic, flattened for the static search index. Tiers are raw; map via effectiveTier. */
+export async function getSearchRows(): Promise<SearchRow[]> {
+  const [rows, stationRows] = await Promise.all([
+    db.select({
+      id:           clinics.id,
+      name:         clinics.name,
+      nameEn:       clinics.nameEn,
+      nameTh:       clinics.nameTh,
+      slug:         clinics.slug,
+      citySlug:     cities.slug,
+      categorySlug: categories.slug,
+      district:     clinics.district,
+      rating:       clinics.googleRating,
+      reviews:      clinics.googleReviewsCount,
+      photoUrl:     clinics.photoUrl,
+      services:     clinics.services,
+      tier:         clinics.tier,
+      brandSlug:    brands.slug,
+      brandName:    brands.name,
+      brandTier:    brands.tier,
+      branchSlug:   clinics.branchSlug,
+    })
+      .from(clinics)
+      .innerJoin(cities,     eq(clinics.cityId,     cities.id))
+      .innerJoin(categories, eq(clinics.categoryId, categories.id))
+      .leftJoin(brands,      eq(clinics.brandId,    brands.id)),
+    db.select({ clinicId: clinicStations.clinicId, name: transitStations.name })
+      .from(clinicStations)
+      .innerJoin(transitStations, eq(clinicStations.stationId, transitStations.id))
+      .orderBy(clinicStations.distanceM),
+  ]);
+  const stations = new Map<number, string[]>();
+  for (const s of stationRows) {
+    const list = stations.get(s.clinicId) ?? [];
+    list.push(s.name);
+    stations.set(s.clinicId, list);
+  }
+  return rows.map(({ nameEn, ...r }) => ({
+    ...r,
+    name: nameEn ?? r.name,
+    stations: stations.get(r.id) ?? [],
+  }));
+}

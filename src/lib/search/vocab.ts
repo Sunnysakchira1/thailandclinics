@@ -1,0 +1,33 @@
+export const CATEGORY_LABELS: Record<string, string> = {
+  "physiotherapy-clinics": "Physiotherapy",
+  "dental-clinics": "Dental",
+  "cosmetic-clinics": "Cosmetic",
+  "wellness-clinics": "Wellness",
+  "fertility-clinics": "IVF & fertility",
+};
+
+export const TREATMENTS: { label: string; category: string; terms: string[] }[] = [
+  { label: "Ulthera / HIFU skin lifting", category: "cosmetic-clinics", terms: ["ulthera", "ultherapy", "hifu", "skin lift", "thermage"] },
+  { label: "Botox", category: "cosmetic-clinics", terms: ["botox", "toxin", "wrinkle"] },
+  { label: "Dermal fillers", category: "cosmetic-clinics", terms: ["filler", "fillers", "lip filler", "juvederm"] },
+  { label: "Laser and skin treatments", category: "cosmetic-clinics", terms: ["laser", "pico", "acne", "scar", "pigmentation", "melasma"] },
+  { label: "Thread lift", category: "cosmetic-clinics", terms: ["thread lift", "threadlift"] },
+  { label: "Dental implants", category: "dental-clinics", terms: ["implant", "implants"] },
+  { label: "Veneers", category: "dental-clinics", terms: ["veneer", "veneers"] },
+  { label: "Invisalign and braces", category: "dental-clinics", terms: ["invisalign", "braces", "aligners", "orthodontist"] },
+  { label: "Teeth whitening", category: "dental-clinics", terms: ["whitening", "teeth whitening"] },
+  { label: "Root canal", category: "dental-clinics", terms: ["root canal"] },
+  { label: "Crowns and bridges", category: "dental-clinics", terms: ["crown", "crowns", "bridge"] },
+  { label: "IVF / ICSI", category: "fertility-clinics", terms: ["ivf", "icsi", "fertility", "infertility"] },
+  { label: "Egg freezing", category: "fertility-clinics", terms: ["egg freezing", "freeze eggs"] },
+  { label: "PGT genetic testing", category: "fertility-clinics", terms: ["pgt", "genetic testing", "pgs"] },
+  { label: "IUI", category: "fertility-clinics", terms: ["iui", "insemination"] },
+  { label: "Back and neck pain", category: "physiotherapy-clinics", terms: ["back pain", "neck pain", "spine", "sciatica", "slipped disc"] },
+  { label: "Office syndrome", category: "physiotherapy-clinics", terms: ["office syndrome", "posture"] },
+  { label: "Sports injury", category: "physiotherapy-clinics", terms: ["sports injury", "acl", "knee", "shoulder", "running injury"] },
+  { label: "Post-surgery rehab", category: "physiotherapy-clinics", terms: ["rehab", "rehabilitation", "post surgery"] },
+  { label: "Dry needling", category: "physiotherapy-clinics", terms: ["dry needling", "needling"] },
+  { label: "Health check-up", category: "wellness-clinics", terms: ["health check", "checkup", "check up", "blood test"] },
+  { label: "IV therapy / NAD+", category: "wellness-clinics", terms: ["iv drip", "iv therapy", "nad", "vitamin drip"] },
+  { label: "Weight management", category: "wellness-clinics", terms: ["weight loss", "weight management", "ozempic"] },
+];
