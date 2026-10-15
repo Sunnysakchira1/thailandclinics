@@ -6,6 +6,8 @@ import type { ListingEntry } from '@/lib/db/queries';
 import { weightedRating } from '@/lib/ranking';
 import ClinicPhoto from '@/components/clinic/ClinicPhoto';
 import Nav from '@/components/layout/Nav';
+import PlanBadges from '@/components/ui/PlanBadges';
+import { tierRank } from '@/lib/tiers';
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 type SortOption = 'rating' | 'reviews' | 'alpha';
@@ -483,10 +485,16 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
     }
 
     if (sort === 'rating') {
+      // Default sort: Premium, then Pro (each by featuredPosition), then organic.
+      // 'reviews' and 'alpha' below stay purely organic — paid entries keep
+      // their badges there but lose their pinned position.
       list.sort((a, b) => {
-        const aPos = a.featured && a.featuredPosition != null ? a.featuredPosition : Infinity;
-        const bPos = b.featured && b.featuredPosition != null ? b.featuredPosition : Infinity;
-        if (aPos !== bPos) return aPos - bPos;
+        const td = tierRank(b.tier) - tierRank(a.tier);
+        if (td !== 0) return td;
+        if (a.tier !== 'basic') {
+          const pd = (a.featuredPosition ?? 9999) - (b.featuredPosition ?? 9999);
+          if (pd !== 0) return pd;
+        }
         const wd = weightedRating(b.googleRating, b.googleReviewsCount)
                  - weightedRating(a.googleRating, a.googleReviewsCount);
         return wd !== 0 ? wd : (b.googleReviewsCount ?? 0) - (a.googleReviewsCount ?? 0);
@@ -719,7 +727,8 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
               const displayName = clinic.nameEn || clinic.name;
               const rank = i + 1;
               const bg = PHOTO_BG[i % PHOTO_BG.length];
-              const isFeatured = !!clinic.featured;
+              const isPremium = clinic.tier === 'premium';
+              const isPro     = clinic.tier === 'pro';
               // Brand entry: link to hub; standalone: link to clinic profile
               const href = clinic.isBrand
                 ? `/${citySlug}/${catSlug}/${clinic.brandSlug}/`
@@ -739,9 +748,11 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                   key={clinic.isBrand ? `brand-${clinic.brandSlug}` : clinic.id}
                   href={href}
                   className="clinic-row-list"
-                  style={{
-                    borderLeft: isFeatured ? '3px solid var(--green)' : undefined,
-                  }}
+                  style={
+                    isPremium ? { border: '2px solid var(--gold)' }
+                    : isPro   ? { borderLeft: '3px solid var(--green)' }
+                    : undefined
+                  }
                 >
                   {/* Photo */}
                   <div style={{
@@ -763,7 +774,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                   {/* Body */}
                   <div style={{ padding: '20px 24px 20px 20px', display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
-                    {/* Brand badge (locations count) or Featured badge */}
+                    {/* Brand badge (locations count) + plan badges */}
                     {clinic.isBrand && clinic.branchCount != null && (
                       <div style={{
                         display: 'inline-flex', alignItems: 'center', gap: '4px',
@@ -776,18 +787,9 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                         {clinic.branchCount} locations
                       </div>
                     )}
-                    {isFeatured && (
-                      <div style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '4px',
-                        fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.08em',
-                        textTransform: 'uppercase', color: 'var(--green)',
-                        background: 'var(--green-pale)', padding: '3px 8px',
-                        borderRadius: '3px', marginBottom: '6px', width: 'fit-content',
-                      }}>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                          <path d={STAR_PATH} />
-                        </svg>
-                        Top Rated
+                    {(clinic.tier !== 'basic' || clinic.topRated) && (
+                      <div style={{ marginBottom: '6px' }}>
+                        <PlanBadges tier={clinic.tier} topRated={clinic.topRated} context="listing" />
                       </div>
                     )}
 

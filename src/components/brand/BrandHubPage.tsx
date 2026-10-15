@@ -4,7 +4,9 @@ import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import { withUtm } from "@/lib/utils/outbound";
+import PlanBadges from "@/components/ui/PlanBadges";
 import type { BranchRow } from "@/lib/db/queries";
+import type { Tier } from "@/lib/tiers";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 export type BrandHub = {
@@ -19,6 +21,10 @@ export type BrandHub = {
   totalReviews: number | null;
   featured: boolean | null;
   editorsNote: string | null;
+  /** Brand plan. */
+  tier: Tier;
+  /** Earned from the brand aggregates (avgRating / totalReviews). */
+  topRated: boolean;
   cityName: string;
   citySlug: string;
   categoryName: string;
@@ -120,6 +126,13 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
           }}>
             {hub.categoryName.replace(" Clinics", "")}
           </p>
+
+          {/* Plan badges — brand tier + brand aggregates */}
+          {(hub.tier === "premium" || hub.topRated) && (
+            <div style={{ marginBottom: "10px" }}>
+              <PlanBadges tier={hub.tier} topRated={hub.topRated} />
+            </div>
+          )}
 
           {/* H1 */}
           <h1 style={{
@@ -287,6 +300,11 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                         }}>
                           {displayName}
                         </p>
+                        {(branch.tier === "premium" || branch.topRated) && (
+                          <div style={{ marginBottom: "6px" }}>
+                            <PlanBadges tier={branch.tier} topRated={branch.topRated} size="sm" />
+                          </div>
+                        )}
                         {branch.district && (
                           <p style={{
                             fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",

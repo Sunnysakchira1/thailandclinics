@@ -4,6 +4,7 @@ import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import TCVerifiedBadge from "@/components/clinic/TCVerifiedBadge";
+import PlanBadges from "@/components/ui/PlanBadges";
 import { withUtm } from "@/lib/utils/outbound";
 import type { ClinicProfile, ClinicReviewRow, BranchRow, NearbyStation, PriceRecord } from "@/lib/db/queries";
 
@@ -728,6 +729,13 @@ export default function ClinicProfileView({ clinic, reviews, stations, prices, n
                   )}
                 </div>
 
+                {/* Plan badges — Premium (brand-resolved) + earned Top rated. Pro shows nothing here. */}
+                {(clinic.tier === "premium" || clinic.topRated) && (
+                  <div style={{ marginBottom: "10px" }}>
+                    <PlanBadges tier={clinic.tier} topRated={clinic.topRated} />
+                  </div>
+                )}
+
                 {/* H1 */}
                 <h1 style={{
                   fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)",
@@ -776,8 +784,8 @@ export default function ClinicProfileView({ clinic, reviews, stations, prices, n
                   </div>
                 )}
 
-                {/* Editor's pick — featured clinics (brand note takes precedence over the physio fallback) */}
-                {(editorsNote || clinic.featured) && (
+                {/* Editor's pick — only when there is real editorial copy */}
+                {editorsNote && (
                   <div style={{
                     display: "flex", alignItems: "flex-start", gap: "12px",
                     background: "var(--green-pale)",
@@ -803,7 +811,7 @@ export default function ClinicProfileView({ clinic, reviews, stations, prices, n
                         fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
                         fontSize: "14px", color: "var(--charcoal)", lineHeight: 1.5, margin: 0,
                       }}>
-                        {editorsNote ?? <>Widely recommended as one of the <strong>best physiotherapy clinics in Bangkok</strong> — featured across expat and medical-tourism guides.</>}
+                        {editorsNote}
                       </p>
                     </div>
                   </div>
