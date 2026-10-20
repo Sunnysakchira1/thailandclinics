@@ -880,9 +880,6 @@ details[open] > .profile-detail-summary::after {
   .nav-cta { padding: 9px 16px; }
   .nav-cta-outline { padding: 8px 14px; }
 }
-@media (max-width: 1040px) {
-  .nav-desktop .nav-cta-outline { display: none; }
-}
 
 /* Browse mega-dropdown */
 .nav-browse-wrapper { position: relative; }

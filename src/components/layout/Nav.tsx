@@ -52,15 +52,7 @@ export default function Nav() {
         </div>
         <Link href="/guides/" className="nav-link">Guides</Link>
         <Link href="/about/" className="nav-link">About</Link>
-        <Link href="/list-your-clinic/" className="nav-cta-outline">List your clinic</Link>
-        <a
-          href="https://locully.org"
-          className="nav-cta"
-          target="_blank"
-          rel="noopener"
-        >
-          Get Your Clinic Listed on ChatGPT
-        </a>
+        <Link href="/list-your-clinic/" className="nav-cta">List your clinic</Link>
       </div>
 
       {/* ── Mobile hamburger ────────────────────────────────────── */}
@@ -83,18 +75,9 @@ export default function Nav() {
             <Link href="/guides/" className="nav-mobile-link" onClick={() => setOpen(false)}>Guides</Link>
             <Link href="/about/" className="nav-mobile-link" onClick={() => setOpen(false)}>About</Link>
           </div>
-          <a
-            href="https://locully.org"
-            className="nav-mobile-cta"
-            target="_blank"
-            rel="noopener"
-            onClick={() => setOpen(false)}
-          >
-            Get Your Clinic Listed on ChatGPT →
-          </a>
           <Link
             href="/list-your-clinic/"
-            className="nav-mobile-cta nav-mobile-cta-outline"
+            className="nav-mobile-cta"
             onClick={() => setOpen(false)}
           >
             List your clinic →
