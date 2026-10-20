@@ -415,6 +415,52 @@ function RehabMilestones() {
   );
 }
 
+const MeditationCosts = () => (
+  <PriceChart
+    title="Published meditation and healing course costs in Bangkok, October 2026"
+    caption="Source: each centre's own published price, checked 20 October 2026. Wat Mahathat Section 5 runs on donations; the Buddhadasa Indapanno Archives publish no cost. Saksit's fee includes the book, certificate and lunch."
+    max={10_000}
+    rows={[
+      { name: "Bangkok Shambhala", note: "drop-in, suggested donation", from: 150, to: 300 },
+      { name: "House of Dhamma", note: "1-day vipassana taster", from: 4_500, to: 5_000 },
+      { name: "House of Dhamma", note: "2-day introductory course", from: 8_000, to: 9_000 },
+      { name: "Saksit Meditation and Healing Centre", note: "2-day Pranic Healing Level 1, all-in", from: 9_500 },
+    ]}
+  />
+);
+
+function MeditationVsHealing() {
+  return (
+    <Frame title="Temple meditation, drop-in group or healing course?" caption="ThailandClinics editorial summary, October 2026. All three are complementary practices, not medical treatment.">
+      <Cards cols={[
+        { tag: "Temple meditation", title: "Wat Mahathat, Buddhadasa Archives", points: [
+          "Vipassana and mindfulness", "Donation-based", "Dress code applies", "English on set days only",
+        ], foot: "Suits first-timers and travellers" },
+        { tag: "Drop-in group", title: "Shambhala, House of Dhamma", points: [
+          "Weekly sessions or private teaching", "Taught in English", "Donation to ฿9,000", "Book ahead at House of Dhamma",
+        ], foot: "Suits expats building a habit" },
+        { tag: "Healing course", title: "Saksit Meditation and Healing Centre", points: [
+          "Pranic Healing in levels", "Certificate for each course", "Published 9,500 Baht entry fee", "Prerequisites for later levels",
+        ], foot: "Suits people who want to learn a practice" },
+      ]} />
+    </Frame>
+  );
+}
+
+function MeditationBeforeYouGo() {
+  return (
+    <Frame title="Check these five things before you go" caption="Temple schedules change around Buddhist holidays. Confirm by phone or email before you travel.">
+      <Steps steps={[
+        { title: "Language", body: "Is this session taught in English?" },
+        { title: "Schedule", body: "Today's times, not last year's" },
+        { title: "Booking", body: "Walk in, register, or pay a deposit" },
+        { title: "Cost", body: "Donation, fee, and what it covers" },
+        { title: "Dress code", body: "Shoulders and knees covered" },
+      ]} />
+    </Frame>
+  );
+}
+
 const FIGURES: Record<string, () => React.JSX.Element> = {
   "surgery-prices": SurgeryPrices,
   "surgery-hospital-vs-clinic": SurgeryHospitalVsClinic,
@@ -434,6 +480,9 @@ const FIGURES: Record<string, () => React.JSX.Element> = {
   "pgt-types": PgtTypes,
   "pgt-timeline": PgtTimeline,
   "pgt-checklist": PgtChecklist,
+  "meditation-costs": MeditationCosts,
+  "meditation-vs-healing": MeditationVsHealing,
+  "meditation-before-you-go": MeditationBeforeYouGo,
 };
 
 export function Figure({ name }: { name: string }) {
