@@ -2,10 +2,16 @@
 
 import { useState } from "react";
 import Nav from "@/components/layout/Nav";
+import { GET_MATCHED_FORMSPREE, CONTACT_EMAIL } from "@/lib/forms";
 
-const TREATMENTS = [
-  "IVF / ICSI", "PGT (genetic testing)", "Egg freezing", "Other fertility",
-  "Dental", "Cosmetic / Aesthetic", "Physiotherapy", "Wellness",
+const TREATMENTS: { group: string; items: string[] }[] = [
+  { group: "Fertility", items: ["IVF / ICSI", "PGT (genetic testing)", "Egg freezing", "IUI", "Fertility testing"] },
+  { group: "Dental", items: ["Dental implants", "Veneers", "Crowns or bridges", "Braces or Invisalign", "Root canal", "Teeth whitening", "Check-up and cleaning"] },
+  { group: "Cosmetic (non-surgical)", items: ["Botox", "Dermal fillers", "Ulthera / HIFU skin lifting", "Laser and skin treatments", "Acne or scar treatment", "Thread lift"] },
+  { group: "Cosmetic surgery", items: ["Rhinoplasty (nose)", "Breast augmentation", "Eyelid surgery", "Facelift", "Liposuction"] },
+  { group: "Physiotherapy", items: ["Back or neck pain", "Sports injury", "Post-surgery rehab (ACL, knee, hip)", "Office syndrome", "Physio for older adults"] },
+  { group: "Wellness", items: ["Health check-up", "IV therapy / NAD+", "Weight management"] },
+  { group: "Something else", items: ["Other (tell us below)"] },
 ];
 const CITIES = ["Bangkok", "Phuket", "Chiang Mai", "Pattaya", "Not sure yet"];
 const TIMING = ["Within a month", "1–3 months", "3–6 months", "Just researching"];
@@ -41,14 +47,32 @@ export default function GetMatchedPage() {
   const [city, setCity]           = useState("");
   const [timing, setTiming]       = useState("");
   const [notes, setNotes]         = useState("");
+  const [status, setStatus]       = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const isOther = treatment.startsWith("Other");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const subject = encodeURIComponent(`Shortlist request — ${treatment} in ${city}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nEmail: ${email}\nCountry: ${country}\nTreatment: ${treatment}\nCity: ${city}\nTiming: ${timing}\n\nWhat matters to me:\n${notes}`
-    );
-    window.location.href = `mailto:hello@thailand-clinics.com?subject=${subject}&body=${body}`;
+    const subject = `Shortlist request — ${treatment} in ${city}`;
+    const fields = { name, email, country, treatment, city, timing, notes };
+
+    if (!GET_MATCHED_FORMSPREE) {
+      const body = `Name: ${name}\nEmail: ${email}\nCountry: ${country}\nTreatment: ${treatment}\nCity: ${city}\nTiming: ${timing}\n\nWhat matters to me:\n${notes}`;
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      return;
+    }
+
+    setStatus("sending");
+    try {
+      const honeypot = (e.currentTarget.elements.namedItem("_gotcha") as HTMLInputElement | null)?.value ?? "";
+      const res = await fetch(GET_MATCHED_FORMSPREE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ ...fields, _subject: subject, _replyto: email, _gotcha: honeypot }),
+      });
+      setStatus(res.ok ? "sent" : "error");
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -129,7 +153,22 @@ export default function GetMatchedPage() {
               A short description is enough. Please don&apos;t send medical records.
             </p>
 
+            {status === "sent" ? (
+              <div role="status" style={{
+                background: "var(--green-pale)", border: "1px solid var(--green)", borderRadius: "6px", padding: "24px 28px",
+              }}>
+                <div style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)", fontSize: "26px", color: "var(--green)", marginBottom: "6px" }}>
+                  Request received
+                </div>
+                <p style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px", lineHeight: 1.7, color: "var(--charcoal-soft)", margin: 0 }}>
+                  Thanks, {name.split(" ")[0] || "there"}. We&apos;ll email your shortlist to {email} within 2–3 business days.
+                </p>
+              </div>
+            ) : (
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              {/* Spam trap: hidden from people, filled in by bots */}
+              <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }} />
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }} className="gm-grid">
                 <Field label="Your name" id="gm-name" required>
                   <input id="gm-name" type="text" value={name} onChange={(e) => setName(e.target.value)} required style={inputStyle} />
@@ -143,7 +182,11 @@ export default function GetMatchedPage() {
                 <Field label="Treatment" id="gm-treatment" required>
                   <select id="gm-treatment" value={treatment} onChange={(e) => setTreatment(e.target.value)} required style={{ ...inputStyle, cursor: "pointer" }}>
                     <option value="">Select treatment</option>
-                    {TREATMENTS.map((t) => <option key={t} value={t}>{t}</option>)}
+                    {TREATMENTS.map(({ group, items }) => (
+                      <optgroup key={group} label={group}>
+                        {items.map((t) => <option key={t} value={t}>{t}</option>)}
+                      </optgroup>
+                    ))}
                   </select>
                 </Field>
                 <Field label="City" id="gm-city" required>
@@ -166,24 +209,37 @@ export default function GetMatchedPage() {
                 </Field>
               </div>
 
-              <Field label="What matters most to you?" id="gm-notes">
-                <textarea id="gm-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
-                  placeholder="e.g. budget, PGT, English-speaking doctor, near BTS, a hospital setting"
+              <Field label={isOther ? "What treatment do you need?" : "What matters most to you?"} id="gm-notes" required={isOther}>
+                <textarea id="gm-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} required={isOther}
+                  placeholder={isOther
+                    ? "Tell us the treatment, plus anything that matters: budget, English-speaking doctor, location"
+                    : "e.g. budget, PGT, English-speaking doctor, near BTS, a hospital setting"}
                   style={{ ...inputStyle, resize: "vertical" }} />
               </Field>
 
-              <button type="submit" className="gm-submit" style={{
+              <button type="submit" className="gm-submit" disabled={status === "sending"} style={{
                 fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500,
                 backgroundColor: "var(--green)", color: "var(--white)", border: "none", borderRadius: "4px",
-                padding: "14px 28px", cursor: "pointer", alignSelf: "flex-start",
+                padding: "14px 28px", cursor: status === "sending" ? "wait" : "pointer", alignSelf: "flex-start",
+                opacity: status === "sending" ? 0.7 : 1,
               }}>
-                Send my request
+                {status === "sending" ? "Sending…" : "Send my request"}
               </button>
 
+              {status === "error" && (
+                <p role="alert" style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", color: "var(--terracotta)", margin: 0 }}>
+                  Something went wrong sending your request. Please try again, or email us at{" "}
+                  <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "var(--green)" }}>{CONTACT_EMAIL}</a>.
+                </p>
+              )}
+
               <p style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "12.5px", color: "var(--muted)", margin: 0 }}>
-                Submitting opens your email app with your details filled in. We reply within 2–3 business days.
+                {GET_MATCHED_FORMSPREE
+                  ? "Free, with no obligation. We reply within 2–3 business days."
+                  : "Submitting opens your email app with your details filled in. We reply within 2–3 business days."}
               </p>
             </form>
+            )}
           </div>
 
           {/* FAQ */}
