@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { FORMSPREE_ENDPOINT, CONTACT_EMAIL } from "@/lib/forms";
 import Nav from "@/components/layout/Nav";
 
 const CITIES = ["Bangkok", "Chiang Mai", "Phuket", "Pattaya", "Koh Samui", "Other"];
@@ -98,13 +99,33 @@ export default function ListYourClinicPage() {
   const [city, setCity]         = useState("");
   const [category, setCategory] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  const [status, setStatus]     = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const subject = encodeURIComponent(`Clinic listing request — ${clinic}`);
-    const body = encodeURIComponent(
-      `Name: ${name}\nClinic: ${clinic}\nEmail: ${email}\nCity: ${city}\nCategory: ${category}`
-    );
-    window.location.href = `mailto:hello@thailand-clinics.com?subject=${subject}&body=${body}`;
+    const subject = `[Clinic] Listing request — ${clinic}`;
+
+    if (!FORMSPREE_ENDPOINT) {
+      const body = `Name: ${name}\nClinic: ${clinic}\nEmail: ${email}\nCity: ${city}\nCategory: ${category}`;
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      return;
+    }
+
+    setStatus("sending");
+    try {
+      const honeypot = (e.currentTarget.elements.namedItem("_gotcha") as HTMLInputElement | null)?.value ?? "";
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          form: "Clinic: listing request", name, clinic, email, city, category,
+          _subject: subject, _replyto: email, _gotcha: honeypot,
+        }),
+      });
+      setStatus(res.ok ? "sent" : "error");
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -401,7 +422,22 @@ export default function ListYourClinicPage() {
               Fill in your details and we'll be in touch within a few days.
             </p>
 
+            {status === "sent" ? (
+              <div role="status" style={{
+                background: "var(--green-pale)", border: "1px solid var(--green)", borderRadius: "6px", padding: "24px 28px",
+              }}>
+                <div style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',serif)", fontSize: "26px", color: "var(--green)", marginBottom: "6px" }}>
+                  Request received
+                </div>
+                <p style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "15px", lineHeight: 1.7, color: "var(--charcoal-soft)", margin: 0 }}>
+                  Thanks, {name.split(" ")[0] || "there"}. We&apos;ll reply to {email} about listing {clinic} within 2–3 business days.
+                </p>
+              </div>
+            ) : (
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              {/* Spam trap: hidden from people, filled in by bots */}
+              <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" aria-hidden="true"
+                style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }} />
 
               <Field label="Your name" required>
                 <input
@@ -468,6 +504,7 @@ export default function ListYourClinicPage() {
 
               <button
                 type="submit"
+                disabled={status === "sending"}
                 style={{
                   fontFamily:      "var(--font-dm-sans,'DM Sans',sans-serif)",
                   fontSize:        "14px",
@@ -477,15 +514,23 @@ export default function ListYourClinicPage() {
                   border:          "none",
                   borderRadius:    "4px",
                   padding:         "14px 28px",
-                  cursor:          "pointer",
+                  cursor:          status === "sending" ? "wait" : "pointer",
+                  opacity:         status === "sending" ? 0.7 : 1,
                   alignSelf:       "flex-start",
                   transition:      "background 0.2s",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--green-light)")}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--green)")}
               >
-                Submit listing request
+                {status === "sending" ? "Sending…" : "Submit listing request"}
               </button>
+
+              {status === "error" && (
+                <p role="alert" style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", color: "var(--terracotta)", margin: 0 }}>
+                  Something went wrong sending your request. Please try again, or email us at{" "}
+                  <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "var(--green)" }}>{CONTACT_EMAIL}</a>.
+                </p>
+              )}
 
               <p style={{
                 fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
@@ -493,11 +538,13 @@ export default function ListYourClinicPage() {
                 color:      "var(--muted)",
                 margin:     0,
               }}>
-                Submitting opens your email client with your details pre-filled.
-                We'll reply within 2–3 business days.
+                {FORMSPREE_ENDPOINT
+                  ? "We reply within 2–3 business days."
+                  : "Submitting opens your email app with your details filled in. We reply within 2–3 business days."}
               </p>
 
             </form>
+            )}
           </div>
 
           {/* FAQ */}

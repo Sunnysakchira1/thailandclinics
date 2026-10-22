@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Nav from "@/components/layout/Nav";
-import { GET_MATCHED_FORMSPREE, CONTACT_EMAIL } from "@/lib/forms";
+import { FORMSPREE_ENDPOINT, CONTACT_EMAIL } from "@/lib/forms";
 
 const TREATMENTS: { group: string; items: string[] }[] = [
   { group: "Fertility", items: ["IVF / ICSI", "PGT (genetic testing)", "Egg freezing", "IUI", "Fertility testing"] },
@@ -52,10 +52,10 @@ export default function GetMatchedPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const subject = `Shortlist request — ${treatment} in ${city}`;
-    const fields = { name, email, country, treatment, city, timing, notes };
+    const subject = `[Patient] Shortlist request — ${treatment} in ${city}`;
+    const fields = { form: "Patient: get matched", name, email, country, treatment, city, timing, notes };
 
-    if (!GET_MATCHED_FORMSPREE) {
+    if (!FORMSPREE_ENDPOINT) {
       const body = `Name: ${name}\nEmail: ${email}\nCountry: ${country}\nTreatment: ${treatment}\nCity: ${city}\nTiming: ${timing}\n\nWhat matters to me:\n${notes}`;
       window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       return;
@@ -64,7 +64,7 @@ export default function GetMatchedPage() {
     setStatus("sending");
     try {
       const honeypot = (e.currentTarget.elements.namedItem("_gotcha") as HTMLInputElement | null)?.value ?? "";
-      const res = await fetch(GET_MATCHED_FORMSPREE, {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({ ...fields, _subject: subject, _replyto: email, _gotcha: honeypot }),
@@ -234,7 +234,7 @@ export default function GetMatchedPage() {
               )}
 
               <p style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "12.5px", color: "var(--muted)", margin: 0 }}>
-                {GET_MATCHED_FORMSPREE
+                {FORMSPREE_ENDPOINT
                   ? "Free, with no obligation. We reply within 2–3 business days."
                   : "Submitting opens your email app with your details filled in. We reply within 2–3 business days."}
               </p>
