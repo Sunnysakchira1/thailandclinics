@@ -4,6 +4,7 @@ import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
 import ClinicPhoto from "@/components/clinic/ClinicPhoto";
 import { withUtm } from "@/lib/utils/outbound";
+import { BRAND_SPOTLIGHT } from "@/lib/brandSpotlight";
 import PlanBadges from "@/components/ui/PlanBadges";
 import type { BranchRow } from "@/lib/db/queries";
 import type { Tier } from "@/lib/tiers";
@@ -195,6 +196,15 @@ export default function BrandHubPage({ hub }: { hub: BrandHub }) {
                 }}>
                   {hub.editorsNote}
                 </p>
+                {BRAND_SPOTLIGHT[hub.slug] && (
+                        <a href={withUtm(BRAND_SPOTLIGHT[hub.slug].href)} target="_blank" rel="noopener" style={{
+                          display: "inline-block", marginTop: "8px",
+                          fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                          fontSize: "13.5px", fontWeight: 600, color: "var(--green)",
+                        }}>
+                          {BRAND_SPOTLIGHT[hub.slug].label} →
+                        </a>
+                      )}
               </div>
             </div>
           )}

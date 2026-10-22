@@ -8,6 +8,7 @@ import PlanBadges from "@/components/ui/PlanBadges";
 import DoctorsSection from "@/components/clinic/DoctorsSection";
 import type { ClinicDoctor } from "@/lib/db/schema";
 import { withUtm } from "@/lib/utils/outbound";
+import { BRAND_SPOTLIGHT } from "@/lib/brandSpotlight";
 import type { ClinicProfile, ClinicReviewRow, BranchRow, NearbyStation, PriceRecord } from "@/lib/db/queries";
 
 /* ─── Helpers ────────────────────────────────────────────────────── */
@@ -499,6 +500,7 @@ export type ClinicProfileViewProps = {
 /* ─── View ───────────────────────────────────────────────────────── */
 export default function ClinicProfileView({ clinic, reviews, stations, prices, nearby, schemas, brand, branchSlug, siblings, editorsNote, doctors = [] }: ClinicProfileViewProps) {
   const allReviews = reviews;
+  const spot        = brand ? BRAND_SPOTLIGHT[brand.slug] : undefined;
   const displayName = clinic.nameEn ?? clinic.name;
   const mapsUrl     = clinic.googlePlaceId
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(displayName)}&query_place_id=${clinic.googlePlaceId}`
@@ -817,6 +819,15 @@ export default function ClinicProfileView({ clinic, reviews, stations, prices, n
                       }}>
                         {editorsNote}
                       </p>
+                      {spot && (
+                        <a href={withUtm(spot.href)} target="_blank" rel="noopener" style={{
+                          display: "inline-block", marginTop: "8px",
+                          fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
+                          fontSize: "13.5px", fontWeight: 600, color: "var(--green)",
+                        }}>
+                          {spot.label} →
+                        </a>
+                      )}
                     </div>
                   </div>
                 )}
