@@ -278,7 +278,7 @@ export default async function BlogPostPage({ params }: Props) {
                     Use our interactive {catLabel.toLowerCase()} guide for {cityLabel} →
                   </Link>
                 )}
-                <Link href={`/${post.city}/${catPath}/`} style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
+                <Link href={post.city === "thailand" ? `/${catPath}/` : `/${post.city}/${catPath}/`} style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
                   Browse all {catLabel.toLowerCase()} clinics in {cityLabel} →
                 </Link>
               </div>
