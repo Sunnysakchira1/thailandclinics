@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "node scripts/build-sitemap.mjs",
+    "postbuild": "node scripts/set-html-lang.mjs && node scripts/build-sitemap.mjs",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run"

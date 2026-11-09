@@ -5,6 +5,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
+import LanguageSwitcher from "@/components/blog/LanguageSwitcher";
 import { mdxComponents } from "@/components/blog/MdxComponents";
 import { GUIDE_CITIES, GUIDE_CATEGORIES, guideSlug } from "@/lib/guides";
 import {
@@ -278,6 +279,7 @@ export default async function BlogPostPage({ params }: Props) {
               By ThailandClinics · Published {formatPostDateLong(post.publishedAt)}
               {post.updatedAt !== post.publishedAt && ` · Updated ${formatPostDateLong(post.updatedAt)}`}
             </p>
+            <LanguageSwitcher enSlug={slug} current="en" />
 
             <hr style={{ border: "none", borderTop: "1px solid var(--border-soft)", margin: "24px 0 0" }} />
           </div>

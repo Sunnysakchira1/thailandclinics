@@ -5,6 +5,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
+import LanguageSwitcher from "@/components/blog/LanguageSwitcher";
 import { mdxComponents } from "@/components/blog/MdxComponents";
 import { extractFAQs } from "@/lib/mdx";
 import { getLocalizedPosts, getLocalizedPost, getAlternates, formatLocalDate, UI, type Lang } from "@/lib/mdxI18n";
@@ -59,7 +60,8 @@ export function makeLocalizedPostPage(lang: Lang) {
 
     return (
       <>
-        {/* Root layout hard-codes <html lang="en">; set the real language before paint. */}
+        {/* Root layout hard-codes <html lang="en">. scripts/set-html-lang.mjs fixes the built HTML
+            at postbuild; this covers `next dev` and client-side navigation. */}
         <script dangerouslySetInnerHTML={{ __html: `document.documentElement.lang=${JSON.stringify(lang)}` }} />
         <StructuredData data={schemas} />
         <Nav />
@@ -75,6 +77,7 @@ export function makeLocalizedPostPage(lang: Lang) {
               <p style={{ fontFamily: SANS, fontSize: "13px", color: "var(--muted)", margin: 0 }}>
                 {t.by} · {t.updated} {formatLocalDate(lang, post.updatedAt)} · <Link href={`/blog/${post.enSlug}/`} hrefLang="en" style={{ color: "var(--green)" }}>{t.readIn}</Link>
               </p>
+              <LanguageSwitcher enSlug={post.enSlug} current={lang} label={t.language} />
             </div>
           </div>
           <div style={{ padding: "48px" }} className="blog-content-pad">
