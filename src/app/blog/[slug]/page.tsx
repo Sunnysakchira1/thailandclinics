@@ -5,6 +5,7 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
+import LanguageSwitcher from "@/components/blog/LanguageSwitcher";
 import { mdxComponents } from "@/components/blog/MdxComponents";
 import { GUIDE_CITIES, GUIDE_CATEGORIES, guideSlug } from "@/lib/guides";
 import {
@@ -65,6 +66,28 @@ const CITY_CATEGORY_PATH: Record<string, string> = {
   wellness:      "wellness-clinics",
   fertility:     "fertility-clinics",
 };
+
+
+// Internal-linking playbook (2026-11-08): every article links up to its national hub and the
+// homepage from the end-of-article box. Anchors rotate by slug so the site uses a natural mix
+// (partial · question · exact · brand) instead of one repeated phrase.
+function upLinkAnchors(slug: string, catRaw: string) {
+  const cat = catRaw.replace(/\bivf\b/g, "IVF");
+  const h = [...slug].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+  const hub = [
+    `${cat} clinics across Thailand`,
+    `where else to find a good ${cat} clinic in Thailand`,
+    `${cat} clinics in other Thai cities`,
+    `the Thailand ${cat} clinic directory`,
+  ][h % 4];
+  const home = [
+    "ThailandClinics",
+    "verified clinics in Thailand",
+    "Thailand's independent clinic directory",
+    "the Thailand clinic directory",
+  ][(h >>> 3) % 4];
+  return { hub, home };
+}
 
 const CITY_LABEL: Record<string, string> = {
   bangkok:    "Bangkok",
@@ -256,6 +279,7 @@ export default async function BlogPostPage({ params }: Props) {
               By ThailandClinics · Published {formatPostDateLong(post.publishedAt)}
               {post.updatedAt !== post.publishedAt && ` · Updated ${formatPostDateLong(post.updatedAt)}`}
             </p>
+            <LanguageSwitcher enSlug={slug} current="en" />
 
             <hr style={{ border: "none", borderTop: "1px solid var(--border-soft)", margin: "24px 0 0" }} />
           </div>
@@ -282,6 +306,19 @@ export default async function BlogPostPage({ params }: Props) {
                 <Link href={post.city === "thailand" ? `/${catPath}/` : `/${post.city}/${catPath}/`} style={{ fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
                   Browse all {catLabel.toLowerCase()} clinics in {cityLabel} →
                 </Link>
+                {post.city !== "thailand" && (() => {
+                  const ua = upLinkAnchors(slug, catLabel.toLowerCase());
+                  return (
+                    <p style={{ width: "100%", margin: 0, fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13.5px", lineHeight: 1.6, color: "var(--charcoal-soft)" }}>
+                      Outside {cityLabel}? See <Link href={`/${catPath}/`} style={{ color: "var(--green)", textDecoration: "underline" }}>{ua.hub}</Link>, or start from <Link href="/" style={{ color: "var(--green)", textDecoration: "underline" }}>{ua.home}</Link>.
+                    </p>
+                  );
+                })()}
+                {post.city === "thailand" && (
+                  <p style={{ width: "100%", margin: 0, fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontSize: "13.5px", lineHeight: 1.6, color: "var(--charcoal-soft)" }}>
+                    Looking for a clinic? Start with <Link href="/" style={{ color: "var(--green)", textDecoration: "underline" }}>{upLinkAnchors(slug, catLabel.toLowerCase()).home}</Link>, independent and built for expats and medical travellers.
+                  </p>
+                )}
               </div>
             )}
           </div>

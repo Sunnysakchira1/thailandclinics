@@ -602,6 +602,10 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
             )}
           </span>
         </div>
+        <p style={{ marginTop: '10px', fontSize: '13px', color: 'var(--muted)', lineHeight: 1.6 }}>
+          Also in other cities: <Link href={`/${catSlug}/`} style={{ color: 'var(--green)', textDecoration: 'underline' }}>{catName.toLowerCase()} across Thailand</Link>
+          {' · '}<Link href="/" style={{ color: 'var(--green)', textDecoration: 'underline' }}>verified clinics in Thailand</Link>
+        </p>
         {guideHref && (
           <Link href={guideHref} className="listing-guide-link" style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '14px',

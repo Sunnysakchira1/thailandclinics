@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
+import SiteFooter from "@/components/layout/SiteFooter";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -44,6 +45,7 @@ export default function RootLayout({
         style={{ fontFamily: "var(--font-dm-sans, DM Sans, sans-serif)" }}
       >
         {children}
+        <SiteFooter />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-DS28XT8TPY"
           strategy="afterInteractive"
