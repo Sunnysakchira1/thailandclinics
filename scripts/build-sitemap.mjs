@@ -96,8 +96,8 @@ if (process.env.TURSO_URL) {
 function segmentOf(p) {
   const parts = p.split("/").filter(Boolean);
   if (parts[0] === "blog" || parts[0] === "guides") return "editorial";
-  // Translated editorial: /de|it|fr|es|pt/blog/<slug>/
-  if (["de", "it", "fr", "es", "pt"].includes(parts[0]) && parts[1] === "blog") return "editorial";
+  // Translated editorial: /de|it|fr|es|pt|zh|ar/blog/<slug>/
+  if (["de", "it", "fr", "es", "pt", "zh", "ar"].includes(parts[0]) && parts[1] === "blog") return "editorial";
   if (CITIES.has(parts[0])) {
     if (parts.length === 2) return "listings";
     if (parts.length >= 3) return "clinics";

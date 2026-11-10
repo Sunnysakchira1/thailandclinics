@@ -3,7 +3,7 @@ import { Figure, InShort } from "./Figures";
 import PremiumBox from "./PremiumBox";
 
 const BLOCKQUOTE_STYLE: React.CSSProperties = {
-  borderLeft:   "3px solid var(--green)",
+  borderInlineStart: "3px solid var(--green)",
   background:   "var(--green-pale)",
   padding:      "16px 24px",
   margin:       "24px 0",
@@ -17,7 +17,7 @@ const TABLE_CELL: React.CSSProperties = {
   padding:     "10px 12px",
   borderBottom: "1px solid var(--border-soft)",
   color:       "var(--charcoal-soft)",
-  textAlign:   "left",
+  textAlign:   "start",
 };
 
 /** In-article call to action. Use sparingly: one or two per post. */
@@ -119,7 +119,7 @@ export const mdxComponents: MDXComponents = {
       fontSize:    "15px",
       lineHeight:  1.8,
       listStyleType: "disc",
-      paddingLeft: "24px",
+      paddingInlineStart: "24px",
       margin:      "0 0 18px",
       color:       "var(--charcoal-soft)",
     }}>{children}</ul>
@@ -130,13 +130,13 @@ export const mdxComponents: MDXComponents = {
       fontSize:    "15px",
       lineHeight:  1.8,
       listStyleType: "decimal",
-      paddingLeft: "24px",
+      paddingInlineStart: "24px",
       margin:      "0 0 18px",
       color:       "var(--charcoal-soft)",
     }}>{children}</ol>
   ),
   li: ({ children }) => (
-    <li style={{ marginBottom: "6px", paddingLeft: "4px" }}>{children}</li>
+    <li style={{ marginBottom: "6px", paddingInlineStart: "4px" }}>{children}</li>
   ),
   CtaBlock,
   PremiumBox,
@@ -183,7 +183,7 @@ export const mdxComponents: MDXComponents = {
       color:         "var(--muted)",
       borderBottom:  "2px solid var(--border)",
       padding:       "10px 12px",
-      textAlign:     "left",
+      textAlign:     "start",
     }}>{children}</th>
   ),
   td: ({ children }) => <td style={TABLE_CELL}>{children}</td>,

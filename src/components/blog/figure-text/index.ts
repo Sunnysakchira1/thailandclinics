@@ -1,16 +1,21 @@
+import ar from "./ar";
 import de from "./de";
 import en from "./en";
 import es from "./es";
 import fr from "./fr";
 import it from "./it";
 import pt from "./pt";
+import zh from "./zh";
 import type { FigureDict, FigureLang, Fmt } from "./types";
 
 export * from "./types";
 
-/** Thousands separator per language. fr uses U+202F (narrow no-break space). */
+/**
+ * Thousands separator per language. fr uses U+202F (narrow no-break space); zh and ar use
+ * the English comma. Digits are always Western 0-9 (never Arabic-Indic).
+ */
 const THOUSANDS: Record<FigureLang, string> = {
-  en: ",", de: ".", it: ".", es: ".", pt: ".", fr: " ",
+  en: ",", de: ".", it: ".", es: ".", pt: ".", fr: " ", zh: ",", ar: ",",
 };
 
 /**
@@ -20,12 +25,15 @@ const THOUSANDS: Record<FigureLang, string> = {
 export function formatNumber(n: number, lang: FigureLang = "en"): string {
   const sign = n < 0 ? "-" : "";
   const digits = String(Math.round(Math.abs(n)));
-  return sign + digits.replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang]);
+  return sign + digits.replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS[lang] ?? ",");
 }
 
 export const formatBaht = (n: number, lang: FigureLang = "en") => `฿${formatNumber(n, lang)}`;
 
-const BUILDERS: Record<FigureLang, (f: Fmt) => FigureDict> = { en, de, it, fr, es, pt };
+const BUILDERS: Record<FigureLang, (f: Fmt) => FigureDict> = { en, de, it, fr, es, pt, zh, ar };
+
+/** Right-to-left languages (the page wrapper carries dir="rtl"). */
+export const isRtl = (lang: FigureLang | undefined) => lang === "ar";
 
 const cache = new Map<FigureLang, { fmt: Fmt; dict: FigureDict }>();
 

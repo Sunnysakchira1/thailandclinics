@@ -3,7 +3,7 @@
  * Data (prices, clinic/hospital/brand names) lives in Figures.tsx and is shared by
  * every language; these dictionaries hold only the words a reader sees.
  */
-export type FigureLang = "en" | "de" | "it" | "fr" | "es" | "pt";
+export type FigureLang = "en" | "de" | "it" | "fr" | "es" | "pt" | "zh" | "ar";
 
 /** Price chart: `notes[i]` belongs to row i of the figure's data rows. */
 export type PriceText = { title: string; caption: string; notes: string[] };
@@ -17,7 +17,7 @@ export type StepsText = { title: string; caption: string; steps: StepText[] };
 
 /** Formatters handed to each dictionary so inline prices use the shared numbers. */
 export type Fmt = {
-  /** "฿150,000" (en) / "฿150.000" (de, it, es, pt) / "฿150 000" (fr, U+202F) */
+  /** "฿150,000" (en, zh, ar) / "฿150.000" (de, it, es, pt) / "฿150 000" (fr, U+202F). Western digits always. */
   baht: (n: number) => string;
   /** Plain grouped number, same separators as `baht`. */
   num: (n: number) => string;

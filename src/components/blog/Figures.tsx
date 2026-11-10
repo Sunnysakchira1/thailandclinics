@@ -9,7 +9,7 @@
  */
 import type { ReactNode } from "react";
 import {
-  figureText, INLINE_PRICES,
+  figureText, INLINE_PRICES, isRtl,
   type CardsText, type FigureLang, type FigureTexts, type Fmt, type PriceText, type StepsText,
 } from "./figure-text";
 
@@ -35,6 +35,8 @@ function Frame({ title, caption, children }: { title: string; caption: string; c
 
 const label: React.CSSProperties = { fontFamily: SANS, fontSize: "13.5px", color: "var(--charcoal)", lineHeight: 1.4 };
 const meta: React.CSSProperties = { fontFamily: SANS, fontSize: "12.5px", color: "var(--charcoal-soft)", lineHeight: 1.55 };
+/** Letter-spacing breaks Arabic letter joining, so RTL (Arabic) eyebrows drop it. */
+const NO_TRACKING: React.CSSProperties = { letterSpacing: "normal" };
 const eyebrow: React.CSSProperties = {
   fontFamily: SANS, fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em",
   textTransform: "uppercase", color: "var(--terracotta)", marginBottom: "6px",
@@ -45,7 +47,13 @@ const eyebrow: React.CSSProperties = {
 type PriceRow = { name: string; from: number; to?: number };
 type PriceData = { max: number; rows: PriceRow[] };
 
-function PriceChart({ t, data, fmt }: { t: PriceText; data: PriceData; fmt: Fmt }) {
+/**
+ * In a right-to-left page the text reads RTL, but the value ranges, bar tracks and the
+ * ฿0 → max axis stay left-to-right so the scale (and "฿a–฿b") still reads correctly.
+ * `dir` is only emitted for RTL languages, so LTR markup is unchanged.
+ */
+function PriceChart({ t, data, fmt, rtl }: { t: PriceText; data: PriceData; fmt: Fmt; rtl: boolean }) {
+  const ltr = rtl ? ("ltr" as const) : undefined;
   const { max, rows } = data;
   const baht = fmt.baht;
   return (
@@ -60,9 +68,9 @@ function PriceChart({ t, data, fmt }: { t: PriceText; data: PriceData; fmt: Fmt 
             <div role="row" key={p.name + note} style={{ marginBottom: "14px" }}>
               <div role="rowheader" style={{ display: "flex", justifyContent: "space-between", gap: "12px", marginBottom: "5px" }}>
                 <span style={label}><strong style={{ fontWeight: 600 }}>{p.name}</strong> <span style={{ color: "var(--muted)" }}>· {note}</span></span>
-                <span role="cell" style={{ ...label, fontWeight: 600, whiteSpace: "nowrap" }}>{value}</span>
+                <span role="cell" dir={ltr} style={{ ...label, fontWeight: 600, whiteSpace: "nowrap" }}>{value}</span>
               </div>
-              <div style={{ position: "relative", height: "10px", background: "var(--linen-dark)", borderRadius: "4px" }} title={`${p.name}: ${value}`}>
+              <div dir={ltr} style={{ position: "relative", height: "10px", background: "var(--linen-dark)", borderRadius: "4px" }} title={`${p.name}: ${value}`}>
                 <div style={{
                   position: "absolute", left: `${left}%`, width: `${width}%`, top: 0, bottom: 0,
                   background: p.to ? "var(--green-light)" : "var(--green)", borderRadius: "4px",
@@ -71,7 +79,7 @@ function PriceChart({ t, data, fmt }: { t: PriceText; data: PriceData; fmt: Fmt 
             </div>
           );
         })}
-        <div style={{ display: "flex", justifyContent: "space-between", ...meta, color: "var(--muted)", marginTop: "4px" }}>
+        <div dir={ltr} style={{ display: "flex", justifyContent: "space-between", ...meta, color: "var(--muted)", marginTop: "4px" }}>
           <span>฿0</span><span>{baht(max / 2)}</span><span>{baht(max)}</span>
         </div>
       </div>
@@ -123,7 +131,7 @@ const PRICE_DATA = {
 /* ── Two- or three-column comparison cards ─────────────────────────────── */
 type Card = { tag: string; title: string; points: string[]; foot?: string };
 
-function Cards({ cols }: { cols: Card[] }) {
+function Cards({ cols, rtl = false }: { cols: Card[]; rtl?: boolean }) {
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "14px" }}>
       {cols.map((c) => (
@@ -131,9 +139,9 @@ function Cards({ cols }: { cols: Card[] }) {
           flex: "1 1 200px", background: "var(--linen)", border: "1px solid var(--border-soft)",
           borderRadius: "6px", padding: "18px",
         }}>
-          <div style={eyebrow}>{c.tag}</div>
+          <div style={rtl ? { ...eyebrow, ...NO_TRACKING } : eyebrow}>{c.tag}</div>
           <div style={{ fontFamily: SERIF, fontSize: "20px", fontWeight: 500, color: "var(--charcoal)", marginBottom: "10px", lineHeight: 1.2 }}>{c.title}</div>
-          <ul style={{ margin: 0, paddingLeft: "18px", listStyleType: "disc" }} className="mdx-list">
+          <ul style={{ margin: 0, paddingInlineStart: "18px", listStyleType: "disc" }} className="mdx-list">
             {c.points.map((pt) => <li key={pt} style={{ ...meta, marginBottom: "5px" }}>{pt}</li>)}
           </ul>
           {c.foot && <div style={{ ...meta, color: "var(--green)", fontWeight: 500, marginTop: "10px" }}>{c.foot}</div>}
@@ -157,12 +165,12 @@ const CARD_NAMES = {
   "meditation-vs-healing": ["Wat Mahathat, Buddhadasa Archives", "Shambhala, House of Dhamma", "Saksit Meditation and Healing Centre"],
 } satisfies Record<string, (string | null)[]>;
 
-function CardsFigure({ t, names }: { t: CardsText; names: (string | null)[] }) {
+function CardsFigure({ t, names, rtl }: { t: CardsText; names: (string | null)[]; rtl: boolean }) {
   return (
     <Frame title={t.title} caption={t.caption}>
       <Cards cols={t.cols.map((c, i) => ({
         tag: c.tag, title: names[i] ?? c.title ?? "", points: c.points, ...(c.foot ? { foot: c.foot } : {}),
-      }))} />
+      }))} rtl={rtl} />
     </Frame>
   );
 }
@@ -200,12 +208,12 @@ function StepsFigure({ t }: { t: StepsText }) {
 
 /* ── Registry ──────────────────────────────────────────────────────────── */
 type FigureName = keyof FigureTexts;
-type Renderer = (t: FigureTexts, fmt: Fmt) => React.JSX.Element;
+type Renderer = (t: FigureTexts, fmt: Fmt, rtl: boolean) => React.JSX.Element;
 
 const price = (n: keyof typeof PRICE_DATA): Renderer =>
-  function renderPriceFigure(t, fmt) { return <PriceChart t={t[n]} data={PRICE_DATA[n]} fmt={fmt} />; };
+  function renderPriceFigure(t, fmt, rtl) { return <PriceChart t={t[n]} data={PRICE_DATA[n]} fmt={fmt} rtl={rtl} />; };
 const cards = (n: keyof typeof CARD_NAMES): Renderer =>
-  function renderCardsFigure(t) { return <CardsFigure t={t[n]} names={CARD_NAMES[n]} />; };
+  function renderCardsFigure(t, _fmt, rtl) { return <CardsFigure t={t[n]} names={CARD_NAMES[n]} rtl={rtl} />; };
 const steps = (n: { [K in FigureName]: FigureTexts[K] extends StepsText ? K : never }[FigureName]): Renderer =>
   function renderStepsFigure(t) { return <StepsFigure t={t[n]} />; };
 
@@ -240,7 +248,7 @@ export function Figure({ name, lang = "en" }: { name: string; lang?: FigureLang 
   const render = (FIGURES as Record<string, Renderer | undefined>)[name];
   if (!render) return null;
   const { dict, fmt } = figureText(lang);
-  return render(dict.figures, fmt);
+  return render(dict.figures, fmt, isRtl(lang));
 }
 
 /** "In short" answer capsule at the top of a post. */
@@ -248,10 +256,10 @@ export function InShort({ children, lang = "en" }: { children: ReactNode; lang?:
   const heading = figureText(lang).dict.inShort;
   return (
     <aside aria-label={heading} style={{
-      background: "var(--green-pale)", borderLeft: "3px solid var(--green)",
-      borderRadius: "0 6px 6px 0", padding: "20px 24px", margin: "8px 0 28px",
+      background: "var(--green-pale)", borderInlineStart: "3px solid var(--green)",
+      borderStartStartRadius: 0, borderStartEndRadius: "6px", borderEndEndRadius: "6px", borderEndStartRadius: 0, padding: "20px 24px", margin: "8px 0 28px",
     }}>
-      <div style={{ ...eyebrow, color: "var(--green)", fontWeight: 600 }}>{heading}</div>
+      <div style={{ ...eyebrow, color: "var(--green)", fontWeight: 600, ...(isRtl(lang) ? NO_TRACKING : {}) }}>{heading}</div>
       <div className="in-short-body">{children}</div>
     </aside>
   );

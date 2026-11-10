@@ -7,7 +7,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const OUT = path.resolve("out");
-const LANGS = ["de", "it", "fr", "es", "pt"];
+// URL folder -> <html> attributes. Chinese is Simplified (zh-Hans); Arabic is right-to-left.
+const LANGS = { de: 'lang="de"', it: 'lang="it"', fr: 'lang="fr"', es: 'lang="es"', pt: 'lang="pt"', zh: 'lang="zh-Hans"', ar: 'lang="ar" dir="rtl"' };
 
 function walk(dir, acc = []) {
   if (!fs.existsSync(dir)) return acc;
@@ -20,10 +21,10 @@ function walk(dir, acc = []) {
 }
 
 let changed = 0;
-for (const lang of LANGS) {
+for (const [lang, attrs] of Object.entries(LANGS)) {
   for (const file of walk(path.join(OUT, lang))) {
     const html = fs.readFileSync(file, "utf8");
-    const next = html.replace(/<html lang="en"/, `<html lang="${lang}"`);
+    const next = html.replace(/<html lang="en"/, `<html ${attrs}`);
     if (next !== html) { fs.writeFileSync(file, next); changed++; }
   }
 }

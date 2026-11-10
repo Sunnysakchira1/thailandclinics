@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getLanguageVersions, type Lang } from "@/lib/mdxI18n";
+import { getLanguageVersions, HREFLANG, type Lang } from "@/lib/mdxI18n";
 
 const SANS = "var(--font-dm-sans,'DM Sans',sans-serif)";
 
@@ -15,8 +15,8 @@ export default function LanguageSwitcher({ enSlug, current, label = "Language" }
     <nav aria-label={label} style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "6px 14px", marginTop: "14px", fontFamily: SANS, fontSize: "12.5px", color: "var(--muted)" }}>
       <span style={{ fontSize: "11px", fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
       {versions.map((v) => v.lang === current
-        ? <span key={v.lang} lang={v.lang} aria-current="page" style={{ color: "var(--charcoal)", fontWeight: 600 }}>{v.name}</span>
-        : <Link key={v.lang} href={v.href} hrefLang={v.lang} lang={v.lang} style={{ color: "var(--green)", textDecoration: "none" }}>{v.name}</Link>)}
+        ? <span key={v.lang} lang={HREFLANG[v.lang]} aria-current="page" style={{ color: "var(--charcoal)", fontWeight: 600 }}>{v.name}</span>
+        : <Link key={v.lang} href={v.href} hrefLang={HREFLANG[v.lang]} lang={HREFLANG[v.lang]} style={{ color: "var(--green)", textDecoration: "none" }}>{v.name}</Link>)}
     </nav>
   );
 }

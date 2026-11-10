@@ -8,8 +8,18 @@ import { calculateReadTime, type PostFrontmatter } from "@/lib/mdx";
  * Frontmatter = the English keys plus `slug` (the localised URL slug).
  * URL: /<lang>/blog/<slug>/  · hreflang ties each translation to /blog/<englishSlug>/.
  */
-export const LANGS = ["de", "it", "fr", "es", "pt"] as const;
+export const LANGS = ["de", "it", "fr", "es", "pt", "zh", "ar"] as const;
 export type Lang = (typeof LANGS)[number];
+
+/** hreflang / <html lang> code per URL language. Chinese pages are Simplified Chinese. */
+export const HREFLANG: Record<"en" | Lang, string> = { en: "en", de: "de", it: "it", fr: "fr", es: "es", pt: "pt", zh: "zh-Hans", ar: "ar" };
+export const RTL_LANGS: readonly Lang[] = ["ar"];
+
+/** getAlternates() keyed by hreflang code, for <link rel="alternate" hreflang>. */
+export function getHreflangAlternates(enSlug: string): Record<string, string> {
+  const alt = getAlternates(enSlug);
+  return Object.fromEntries(Object.entries(alt).map(([k, v]) => [k === "x-default" ? k : HREFLANG[k as "en" | Lang], v]));
+}
 
 const I18N_DIR = path.join(process.cwd(), "content/blog-i18n");
 
@@ -52,7 +62,7 @@ export function getAlternates(enSlug: string): Record<string, string> {
 /** Every language version of an English post, English first, for the visible language switcher.
  *  Same set as the hreflang map (minus x-default), so the links and the tags can't drift apart. */
 export type LanguageVersion = { lang: "en" | Lang; href: string; name: string };
-export const LANG_NAMES: Record<"en" | Lang, string> = { en: "English", de: "Deutsch", it: "Italiano", fr: "Français", es: "Español", pt: "Português" };
+export const LANG_NAMES: Record<"en" | Lang, string> = { en: "English", de: "Deutsch", it: "Italiano", fr: "Français", es: "Español", pt: "Português", zh: "中文", ar: "العربية" };
 export function getLanguageVersions(enSlug: string): LanguageVersion[] {
   const alt = getAlternates(enSlug);
   return (["en", ...LANGS] as const).filter((l) => alt[l]).map((l) => ({ lang: l, href: alt[l], name: LANG_NAMES[l] }));
@@ -69,9 +79,13 @@ export const UI: Record<Lang, { home: string; blog: string; updated: string; pub
     cats: { fertility: "clínicas de fertilidad", physiotherapy: "clínicas de fisioterapia", cosmetic: "clínicas estéticas", dental: "clínicas dentales", wellness: "clínicas de bienestar" } },
   pt: { home: "Início", blog: "Guias", updated: "Atualizado", published: "Publicado", by: "Por ThailandClinics", browse: (c, city) => `Compare todas as ${c} verificadas em ${city} →`, readIn: "Ler em inglês", language: "Idioma",
     cats: { fertility: "clínicas de fertilidade", physiotherapy: "clínicas de fisioterapia", cosmetic: "clínicas estéticas", dental: "clínicas odontológicas", wellness: "clínicas de bem-estar" } },
+  zh: { home: "首页", blog: "指南", updated: "更新于", published: "发布于", by: "ThailandClinics 编辑部", browse: (c, city) => `比较${city}所有经过核实的${c} →`, readIn: "阅读英文版", language: "语言",
+    cats: { fertility: "生殖中心", physiotherapy: "物理治疗诊所", cosmetic: "医美诊所", dental: "牙科诊所", wellness: "健康养生诊所" } },
+  ar: { home: "الرئيسية", blog: "الأدلة", updated: "آخر تحديث", published: "تاريخ النشر", by: "بقلم ThailandClinics", browse: (c, city) => `قارن جميع ${c} الموثّقة في ${city} ←`, readIn: "اقرأ بالإنجليزية", language: "اللغة",
+    cats: { fertility: "عيادات الخصوبة", physiotherapy: "عيادات العلاج الطبيعي", cosmetic: "عيادات التجميل", dental: "عيادات الأسنان", wellness: "عيادات العافية" } },
 };
 
-const LOCALE: Record<Lang, string> = { de: "de-DE", it: "it-IT", fr: "fr-FR", es: "es-ES", pt: "pt-BR" };
+const LOCALE: Record<Lang, string> = { de: "de-DE", it: "it-IT", fr: "fr-FR", es: "es-ES", pt: "pt-BR", zh: "zh-CN", ar: "ar-u-nu-latn" };
 export function formatLocalDate(lang: Lang, d: string): string {
   return new Date(d + "T00:00:00").toLocaleDateString(LOCALE[lang], { day: "numeric", month: "long", year: "numeric" });
 }
