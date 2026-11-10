@@ -58,12 +58,17 @@ export function getLanguageVersions(enSlug: string): LanguageVersion[] {
   return (["en", ...LANGS] as const).filter((l) => alt[l]).map((l) => ({ lang: l, href: alt[l], name: LANG_NAMES[l] }));
 }
 
-export const UI: Record<Lang, { home: string; blog: string; updated: string; published: string; by: string; browse: (cat: string) => string; readIn: string; language: string; cats: Record<string, string> }> = {
-  de: { home: "Startseite", blog: "Ratgeber", updated: "Aktualisiert", published: "Veröffentlicht", by: "Von ThailandClinics", browse: (c) => `Alle geprüften ${c} in Bangkok vergleichen →`, readIn: "Auf Englisch lesen", language: "Sprache", cats: { fertility: "Kinderwunschkliniken", physiotherapy: "Physiotherapie-Praxen" } },
-  it: { home: "Home", blog: "Guide", updated: "Aggiornato", published: "Pubblicato", by: "Di ThailandClinics", browse: (c) => `Confronta tutte le ${c} verificate a Bangkok →`, readIn: "Leggi in inglese", language: "Lingua", cats: { fertility: "cliniche della fertilità", physiotherapy: "cliniche di fisioterapia" } },
-  fr: { home: "Accueil", blog: "Guides", updated: "Mis à jour", published: "Publié", by: "Par ThailandClinics", browse: (c) => `Comparer toutes les ${c} vérifiées à Bangkok →`, readIn: "Lire en anglais", language: "Langue", cats: { fertility: "cliniques de fertilité", physiotherapy: "cliniques de kinésithérapie" } },
-  es: { home: "Inicio", blog: "Guías", updated: "Actualizado", published: "Publicado", by: "Por ThailandClinics", browse: (c) => `Compara todas las ${c} verificadas en Bangkok →`, readIn: "Leer en inglés", language: "Idioma", cats: { fertility: "clínicas de fertilidad", physiotherapy: "clínicas de fisioterapia" } },
-  pt: { home: "Início", blog: "Guias", updated: "Atualizado", published: "Publicado", by: "Por ThailandClinics", browse: (c) => `Compare todas as ${c} verificadas em Bangkok →`, readIn: "Ler em inglês", language: "Idioma", cats: { fertility: "clínicas de fertilidade", physiotherapy: "clínicas de fisioterapia" } },
+export const UI: Record<Lang, { home: string; blog: string; updated: string; published: string; by: string; browse: (cat: string, city: string) => string; readIn: string; language: string; cats: Record<string, string> }> = {
+  de: { home: "Startseite", blog: "Ratgeber", updated: "Aktualisiert", published: "Veröffentlicht", by: "Von ThailandClinics", browse: (c, city) => `Alle geprüften ${c} in ${city} vergleichen →`, readIn: "Auf Englisch lesen", language: "Sprache",
+    cats: { fertility: "Kinderwunschkliniken", physiotherapy: "Physiotherapie-Praxen", cosmetic: "Schönheitskliniken", dental: "Zahnkliniken", wellness: "Wellness-Zentren" } },
+  it: { home: "Home", blog: "Guide", updated: "Aggiornato", published: "Pubblicato", by: "Di ThailandClinics", browse: (c, city) => `Confronta tutte le ${c} verificate a ${city} →`, readIn: "Leggi in inglese", language: "Lingua",
+    cats: { fertility: "cliniche della fertilità", physiotherapy: "cliniche di fisioterapia", cosmetic: "cliniche di medicina estetica", dental: "cliniche dentali", wellness: "strutture wellness" } },
+  fr: { home: "Accueil", blog: "Guides", updated: "Mis à jour", published: "Publié", by: "Par ThailandClinics", browse: (c, city) => `Comparer toutes les ${c} vérifiées à ${city} →`, readIn: "Lire en anglais", language: "Langue",
+    cats: { fertility: "cliniques de fertilité", physiotherapy: "cliniques de kinésithérapie", cosmetic: "cliniques esthétiques", dental: "cliniques dentaires", wellness: "adresses bien-être" } },
+  es: { home: "Inicio", blog: "Guías", updated: "Actualizado", published: "Publicado", by: "Por ThailandClinics", browse: (c, city) => `Compara todas las ${c} verificadas en ${city} →`, readIn: "Leer en inglés", language: "Idioma",
+    cats: { fertility: "clínicas de fertilidad", physiotherapy: "clínicas de fisioterapia", cosmetic: "clínicas estéticas", dental: "clínicas dentales", wellness: "clínicas de bienestar" } },
+  pt: { home: "Início", blog: "Guias", updated: "Atualizado", published: "Publicado", by: "Por ThailandClinics", browse: (c, city) => `Compare todas as ${c} verificadas em ${city} →`, readIn: "Ler em inglês", language: "Idioma",
+    cats: { fertility: "clínicas de fertilidade", physiotherapy: "clínicas de fisioterapia", cosmetic: "clínicas estéticas", dental: "clínicas odontológicas", wellness: "clínicas de bem-estar" } },
 };
 
 const LOCALE: Record<Lang, string> = { de: "de-DE", it: "it-IT", fr: "fr-FR", es: "es-ES", pt: "pt-BR" };

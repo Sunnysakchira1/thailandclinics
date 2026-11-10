@@ -7,10 +7,19 @@ import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import LanguageSwitcher from "@/components/blog/LanguageSwitcher";
 import { mdxComponents } from "@/components/blog/MdxComponents";
+import { Figure, InShort } from "@/components/blog/Figures";
+import PremiumBox from "@/components/blog/PremiumBox";
 import { extractFAQs } from "@/lib/mdx";
 import { getLocalizedPosts, getLocalizedPost, getAlternates, formatLocalDate, UI, type Lang } from "@/lib/mdxI18n";
 
-const MONEY: Record<string, string> = { fertility: "/bangkok/fertility-clinics/", physiotherapy: "/bangkok/physiotherapy-clinics/" };
+/** Listing page a post funnels to: /<city>/<category>-clinics/. Country-wide posts ("thailand") go to Bangkok. */
+const MONEY_CATEGORIES = ["fertility", "physiotherapy", "cosmetic", "dental", "wellness"];
+const CITY_NAMES: Record<string, string> = { bangkok: "Bangkok", phuket: "Phuket" };
+function moneyPage(category: string, city: string): { href: string; cityName: string } | null {
+  if (!MONEY_CATEGORIES.includes(category)) return null;
+  const c = CITY_NAMES[city] ? city : "bangkok";
+  return { href: `/${c}/${category}-clinics/`, cityName: CITY_NAMES[c] };
+}
 const SANS = "var(--font-dm-sans,'DM Sans',sans-serif)";
 const SERIF = "var(--font-cormorant,'Cormorant Garamond',serif)";
 type Props = { params: Promise<{ slug: string }> };
@@ -40,7 +49,13 @@ export function makeLocalizedPostPage(lang: Lang) {
     const t = UI[lang];
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
     const url = `${siteUrl}/${lang}/blog/${slug}/`;
-    const money = MONEY[post.category];
+    const money = moneyPage(post.category, post.city);
+    const components = {
+      ...mdxComponents,
+      Figure: (p: { name: string }) => <Figure {...p} lang={lang} />,
+      InShort: (p: { children: React.ReactNode }) => <InShort {...p} lang={lang} />,
+      PremiumBox: (p: { slug: string; children: React.ReactNode }) => <PremiumBox {...p} lang={lang} />,
+    };
     const faqs = extractFAQs(post.content);
 
     const schemas: Record<string, unknown>[] = [
@@ -56,7 +71,7 @@ export function makeLocalizedPostPage(lang: Lang) {
         mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })) }] : []),
     ];
 
-    const { content: Content } = await compileMDX({ source: post.content, components: mdxComponents, options: { mdxOptions: { remarkPlugins: [remarkGfm] } } });
+    const { content: Content } = await compileMDX({ source: post.content, components, options: { mdxOptions: { remarkPlugins: [remarkGfm] } } });
 
     return (
       <>
@@ -85,8 +100,8 @@ export function makeLocalizedPostPage(lang: Lang) {
               {Content}
               {money && (
                 <div style={{ marginTop: "40px", padding: "22px 24px", background: "var(--green-pale)", border: "1px solid var(--border-soft)", borderRadius: "8px" }}>
-                  <Link href={money} style={{ fontFamily: SANS, fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
-                    {t.browse(t.cats[post.category] ?? post.category)}
+                  <Link href={money.href} style={{ fontFamily: SANS, fontSize: "14px", fontWeight: 500, color: "var(--green)", textDecoration: "none", borderBottom: "1px solid var(--green)", paddingBottom: "2px" }}>
+                    {t.browse(t.cats[post.category] ?? post.category, money.cityName)}
                   </Link>
                 </div>
               )}
