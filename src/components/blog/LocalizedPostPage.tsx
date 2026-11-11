@@ -10,7 +10,7 @@ import { mdxComponents } from "@/components/blog/MdxComponents";
 import { Figure, InShort } from "@/components/blog/Figures";
 import PremiumBox from "@/components/blog/PremiumBox";
 import { extractFAQs } from "@/lib/mdx";
-import { getLocalizedPosts, getLocalizedPost, getAlternates, formatLocalDate, UI, type Lang } from "@/lib/mdxI18n";
+import { getLocalizedPosts, getLocalizedPost, getHreflangAlternates, formatLocalDate, UI, HREFLANG, RTL_LANGS, type Lang } from "@/lib/mdxI18n";
 
 /** Listing page a post funnels to: /<city>/<category>-clinics/. Country-wide posts ("thailand") go to Bangkok. */
 const MONEY_CATEGORIES = ["fertility", "physiotherapy", "cosmetic", "dental", "wellness"];
@@ -37,7 +37,7 @@ export function makeLocalizedPostPage(lang: Lang) {
     return {
       title: post.title,
       description: post.description,
-      alternates: { canonical: `/${lang}/blog/${slug}/`, languages: getAlternates(post.enSlug) },
+      alternates: { canonical: `/${lang}/blog/${slug}/`, languages: getHreflangAlternates(post.enSlug) },
       openGraph: { title: post.title, description: post.description, locale: lang },
     };
   }
@@ -47,6 +47,7 @@ export function makeLocalizedPostPage(lang: Lang) {
     const post = getLocalizedPost(lang, slug);
     if (!post) notFound();
     const t = UI[lang];
+    const dir = RTL_LANGS.includes(lang) ? "rtl" : "ltr";
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://thailand-clinics.com";
     const url = `${siteUrl}/${lang}/blog/${slug}/`;
     const money = moneyPage(post.category, post.city);
@@ -59,7 +60,7 @@ export function makeLocalizedPostPage(lang: Lang) {
     const faqs = extractFAQs(post.content);
 
     const schemas: Record<string, unknown>[] = [
-      { "@context": "https://schema.org", "@type": "Article", headline: post.title, description: post.description, inLanguage: lang,
+      { "@context": "https://schema.org", "@type": "Article", headline: post.title, description: post.description, inLanguage: HREFLANG[lang],
         datePublished: post.publishedAt, dateModified: post.updatedAt, url,
         author: { "@type": "Organization", name: "ThailandClinics", url: `${siteUrl}/` },
         publisher: { "@type": "Organization", name: "ThailandClinics", url: `${siteUrl}/`, logo: { "@type": "ImageObject", url: `${siteUrl}/icon.svg` } } },
@@ -67,7 +68,7 @@ export function makeLocalizedPostPage(lang: Lang) {
         { "@type": "ListItem", position: 1, name: t.home, item: `${siteUrl}/` },
         { "@type": "ListItem", position: 2, name: t.blog, item: `${siteUrl}/blog/` },
         { "@type": "ListItem", position: 3, name: post.title, item: url } ] },
-      ...(faqs.length ? [{ "@context": "https://schema.org", "@type": "FAQPage", inLanguage: lang,
+      ...(faqs.length ? [{ "@context": "https://schema.org", "@type": "FAQPage", inLanguage: HREFLANG[lang],
         mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.question, acceptedAnswer: { "@type": "Answer", text: f.answer } })) }] : []),
     ];
 
@@ -77,10 +78,10 @@ export function makeLocalizedPostPage(lang: Lang) {
       <>
         {/* Root layout hard-codes <html lang="en">. scripts/set-html-lang.mjs fixes the built HTML
             at postbuild; this covers `next dev` and client-side navigation. */}
-        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.lang=${JSON.stringify(lang)}` }} />
+        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.lang=${JSON.stringify(HREFLANG[lang])};document.documentElement.dir=${JSON.stringify(dir)}` }} />
         <StructuredData data={schemas} />
         <Nav />
-        <main lang={lang} style={{ backgroundColor: "var(--linen)", minHeight: "100vh" }}>
+        <main lang={HREFLANG[lang]} dir={dir} style={{ backgroundColor: "var(--linen)", minHeight: "100vh" }}>
           <div style={{ background: "var(--white)", borderBottom: "1px solid var(--border-soft)", padding: "40px 48px 44px" }} className="blog-header-pad">
             <div style={{ maxWidth: "800px", margin: "0 auto" }}>
               <nav aria-label="Breadcrumb" style={{ display: "flex", gap: "6px", flexWrap: "wrap", fontFamily: SANS, fontSize: "12.5px", color: "var(--muted)", marginBottom: "20px" }}>

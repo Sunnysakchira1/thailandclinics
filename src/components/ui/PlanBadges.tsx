@@ -1,6 +1,6 @@
 import type { Tier } from "@/lib/tiers";
 
-export type BadgeLang = "en" | "de" | "it" | "fr" | "es" | "pt";
+export type BadgeLang = "en" | "de" | "it" | "fr" | "es" | "pt" | "zh" | "ar";
 
 /** Badge labels per language. "Premium" reads naturally in every language, so it stays. */
 const LABELS: Record<BadgeLang, { premium: string; featured: string; topRated: string }> = {
@@ -10,6 +10,8 @@ const LABELS: Record<BadgeLang, { premium: string; featured: string; topRated: s
   fr: { premium: "◆ Premium", featured: "À la une", topRated: "★ Parmi les mieux notés" },
   es: { premium: "◆ Premium", featured: "Destacado", topRated: "★ Mejor valorado" },
   pt: { premium: "◆ Premium", featured: "Destaque", topRated: "★ Mais bem avaliado" },
+  zh: { premium: "◆ Premium", featured: "精选", topRated: "★ 高评分" },
+  ar: { premium: "◆ Premium", featured: "مميّز", topRated: "★ تقييم مرتفع" },
 };
 
 type Props = {
@@ -22,11 +24,12 @@ type Props = {
   lang?: BadgeLang;
 };
 
-const base = (size: "sm" | "md"): React.CSSProperties => ({
+const base = (size: "sm" | "md", lang: BadgeLang = "en"): React.CSSProperties => ({
   display: "inline-flex", alignItems: "center", gap: "5px",
   fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)", fontWeight: 600,
   fontSize: size === "sm" ? "9.5px" : "10.5px", lineHeight: 1,
-  letterSpacing: "0.08em", textTransform: "uppercase",
+  // Letter-spacing breaks Arabic letter joining.
+  letterSpacing: lang === "ar" ? "normal" : "0.08em", textTransform: "uppercase",
   padding: size === "sm" ? "3px 6px" : "5px 9px", borderRadius: "3px", whiteSpace: "nowrap",
 });
 
@@ -37,13 +40,13 @@ export default function PlanBadges({ tier, topRated, context = "default", size =
   return (
     <span style={{ display: "inline-flex", gap: "6px", flexWrap: "wrap" }}>
       {tier === "premium" && (
-        <span style={{ ...base(size), background: "var(--gold-pale)", border: "1px solid var(--gold)", color: "var(--gold-ink)" }}>{l.premium}</span>
+        <span style={{ ...base(size, lang), background: "var(--gold-pale)", border: "1px solid var(--gold)", color: "var(--gold-ink)" }}>{l.premium}</span>
       )}
       {showFeatured && (
-        <span style={{ ...base(size), background: "var(--green)", color: "var(--white)" }}>{l.featured}</span>
+        <span style={{ ...base(size, lang), background: "var(--green)", color: "var(--white)" }}>{l.featured}</span>
       )}
       {topRated && (
-        <span style={{ ...base(size), background: "var(--green-pale)", border: "1px solid #cfe0d5", color: "var(--green)" }}>{l.topRated}</span>
+        <span style={{ ...base(size, lang), background: "var(--green-pale)", border: "1px solid #cfe0d5", color: "var(--green)" }}>{l.topRated}</span>
       )}
     </span>
   );

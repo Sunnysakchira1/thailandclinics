@@ -16,7 +16,7 @@ import {
   formatPostDate,
   extractFAQs,
 } from "@/lib/mdx";
-import { getAlternates } from "@/lib/mdxI18n";
+import { getHreflangAlternates } from "@/lib/mdxI18n";
 
 /* ─── Static params ─────────────────────────────────────────────── */
 export async function generateStaticParams() {
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title:       post.title,
     description: post.description,
-    alternates:  { canonical: `/blog/${slug}/`, languages: getAlternates(slug) },
+    alternates:  { canonical: `/blog/${slug}/`, languages: getHreflangAlternates(slug) },
     openGraph: { title: post.title, description: post.description },
   };
 }
