@@ -1,8 +1,9 @@
-import { eq, desc, and, ne, sql, isNotNull, isNull, count, notInArray } from "drizzle-orm";
+import { eq, asc, desc, and, ne, sql, isNotNull, isNull, count, notInArray } from "drizzle-orm";
 import { db } from "./index";
 import { clinics, cities, categories, clinicReviews, brands, transitStations, clinicStations, treatmentPrices, clinicDoctors, type ClinicDoctor } from "./schema";
 import { WR_BASELINE, WR_WEIGHT, weightedRating } from "../ranking";
 import { effectiveTier, isTopRated, normaliseTier, type Tier } from "../tiers";
+import { amenitiesFromAbout, type Filterable, type StationLink } from "../listing-filters";
 
 /* Volume-aware weighted rating as a SQL ORDER BY fragment — mirrors
    weightedRating() in ../ranking so every ranking surface uses one formula. */
@@ -728,13 +729,52 @@ export async function getBrandSiblings(brandId: number, excludeBranchSlug: strin
   }));
 }
 
-export type ListingEntry = ClinicListItem & TierInfo & { isBrand: boolean; brandSlug?: string; branchCount?: number };
+export type ListingEntry = ClinicListItem & TierInfo &
+  Pick<Filterable, 'openingHours' | 'freeParking' | 'lgbtqFriendly' | 'stations'> &
+  { isBrand: boolean; brandSlug?: string; branchCount?: number; branches?: Filterable[] };
 
 export async function getListingEntries(citySlug: string, categorySlug: string): Promise<ListingEntry[]> {
   // standalone clinics (brand_id IS NULL)
-  const standalone = (await getClinicsBySlug(citySlug, categorySlug))
+  const scope = and(eq(cities.slug, citySlug), eq(categories.slug, categorySlug));
+  const [all, extraRows, stationRows] = await Promise.all([
+    getClinicsBySlug(citySlug, categorySlug),
+    db.select({ id: clinics.id, about: clinics.about, openingHours: clinics.openingHours })
+      .from(clinics)
+      .innerJoin(cities, eq(clinics.cityId, cities.id))
+      .innerJoin(categories, eq(clinics.categoryId, categories.id))
+      .where(scope),
+    db.select({
+      clinicId: clinicStations.clinicId, name: transitStations.name,
+      system: transitStations.system, distanceM: clinicStations.distanceM,
+    })
+      .from(clinicStations)
+      .innerJoin(transitStations, eq(clinicStations.stationId, transitStations.id))
+      .innerJoin(clinics, eq(clinicStations.clinicId, clinics.id))
+      .innerJoin(cities, eq(clinics.cityId, cities.id))
+      .innerJoin(categories, eq(clinics.categoryId, categories.id))
+      .where(scope)
+      .orderBy(asc(clinicStations.distanceM)),
+  ]);
+  const extras = new Map(extraRows.map((r) => [r.id, r]));
+  const stationsByClinic = new Map<number, StationLink[]>();
+  for (const { clinicId, ...link } of stationRows) {
+    stationsByClinic.set(clinicId, [...(stationsByClinic.get(clinicId) ?? []), link]);
+  }
+  const withFacets = all.map((c) => ({
+    ...c,
+    openingHours: extras.get(c.id)?.openingHours ?? null,
+    stations: stationsByClinic.get(c.id) ?? [],
+    ...amenitiesFromAbout(extras.get(c.id)?.about ?? null),
+  }));
+  const standalone = withFacets
     .filter((c) => c.brandId == null)
     .map((c) => ({ ...c, isBrand: false }));
+  const toFilterable = (c: (typeof withFacets)[number]): Filterable => ({
+    district: c.district, services: c.services, englishSpeaking: c.englishSpeaking, nearBts: c.nearBts, nearMrt: c.nearMrt,
+    openWeekends: c.openWeekends, openLate: c.openLate, hasParking: c.hasParking, wheelchairAccessible: c.wheelchairAccessible,
+    acceptsCard: c.acceptsCard, acceptsNfc: c.acceptsNfc, openingHours: c.openingHours, freeParking: c.freeParking,
+    lgbtqFriendly: c.lgbtqFriendly, stations: c.stations,
+  });
   // brands as single entries
   const brandRows = await db.select({
     id: brands.id, name: brands.name, slug: brands.slug, district: sql<string | null>`NULL`,
@@ -752,6 +792,8 @@ export async function getListingEntries(citySlug: string, categorySlug: string):
     featured: b.featured, featuredPosition: b.featuredPosition, services: null, hasParking: false, wheelchairAccessible: false,
     appointmentRequired: false, acceptsCard: false, acceptsNfc: false, openLate: false,
     brandId: null, isBrand: true, brandSlug: b.slug, branchCount: b.branchCount,
+    openingHours: null, freeParking: false, lgbtqFriendly: false, stations: [],
+    branches: withFacets.filter((c) => c.brandId === b.id).map(toFilterable),
     tier: effectiveTier(b.brandTier),
     topRated: isTopRated(null, b.brandTopRated),
   })) as ListingEntry[];

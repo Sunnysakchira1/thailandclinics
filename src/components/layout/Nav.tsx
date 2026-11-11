@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useCompareList } from "@/lib/compare";
 
 const CITIES = [
   { label: "Bangkok", href: "/bangkok/" },
@@ -19,6 +20,7 @@ const CATEGORIES = [
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const compareCount = useCompareList().length;
 
   // lock body scroll while the mobile menu is open
   useEffect(() => {
@@ -52,6 +54,7 @@ export default function Nav() {
         </div>
         <Link href="/guides/" className="nav-link">Guides</Link>
         <Link href="/about/" className="nav-link">About</Link>
+        {compareCount > 0 && <Link href="/compare/" className="nav-link">Compare <span className="nav-compare-badge">{compareCount}</span></Link>}
         <Link href="/list-your-clinic/" className="nav-cta">List your clinic</Link>
       </div>
 
@@ -74,6 +77,7 @@ export default function Nav() {
           <div className="nav-mobile-group">
             <Link href="/guides/" className="nav-mobile-link" onClick={() => setOpen(false)}>Guides</Link>
             <Link href="/about/" className="nav-mobile-link" onClick={() => setOpen(false)}>About</Link>
+            {compareCount > 0 && <Link href="/compare/" className="nav-mobile-link" onClick={() => setOpen(false)}>Compare ({compareCount})</Link>}
           </div>
           <Link
             href="/list-your-clinic/"
