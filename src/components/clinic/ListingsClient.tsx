@@ -484,7 +484,7 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
                       </div>
                       <span style={{
                         fontSize: '13px', fontWeight: 500, color: 'var(--green)',
-                        whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px',
+                        whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: '4px', marginLeft: 'auto',
                       }}>
                         {clinic.isBrand ? 'View all locations' : 'View clinic'}
                         <svg className="clinic-row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

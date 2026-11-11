@@ -91,7 +91,7 @@ export default function CompareClient() {
             <Section label="Getting there" span={span} />
             <Row label="Nearest station" items={items}
               render={(c) => (c.stations.length
-                ? c.stations.map((s, i) => <span key={s.name}>{i > 0 && <br />}<SystemBadge system={s.system} />{s.name} · {s.distanceM} m</span>)
+                ? c.stations.map((s, i) => <span key={s.name}>{i > 0 && <br />}<SystemBadge system={s.system} />{s.name} · {s.distanceM}&nbsp;m</span>)
                 : <span className="compare-no">None within 1 km</span>)} />
             <Row label="Neighbourhood" items={items} render={(c) => c.district ?? '–'} />
             <Row label="Free parking" items={items} render={(c) => yesNo(c.freeParking)} />
