@@ -1217,7 +1217,7 @@ a.compare-tray-go:hover { background: var(--green-light); }
 .compare-empty p { margin-bottom: 16px; font-size: 14px; color: var(--charcoal-soft); }
 
 @media (max-width: 767px) {
-  .row-compare { left: 136px; bottom: 14px; }
+  .row-compare { left: 136px; bottom: 22px; }
   .row-foot-tags { display: none !important; }
   .compare-table { min-width: 520px; font-size: 13px; }
   .compare-table th, .compare-table td { padding: 10px 12px; }
