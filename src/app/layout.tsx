@@ -1,23 +1,29 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
+import localFont from "next/font/local";
 import Script from "next/script";
 import "./globals.css";
 import SiteFooter from "@/components/layout/SiteFooter";
 
-const cormorant = Cormorant_Garamond({
+// Self-hosted (latin subset, variable weight 300–600). next/font/google broke on
+// Cloudflare's build servers, where Google returns /l/font?kit=…&skey=… URLs Turbopack can't parse.
+const cormorant = localFont({
   variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
+  src: [
+    { path: "../fonts/CormorantGaramond-normal.woff2", weight: "300 600", style: "normal" },
+    { path: "../fonts/CormorantGaramond-italic.woff2", weight: "300 600", style: "italic" },
+  ],
   display: "swap",
+  fallback: ["Georgia", "serif"],
 });
 
-const dmSans = DM_Sans({
+const dmSans = localFont({
   variable: "--font-dm-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
+  src: [
+    { path: "../fonts/DMSans-normal.woff2", weight: "300 600", style: "normal" },
+    { path: "../fonts/DMSans-italic.woff2", weight: "300 600", style: "italic" },
+  ],
   display: "swap",
+  fallback: ["sans-serif"],
 });
 
 export const metadata: Metadata = {
@@ -39,9 +45,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body
-        className={`${cormorant.variable} ${dmSans.variable}`}
         style={{ fontFamily: "var(--font-dm-sans, DM Sans, sans-serif)" }}
       >
         {children}
