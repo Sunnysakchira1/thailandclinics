@@ -1,4 +1,5 @@
 import Link from "next/link";
+import QuickMatch from "@/components/clinic/QuickMatch";
 import Nav from "@/components/layout/Nav";
 import StructuredData from "@/components/seo/StructuredData";
 import OpenStatus from "@/components/clinic/OpenStatus";
@@ -1463,38 +1464,13 @@ export default function ClinicProfileView({ clinic, reviews, stations, prices, n
         })()}
       </main>
 
-      {/* ══════════════════════════════════════════════════════════
-          STICKY BOTTOM CTA — mobile only
-      ══════════════════════════════════════════════════════════ */}
-      {clinic.phone && (
-        <div className="profile-sticky-cta">
-          <div>
-            <p style={{
-              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-              fontSize: "10px", color: "var(--muted)", fontWeight: 600,
-              textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px",
-            }}>
-              Call clinic
-            </p>
-            <p style={{
-              fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-              fontSize: "16px", fontWeight: 600, color: "var(--charcoal)",
-            }}>
-              {clinic.phone}
-            </p>
-          </div>
-          <a href={`tel:${clinic.phone}`} style={{
-            fontFamily: "var(--font-dm-sans,'DM Sans',sans-serif)",
-            fontSize: "14px", fontWeight: 600,
-            background: "var(--green)", color: "#fff",
-            padding: "13px 28px", borderRadius: "4px",
-            textDecoration: "none", flexShrink: 0,
-            minHeight: "48px", display: "flex", alignItems: "center",
-          }}>
-            Call Now
-          </a>
-        </div>
-      )}
+      {/* Mobile sticky lead CTA: three-tap "Find my clinic" qualifier (hidden ≥768px). */}
+      <QuickMatch
+        clinicName={displayName}
+        cityName={clinic.cityName}
+        categorySlug={clinic.categorySlug}
+        categoryName={clinic.categoryName}
+      />
     </>
   );
 }
