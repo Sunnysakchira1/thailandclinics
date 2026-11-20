@@ -38,6 +38,13 @@ describe('lead formatting', () => {
     expect(p.name).toBe('Anna');
     expect(leadPayload({ ...lead, contact: 'anna.k' }, '')._replyto).toBeUndefined();
   });
+  it('labels profile and listing leads separately', () => {
+    expect(leadPayload(lead, '').form).toBe('Patient: quick match (mobile, profile)');
+    const { clinicName: _omit, ...listing } = lead;
+    const p = leadPayload({ ...listing, pageUrl: 'https://thailand-clinics.com/bangkok/physiotherapy-clinics/' }, '');
+    expect(p.form).toBe('Patient: quick match (mobile, listing)');
+    expect(p.viewed_clinic).toBe('— (listing page)');
+  });
   it('detects emails', () => {
     expect(isEmail('a@b.co')).toBe(true);
     expect(isEmail('+66 81 234 5678')).toBe(false);

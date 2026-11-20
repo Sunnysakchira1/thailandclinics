@@ -1,5 +1,5 @@
 /**
- * Mobile "Find my clinic" qualifier on clinic profiles: three taps (need,
+ * Mobile "Find my clinic" qualifier on clinic profiles and listing pages: three taps (need,
  * timing, contact) that send a lead to hello@ through the shared Formspree
  * form. Need options come from SERVICE_TAXONOMY labels so they only name
  * treatments the directory already tracks for that category.
@@ -29,7 +29,8 @@ export type QuickMatchLead = {
   timing: string;
   name: string;
   contact: string;
-  clinicName: string;
+  /** Clinic the visitor was viewing; omitted on listing pages. */
+  clinicName?: string;
   cityName: string;
   categoryName: string;
   pageUrl: string;
@@ -50,12 +51,12 @@ export function leadSubject(l: Pick<QuickMatchLead, 'need' | 'timing' | 'cityNam
 export function leadPayload(l: QuickMatchLead, honeypot: string): Record<string, string> {
   const contact = l.contact.trim();
   const body: Record<string, string> = {
-    form: 'Patient: quick match (mobile)',
+    form: l.clinicName ? 'Patient: quick match (mobile, profile)' : 'Patient: quick match (mobile, listing)',
     name: l.name.trim(),
     contact,
     need: l.need,
     timing: l.timing,
-    viewed_clinic: l.clinicName,
+    viewed_clinic: l.clinicName ?? '— (listing page)',
     city: l.cityName,
     category: l.categoryName,
     page: l.pageUrl,

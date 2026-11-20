@@ -5,7 +5,10 @@ import { CONTACT_EMAIL, FORMSPREE_ENDPOINT } from '@/lib/forms';
 import { TIMING_OPTIONS, leadPayload, needOptions } from '@/lib/quick-match';
 
 type Props = {
-  clinicName: string;
+  /** Set on clinic profiles; omit on listing pages. */
+  clinicName?: string;
+  /** Hide the bar (e.g. while the listing's Compare tray occupies the bottom). */
+  hidden?: boolean;
   cityName: string;
   categorySlug: string;
   categoryName: string;
@@ -21,7 +24,7 @@ function track(event: string, params: Record<string, string | number> = {}) {
 }
 
 /** Mobile sticky "Find my clinic" bar + three-step bottom sheet. Opens only on tap. */
-export default function QuickMatch({ clinicName, cityName, categorySlug, categoryName }: Props) {
+export default function QuickMatch({ clinicName, hidden = false, cityName, categorySlug, categoryName }: Props) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>(0);
   const [need, setNeed] = useState('');
@@ -52,7 +55,7 @@ export default function QuickMatch({ clinicName, cityName, categorySlug, categor
   function openSheet() {
     setOpen(true);
     if (step === 'sent') { setStep(0); setNeed(''); setTiming(''); }
-    track('quick_match_open', { clinic: clinicName, category: categorySlug });
+    track('quick_match_open', { source: clinicName ? 'profile' : 'listing', clinic: clinicName ?? '', category: categorySlug });
   }
   function close() {
     setOpen(false);
@@ -78,7 +81,7 @@ export default function QuickMatch({ clinicName, cityName, categorySlug, categor
       if (!res.ok) throw new Error(String(res.status));
       setStatus('idle');
       setStep('sent');
-      track('generate_lead', { form: 'quick_match', need, timing, category: categorySlug });
+      track('generate_lead', { form: 'quick_match', source: clinicName ? 'profile' : 'listing', need, timing, category: categorySlug });
     } catch {
       setStatus('error');
       track('quick_match_error', { category: categorySlug });
@@ -87,10 +90,10 @@ export default function QuickMatch({ clinicName, cityName, categorySlug, categor
 
   return (
     <>
-      <div className="profile-sticky-cta qm-bar">
+      <div className="profile-sticky-cta qm-bar" hidden={hidden && !open}>
         <div className="qm-bar-text">
           <p className="qm-kicker">3 taps · free</p>
-          <p className="qm-headline">Not sure this is the one?</p>
+          <p className="qm-headline">{clinicName ? 'Not sure this is the one?' : 'Not sure which to pick?'}</p>
         </div>
         <button ref={triggerRef} type="button" className="qm-btn" onClick={openSheet} aria-haspopup="dialog">
           Find my clinic
@@ -141,7 +144,7 @@ export default function QuickMatch({ clinicName, cityName, categorySlug, categor
                   <input value={contact} onChange={(e) => setContact(e.target.value)} required maxLength={120}
                     placeholder="e.g. anna.k or anna@mail.com" />
                 </label>
-                <p className="qm-context">{need} · {timing} · viewed {clinicName}</p>
+                <p className="qm-context">{need} · {timing}{clinicName ? ` · viewed ${clinicName}` : ''}</p>
                 <button type="submit" className="qm-btn qm-full" disabled={status === 'sending'}>
                   {status === 'sending' ? 'Sending…' : 'Send my request'}
                 </button>
@@ -160,7 +163,7 @@ export default function QuickMatch({ clinicName, cityName, categorySlug, categor
                 <div className="qm-tick" aria-hidden="true">✓</div>
                 <h2 id="qm-title" className="qm-title">Request received</h2>
                 <p className="qm-sub">We&rsquo;ll reply within 1 business day on the contact you gave us.</p>
-                <button type="button" className="qm-btn qm-ghost qm-full" onClick={close}>Back to the clinic</button>
+                <button type="button" className="qm-btn qm-ghost qm-full" onClick={close}>{clinicName ? 'Back to the clinic' : 'Back to the list'}</button>
               </div>
             )}
           </div>
