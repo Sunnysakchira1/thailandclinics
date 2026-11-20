@@ -11,6 +11,7 @@ import { tierRank } from '@/lib/tiers';
 import ListingFilterSidebar, { SystemBadge } from '@/components/clinic/ListingFilterSidebar';
 import { ActiveChips, SortMenu, type SortOption } from '@/components/clinic/ListingToolbar';
 import CompareTray from '@/components/clinic/CompareTray';
+import QuickMatch from '@/components/clinic/QuickMatch';
 import {
   activeFilterCount, applyFilters, buildSections, chipLabel, countClinics, EMPTY_FILTERS,
   prepareEntries, stateWith, toggleFilter, type FilterState, type Prepared,
@@ -526,6 +527,13 @@ export default function ListingsClient({ clinics: allClinics, citySlug, catSlug,
         </main>
       </div>
       <CompareTray items={compareItems} notice={notice} />
+      {/* Mobile lead CTA; steps aside while the Compare tray is in use. */}
+      <QuickMatch
+        cityName={cityName}
+        categorySlug={catSlug}
+        categoryName={catName}
+        hidden={compareItems.length > 0}
+      />
     </>
   );
 }

@@ -1239,7 +1239,8 @@ a.compare-tray-go:hover { background: var(--green-light); }
   .lf-chev, .row-compare { transition: none; }
 }
 
-/* ── Quick match (mobile lead CTA on clinic profiles) ──────────────── */
+/* ── Quick match (mobile lead CTA on clinic profiles + listings) ───── */
+.qm-bar[hidden] { display: none; }
 .qm-bar-text { min-width: 0; }
 .qm-kicker { margin-bottom: 2px; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .qm-headline { font-size: 15px; font-weight: 600; line-height: 1.25; color: var(--charcoal); }
